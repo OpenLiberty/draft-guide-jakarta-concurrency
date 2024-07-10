@@ -16,6 +16,7 @@
         <liberty.var.http.port>9080</liberty.var.http.port>
         <liberty.var.https.port>9443</liberty.var.https.port>
         <liberty.var.context.root>/inventory</liberty.var.context.root>
+        <liberty.var.client.https.port>9444</liberty.var.client.https.port>
     </properties>
 
     <dependencies>
@@ -53,7 +54,46 @@
             <version>10.17.1.0</version>
             <scope>provided</scope>
         </dependency>
+    <!-- Test dependencies -->
+
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>5.10.2</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers</artifactId>
+            <version>1.19.8</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>1.19.8</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.resteasy</groupId>
+            <artifactId>resteasy-client</artifactId>
+            <version>6.2.9.Final</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.resteasy</groupId>
+            <artifactId>resteasy-json-binding-provider</artifactId>
+            <version>6.2.9.Final</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>jakarta.json</artifactId>
+            <version>2.0.1</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
+
     <build>
         <finalName>${project.artifactId}</finalName>
         <pluginManagement>
@@ -62,6 +102,9 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-war-plugin</artifactId>
                     <version>3.4.0</version>
+                    <configuration>
+                        <packagingExcludes>pom.xml</packagingExcludes>
+                    </configuration>
                 </plugin>
                 <plugin>
                     <groupId>io.openliberty.tools</groupId>
@@ -85,11 +128,40 @@
                         </copyDependencies>
                     </configuration>
                 </plugin>
-                <!-- Plugin to run integration tests -->
+
+                <!-- Liberty plugin -->
                 <plugin>
                     <groupId>io.openliberty.tools</groupId>
                     <artifactId>liberty-maven-plugin</artifactId>
                     <version>3.10.3</version>
+                </plugin>
+
+                <!-- Plugin to run unit tests -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>3.2.5</version>
+                </plugin>
+
+                <!-- Plugin to run integration tests -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-failsafe-plugin</artifactId>
+                    <version>3.2.5</version>
+                    <configuration>
+                        <systemPropertyVariables>
+                            <http.port>${liberty.var.http.port}</http.port>
+                            <https.port>${liberty.var.https.port}</https.port>
+                        </systemPropertyVariables>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>integration-test</goal>
+                                <goal>verify</goal>
+                            </goals>
+                        </execution>
+                    </executions>
                 </plugin>
             </plugins>
         </pluginManagement>

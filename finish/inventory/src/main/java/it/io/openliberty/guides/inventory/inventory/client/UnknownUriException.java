@@ -9,11 +9,18 @@
  * SPDX-License-Identifier: EPL-2.0
  *******************************************************************************/
 // end::copyright[]
-package io.openliberty.guides.inventory;
+package it.io.openliberty.guides.inventory.inventory.client;
 
-import jakarta.ws.rs.ApplicationPath;
-import jakarta.ws.rs.core.Application;
+public class UnknownUriException extends Exception {
 
-@ApplicationPath("/api")
-public class InventoryApplication extends Application {
+    private static final long serialVersionUID = 1L;
+
+    public UnknownUriException() {
+        super();
+    }
+
+    public UnknownUriException(String message) {
+        super(message);
+    }
+
 }

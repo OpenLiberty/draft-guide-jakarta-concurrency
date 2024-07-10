@@ -9,7 +9,7 @@
  * SPDX-License-Identifier: EPL-2.0
  *******************************************************************************/
 // end::copyright[]
-package io.openliberty.guides.inventory.models;
+package it.io.openliberty.guides.inventory.inventory.model;
 
 import java.io.Serializable;
 
@@ -26,54 +26,31 @@ import jakarta.persistence.Table;
 
 @Schema(name = "SystemData",
         description = "POJO that represents a single inventory entry.")
-// tag::Entity[]
 @Entity
-// end::Entity[]
-// tag::Table[]
 @Table(name = "SystemData")
-// end::Table[]
-// tag::findAll[]
 @NamedQuery(name = "SystemData.findAll", query = "SELECT e FROM SystemData e")
-//end::findAll[]
-//tag::findSystem[]
 @NamedQuery(name = "SystemData.findSystem",
         query = "SELECT e FROM SystemData e WHERE e.hostname = :hostname")
-// end::findSystem[]
-// tag::SystemData[]
 public class SystemData implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    // tag::GeneratedValue[]
     @SequenceGenerator(name = "SEQ",
             sequenceName = "systemData_id_seq",
             allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "SEQ")
-    // end::GeneratedValue[]
-    // tag::Id[]
     @Id
-    // end::Id[]
-    // tag::columnId[]
     @Column(name = "id")
-    // end::columnId[]
     private int id;
 
     @Schema(required = true)
-    // tag::columnHostname[]
     @Column(name = "hostname")
-    // end::columnHostname[]
     private String hostname;
 
-    // tag::columnOsName[]
     @Column(name = "osName")
-    // end::columnOsName[]
     private String osName;
-    // tag::columnJavaVersion[]
     @Column(name = "javaVersion")
-    // end::columnJavaVersion[]
     private String javaVersion;
-    // tag::columnHeapSize[]
     @Column(name = "heapSize")
-    // end::columnHeapSize[]
     private Long heapSize;
 
     public SystemData() {

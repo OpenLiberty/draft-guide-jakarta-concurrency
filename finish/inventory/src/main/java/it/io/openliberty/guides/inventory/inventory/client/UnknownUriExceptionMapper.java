@@ -9,7 +9,7 @@
  * SPDX-License-Identifier: EPL-2.0
  *******************************************************************************/
 // end::copyright[]
-package io.openliberty.guides.inventory.client;
+package it.io.openliberty.guides.inventory.inventory.client;
 
 import java.util.logging.Logger;
 

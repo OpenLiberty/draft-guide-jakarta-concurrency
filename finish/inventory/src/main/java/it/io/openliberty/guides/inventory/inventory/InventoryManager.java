@@ -9,10 +9,11 @@
  * SPDX-License-Identifier: EPL-2.0
  *******************************************************************************/
 // end::copyright[]
-package io.openliberty.guides.inventory;
+package it.io.openliberty.guides.inventory.inventory;
 
 import java.util.List;
-import io.openliberty.guides.inventory.models.SystemData;
+
+import it.io.openliberty.guides.inventory.inventory.model.SystemData;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -21,7 +22,6 @@ import jakarta.persistence.PersistenceContext;
 public class InventoryManager {
 
     @PersistenceContext(name = "jpa-unit")
-    // end::PersistenceContext[]
     private EntityManager em;
 
     public List<SystemData> getSystems() {
