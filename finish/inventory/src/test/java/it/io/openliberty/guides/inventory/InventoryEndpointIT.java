@@ -23,7 +23,6 @@ import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.TestMethodOrder;
 
-import java.util.Base64;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -88,6 +87,5 @@ public class InventoryEndpointIT {
         System.out.println("TEST: " + baseUrl);
         return baseUrl;
     }
-
 
 }

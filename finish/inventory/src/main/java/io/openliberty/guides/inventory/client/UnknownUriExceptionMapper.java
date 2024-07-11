@@ -19,7 +19,7 @@ import jakarta.ws.rs.core.MultivaluedMap;
 import jakarta.ws.rs.core.Response;
 
 public class UnknownUriExceptionMapper
-        implements ResponseExceptionMapper<UnknownUriException> {
+       implements ResponseExceptionMapper<UnknownUriException> {
     Logger LOG = Logger.getLogger(UnknownUriExceptionMapper.class.getName());
 
     @Override

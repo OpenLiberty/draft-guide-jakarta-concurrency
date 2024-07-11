@@ -44,7 +44,7 @@ public interface InventoryResourceClient {
     @Path("/{hostname}")
     @Produces(MediaType.APPLICATION_JSON)
     SystemData getSystem(
-            @PathParam("hostname") String hostname);
+        @PathParam("hostname") String hostname);
     // end::getSystem[]
 
     // tag::addSystem[]
@@ -52,10 +52,10 @@ public interface InventoryResourceClient {
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_JSON)
     Response addSystem(
-            @QueryParam("hostname") String hostname,
-            @QueryParam("osName") String osName,
-            @QueryParam("javaVersion") String javaVersion,
-            @QueryParam("heapSize") Long heapSize);
+        @QueryParam("hostname") String hostname,
+        @QueryParam("osName") String osName,
+        @QueryParam("javaVersion") String javaVersion,
+        @QueryParam("heapSize") Long heapSize);
     // end::addSystem[]
 
     // tag::updateSystem[]
@@ -64,10 +64,10 @@ public interface InventoryResourceClient {
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_JSON)
     Response updateSystem(
-            @PathParam("hostname") String hostname,
-            @QueryParam("osName") String osName,
-            @QueryParam("javaVersion") String javaVersion,
-            @QueryParam("heapSize") Long heapSize);
+        @PathParam("hostname") String hostname,
+        @QueryParam("osName") String osName,
+        @QueryParam("javaVersion") String javaVersion,
+        @QueryParam("heapSize") Long heapSize);
     // end::updateSystem[]
 
     // tag::removeSystem[]
@@ -75,6 +75,6 @@ public interface InventoryResourceClient {
     @Path("/{hostname}")
     @Produces(MediaType.APPLICATION_JSON)
     Response removeSystem(
-            @PathParam("hostname") String hostname);
+        @PathParam("hostname") String hostname);
     // end::removeSystem[]
 }

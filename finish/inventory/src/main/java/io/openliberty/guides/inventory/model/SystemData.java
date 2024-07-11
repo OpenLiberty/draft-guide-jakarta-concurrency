@@ -30,7 +30,7 @@ import jakarta.persistence.Table;
 @Table(name = "SystemData")
 @NamedQuery(name = "SystemData.findAll", query = "SELECT e FROM SystemData e")
 @NamedQuery(name = "SystemData.findSystem",
-        query = "SELECT e FROM SystemData e WHERE e.hostname = :hostname")
+            query = "SELECT e FROM SystemData e WHERE e.hostname = :hostname")
 public class SystemData implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -116,4 +116,3 @@ public class SystemData implements Serializable {
         return false;
     }
 }
-// end::SystemData[]

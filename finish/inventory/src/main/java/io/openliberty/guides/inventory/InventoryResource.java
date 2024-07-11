@@ -39,8 +39,7 @@ public class InventoryResource {
     InventoryManager inventoryManager;
     @Inject
     @ConfigProperty(name = "client.https.port")
-            String CLIENT_PORT;
-
+        String CLIENT_PORT;
 
     @GET
     @Path("/")
@@ -53,7 +52,7 @@ public class InventoryResource {
     @Path("/{hostname}")
     @Produces(MediaType.APPLICATION_JSON)
     public SystemData getSystem(
-            @PathParam("hostname") String hostname) {
+        @PathParam("hostname") String hostname) {
         return inventoryManager.getSystem(hostname);
     }
 
@@ -62,10 +61,10 @@ public class InventoryResource {
     @Produces(MediaType.APPLICATION_JSON)
     @Transactional
     public Response addSystem(
-            @QueryParam("hostname") String hostname,
-            @QueryParam("osName") String osName,
-            @QueryParam("javaVersion") String javaVersion,
-            @QueryParam("heapSize") Long heapSize) {
+        @QueryParam("hostname") String hostname,
+        @QueryParam("osName") String osName,
+        @QueryParam("javaVersion") String javaVersion,
+        @QueryParam("heapSize") Long heapSize) {
 
         SystemData s = inventoryManager.getSystem(hostname);
         if (s != null) {
@@ -81,10 +80,10 @@ public class InventoryResource {
     @Produces(MediaType.APPLICATION_JSON)
     @Transactional
     public Response updateSystem(
-            @PathParam("hostname") String hostname,
-            @QueryParam("osName") String osName,
-            @QueryParam("javaVersion") String javaVersion,
-            @QueryParam("heapSize") Long heapSize) {
+        @PathParam("hostname") String hostname,
+        @QueryParam("osName") String osName,
+        @QueryParam("javaVersion") String javaVersion,
+        @QueryParam("heapSize") Long heapSize) {
 
         SystemData s = inventoryManager.getSystem(hostname);
         if (s == null) {
@@ -117,7 +116,7 @@ public class InventoryResource {
 
     private Response fail(String message) {
         return Response.status(Response.Status.BAD_REQUEST)
-                .entity("{ \"error\" : \"" + message + "\" }")
-                .build();
+               .entity("{ \"error\" : \"" + message + "\" }")
+               .build();
     }
 }
