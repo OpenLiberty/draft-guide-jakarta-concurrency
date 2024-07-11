@@ -38,7 +38,6 @@ public class InventoryEndpointIT {
 
     @BeforeAll
     public static void setupTestClass() throws Exception {
-        System.out.println("TEST: Starting Liberty Container setup");
         client = createRestClient(
                 InventoryResourceClient.class, appPath);
     }
