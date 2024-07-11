@@ -38,35 +38,20 @@ public class InventoryEndpointIT {
     private static String appPath = "inventory/api/";
 
     private static InventoryResourceClient client;
-    private static String authHeader;
 
     @BeforeAll
     public static void setupTestClass() throws Exception {
         System.out.println("TEST: Starting Liberty Container setup");
         client = createRestClient(
                 InventoryResourceClient.class, appPath);
-        String userPassword = "bob" + ":" + "bobpwd";
-        authHeader = "Basic "
-                + Base64.getEncoder().encodeToString(userPassword.getBytes());
-    }
-
-    private void showSystemData(SystemData system) {
-        System.out.println("TEST: SystemData > "
-                + system.getId() + ", "
-                + system.getHostname() + ", "
-                + system.getOsName() + ", "
-                + system.getJavaVersion() + ", "
-                + system.getHeapSize());
     }
 
     @Test
     @Order(1)
     public void testAddSystem() {
-        System.out.println("TEST: Testing add a system");
         client.addSystem("localhost", "linux", "17", Long.valueOf(2048));
         List<SystemData> systems = client.listContents();
         assertEquals(1, systems.size());
-        showSystemData(systems.get(0));
         assertEquals("17", systems.get(0).getJavaVersion());
         assertEquals(Long.valueOf(2048), systems.get(0).getHeapSize());
     }
@@ -74,10 +59,8 @@ public class InventoryEndpointIT {
     @Test
     @Order(2)
     public void testUpdateSystem() {
-        System.out.println("TEST: Testing update a system");
-        client.updateSystem(authHeader, "localhost", "linux", "8", Long.valueOf(1024));
+        client.updateSystem("localhost", "linux", "8", Long.valueOf(1024));
         SystemData system = client.getSystem("localhost");
-        showSystemData(system);
         assertEquals("8", system.getJavaVersion());
         assertEquals(Long.valueOf(1024), system.getHeapSize());
     }
@@ -85,8 +68,7 @@ public class InventoryEndpointIT {
     @Test
     @Order(3)
     public void testRemoveSystem() {
-        System.out.println("TEST: Testing remove a system");
-        client.removeSystem(authHeader, "localhost");
+        client.removeSystem("localhost");
         List<SystemData> systems = client.listContents();
         assertEquals(0, systems.size());
     }

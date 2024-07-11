@@ -64,7 +64,6 @@ public interface InventoryResourceClient {
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_JSON)
     Response updateSystem(
-            @HeaderParam("Authorization") String authHeader,
             @PathParam("hostname") String hostname,
             @QueryParam("osName") String osName,
             @QueryParam("javaVersion") String javaVersion,
@@ -76,7 +75,6 @@ public interface InventoryResourceClient {
     @Path("/{hostname}")
     @Produces(MediaType.APPLICATION_JSON)
     Response removeSystem(
-            @HeaderParam("Authorization") String authHeader,
             @PathParam("hostname") String hostname);
     // end::removeSystem[]
 }
