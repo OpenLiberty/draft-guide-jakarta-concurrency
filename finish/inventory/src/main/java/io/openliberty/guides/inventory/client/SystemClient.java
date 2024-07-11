@@ -9,7 +9,7 @@
  * SPDX-License-Identifier: EPL-2.0
  *******************************************************************************/
 // end::copyright[]
-package it.io.openliberty.guides.inventory.inventory.client;
+package io.openliberty.guides.inventory.client;
 
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.HeaderParam;

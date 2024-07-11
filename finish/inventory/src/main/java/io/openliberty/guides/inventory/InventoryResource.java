@@ -9,12 +9,12 @@
  * SPDX-License-Identifier: EPL-2.0
  *******************************************************************************/
 // end::copyright[]
-package it.io.openliberty.guides.inventory.inventory;
+package io.openliberty.guides.inventory;
 
 import java.util.List;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
-import it.io.openliberty.guides.inventory.inventory.model.SystemData;
+import io.openliberty.guides.inventory.model.SystemData;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
