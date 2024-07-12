@@ -33,6 +33,11 @@ public interface SystemClient extends AutoCloseable {
     Long getHeapSize(@HeaderParam("Authorization") String authHeader);
 
     @GET
+    @Path("/memoryUsed")
+    @Produces(MediaType.APPLICATION_JSON)
+    Long getMemoryUsed(@HeaderParam("Authorization") String authHeader);
+
+    @GET
     @Path("/systemLoad")
     @Produces(MediaType.APPLICATION_JSON)
     Double getSystemLoad(@HeaderParam("Authorization") String authHeader);

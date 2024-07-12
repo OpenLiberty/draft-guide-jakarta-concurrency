@@ -38,10 +38,17 @@ public class SystemResource {
     }
 
     @GET
-    @Path("/memoryUsed")
+    @Path("/heapsize")
     @Produces(MediaType.TEXT_PLAIN)
     public Long getHeapSize() {
         return MEM_BEAN.getHeapMemoryUsage().getMax();
+    }
+
+    @GET
+    @Path("/memoryUsed")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Long getMemoryUsed() {
+        return MEM_BEAN.getHeapMemoryUsage().getUsed();
     }
 
     @GET
