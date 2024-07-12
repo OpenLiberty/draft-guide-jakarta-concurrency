@@ -32,4 +32,9 @@ public interface SystemClient extends AutoCloseable {
     @Produces(MediaType.TEXT_PLAIN)
     Long getHeapSize(@HeaderParam("Authorization") String authHeader);
 
+    @GET
+    @Path("/systemLoad")
+    @Produces(MediaType.APPLICATION_JSON)
+    Double getSystemLoad(@HeaderParam("Authorization") String authHeader);
+
 }

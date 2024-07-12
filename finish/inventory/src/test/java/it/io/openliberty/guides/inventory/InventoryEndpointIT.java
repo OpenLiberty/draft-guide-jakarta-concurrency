@@ -50,6 +50,18 @@ public class InventoryEndpointIT {
         assertEquals(1, systems.size());
         assertEquals("17", systems.get(0).getJavaVersion());
         assertEquals(Long.valueOf(2048), systems.get(0).getHeapSize());
+
+        boolean hostnameExists = false;
+        for(int i = 0; i < systems.size(); i++) {
+            hostnameExists = systems.get(i).getHostname().isEmpty();
+            assertFalse(hostnameExists, "A host was registered, but it was empty");
+            if (!hostnameExists) {
+                String host = systems.get(i).getHostname();
+                hostname = host.substring(1, host.length() - 1);
+                break;
+            }
+        }
+        assertNotNull(hostname, "Hostname should be set by the first test.");
     }
 
     @Test
