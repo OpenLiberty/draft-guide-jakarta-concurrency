@@ -13,6 +13,7 @@ package io.openliberty.guides.system;
 
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryMXBean;
+import java.lang.management.OperatingSystemMXBean;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.ws.rs.GET;
@@ -25,6 +26,8 @@ import jakarta.ws.rs.core.MediaType;
 @Path("/")
 public class SystemResource {
 
+    private static final OperatingSystemMXBean OS_MEAN =
+            ManagementFactory.getOperatingSystemMXBean();
     private static final MemoryMXBean MEM_BEAN = ManagementFactory.getMemoryMXBean();
 
     @GET
@@ -35,10 +38,19 @@ public class SystemResource {
     }
 
     @GET
-    @Path("/heapsize")
+    @Path("/memoryUsed")
     @Produces(MediaType.TEXT_PLAIN)
     public Long getHeapSize() {
         return MEM_BEAN.getHeapMemoryUsage().getMax();
     }
+
+    @GET
+    @Path("/systemLoad")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Double getSystemLoad() {
+        return OS_MEAN.getSystemLoadAverage();
+    }
+
+
 
 }
