@@ -32,7 +32,6 @@ import jakarta.ws.rs.core.Response;
 
 @ApplicationScoped
 @Path("/systems")
-// tag::SystemResource[]
 public class InventoryResource {
 
     @Inject
