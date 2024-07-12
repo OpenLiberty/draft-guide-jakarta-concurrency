@@ -37,9 +37,10 @@ public class InventoryResource {
 
     @Inject
     InventoryManager inventoryManager;
+
     @Inject
     @ConfigProperty(name = "client.https.port")
-        String CLIENT_PORT;
+    String CLIENT_PORT;
 
     @GET
     @Path("/")
