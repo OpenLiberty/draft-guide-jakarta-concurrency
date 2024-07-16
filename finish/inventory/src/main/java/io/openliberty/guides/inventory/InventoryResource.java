@@ -11,7 +11,11 @@
 // end::copyright[]
 package io.openliberty.guides.inventory;
 
+import java.net.URI;
 import java.util.List;
+
+import io.openliberty.guides.inventory.client.SystemClient;
+import io.openliberty.guides.inventory.client.UnknownUriExceptionMapper;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import io.openliberty.guides.inventory.model.SystemData;
@@ -29,6 +33,7 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import org.eclipse.microprofile.rest.client.RestClientBuilder;
 
 @ApplicationScoped
 @Path("/systems")
@@ -110,6 +115,39 @@ public class InventoryResource {
         }
     }
 
+    @POST
+    @Path("/client/{hostname}")
+    // end::addSystemClient[]
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Transactional
+    public Response addSystemClient(@PathParam("hostname") String hostname) {
+
+        SystemData s = inventoryManager.getSystem(hostname);
+        if (s != null) {
+            return fail(hostname + " already exists.");
+        }
+
+        SystemClient customRestClient = null;
+        try {
+            customRestClient = getSystemClient(hostname);
+        } catch (Exception e) {
+            return fail("Failed to create the client " + hostname + ".");
+        }
+
+        try {
+            // tag::customRestClient[]
+            String osName = customRestClient.getProperty("os.name");
+            String javaVer = customRestClient.getProperty("java.version");
+            Long heapSize = customRestClient.getHeapSize();
+            // end::customRestClient[]
+            inventoryManager.add(hostname, osName, javaVer, heapSize);
+        } catch (Exception e) {
+            return fail("Failed to reach the client " + hostname + ".");
+        }
+        return success(hostname + " was added.");
+    }
+
     private Response success(String message) {
         return Response.ok("{ \"ok\" : \"" + message + "\" }").build();
     }
@@ -119,4 +157,15 @@ public class InventoryResource {
                .entity("{ \"error\" : \"" + message + "\" }")
                .build();
     }
+
+    private SystemClient getSystemClient(String hostname) throws Exception {
+        String customURIString = "https://" + hostname + ":" + CLIENT_PORT + "/system";
+        URI customURI = URI.create(customURIString);
+        return RestClientBuilder.newBuilder()
+                .baseUri(customURI)
+                .register(UnknownUriExceptionMapper.class)
+                .build(SystemClient.class);
+    }
+
+
 }
