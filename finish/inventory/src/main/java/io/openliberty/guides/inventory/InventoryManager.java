@@ -37,6 +37,10 @@ public class InventoryManager {
         return systems == null || systems.isEmpty() ? null : systems.get(0);
     }
 
+    public void add(SystemData systemData) {
+        em.persist(systemData);
+    }
+
     public void add(String hostname, String osName, String javaVersion, Long heapSize) {
         em.persist(new SystemData(hostname, osName, javaVersion, heapSize));
     }

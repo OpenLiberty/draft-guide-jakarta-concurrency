@@ -46,14 +46,14 @@ public class SystemResource {
 
     @GET
     @Path("/memoryUsed")
-    @Produces(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.TEXT_PLAIN)
     public Long getMemoryUsed() {
         return MEM_BEAN.getHeapMemoryUsage().getUsed();
     }
 
     @GET
     @Path("/systemLoad")
-    @Produces(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.TEXT_PLAIN)
     public Double getSystemLoad() {
         return OS_MEAN.getSystemLoadAverage();
     }
