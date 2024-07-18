@@ -125,44 +125,11 @@ public class InventoryResource {
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_JSON)
     @Transactional
-    public Response addSystemClient(@PathParam("hostname") String hostname) {
-
-        SystemData s = inventoryManager.getSystem(hostname);
-        if (s != null) {
-            return fail(hostname + " already exists.");
-        }
-
-        SystemClient customRestClient = null;
-        try {
-            customRestClient = getSystemClient(hostname);
-        } catch (Exception e) {
-            return fail("Failed to create the client " + hostname + ".");
-        }
-
-        try {
-            // tag::customRestClient[]
-            String osName = customRestClient.getProperty("os.name");
-            String javaVer = customRestClient.getProperty("java.version");
-            Long heapSize = customRestClient.getHeapSize();
-            // end::customRestClient[]
-            inventoryManager.add(hostname, osName, javaVer, heapSize);
-        } catch (Exception e) {
-            return fail("Failed to reach the client " + hostname + ".");
-        }
-        return success(hostname + " was added.");
-    }
-
-    @POST
-    @Path("/client/{hostname}")
-    // end::addSystemClient[]
-    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    @Produces(MediaType.APPLICATION_JSON)
-    @Transactional
-    public SystemData addSystemClientReturnSystemData(@PathParam("hostname") String hostname){
+    public SystemData addSystemClient(@PathParam("hostname") String hostname){
 
         SystemData systemData;
         try {
-            systemData = inventoryAsyncTask.createSystemData(hostname);
+            systemData = inventoryAsyncTask.createSystemData(hostname, CLIENT_PORT);
             inventoryManager.add(systemData);
         } catch (Exception e) {
             throw new WebApplicationException
