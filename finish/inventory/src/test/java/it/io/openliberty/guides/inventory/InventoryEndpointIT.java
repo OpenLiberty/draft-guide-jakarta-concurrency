@@ -94,7 +94,6 @@ public class InventoryEndpointIT {
         String errorMessage = response.readEntity(String.class);
         assertTrue(errorMessage.contains("unknown does not exist"));
     }
-
     public static <T> T createRestClient(Class<T> clazz, String applicationPath) {
         String urlPath = getBaseURL();
         if (applicationPath != null) {

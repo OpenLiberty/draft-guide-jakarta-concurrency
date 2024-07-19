@@ -11,11 +11,8 @@
 // end::copyright[]
 package io.openliberty.guides.inventory;
 
-import java.net.URI;
 import java.util.List;
 
-import io.openliberty.guides.inventory.client.SystemClient;
-import io.openliberty.guides.inventory.client.UnknownUriExceptionMapper;
 import jakarta.ws.rs.WebApplicationException;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
@@ -129,7 +126,7 @@ public class InventoryResource {
 
         SystemData systemData;
         try {
-            systemData = inventoryAsyncTask.createSystemData(hostname, CLIENT_PORT);
+            systemData = inventoryAsyncTask.createSystemData(hostname);
             inventoryManager.add(systemData);
         } catch (Exception e) {
             throw new WebApplicationException
@@ -147,15 +144,6 @@ public class InventoryResource {
         return Response.status(Response.Status.BAD_REQUEST)
                .entity("{ \"error\" : \"" + message + "\" }")
                .build();
-    }
-
-    private SystemClient getSystemClient(String hostname) throws Exception {
-        String customURIString = "https://" + hostname + ":" + CLIENT_PORT + "/system";
-        URI customURI = URI.create(customURIString);
-        return RestClientBuilder.newBuilder()
-                .baseUri(customURI)
-                .register(UnknownUriExceptionMapper.class)
-                .build(SystemClient.class);
     }
 
 

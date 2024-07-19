@@ -33,12 +33,12 @@ public interface SystemClient extends AutoCloseable {
 
     @GET
     @Path("/memoryUsed")
-    @Produces(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.TEXT_PLAIN)
     Long getMemoryUsed();
 
     @GET
     @Path("/systemLoad")
-    @Produces(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.TEXT_PLAIN)
     Double getSystemLoad();
 
 }
