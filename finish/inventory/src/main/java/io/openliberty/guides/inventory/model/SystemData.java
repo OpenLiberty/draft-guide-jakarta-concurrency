@@ -119,10 +119,6 @@ public class SystemData implements Serializable {
         return memoryUsage;
     }
 
-    public void setMemoryUsage(Long memoryUsage) {
-        this.memoryUsage = memoryUsage;
-    }
-
     public void updateMemoryUsage(Long memoryUsage) {
         memoryUsage =  (long) (memoryUsage * 1.0) / heapSize;
     }

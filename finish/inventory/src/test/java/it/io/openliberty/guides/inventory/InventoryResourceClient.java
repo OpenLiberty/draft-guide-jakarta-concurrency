@@ -77,4 +77,10 @@ public interface InventoryResourceClient {
     Response removeSystem(
         @PathParam("hostname") String hostname);
     // end::removeSystem[]
+
+    @POST
+    @Path("/client/{hostname}")
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Produces(MediaType.APPLICATION_JSON)
+    Response addSystemClient(@PathParam("hostname") String hostname);
 }

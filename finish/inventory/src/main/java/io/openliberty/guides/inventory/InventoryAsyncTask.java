@@ -14,36 +14,30 @@ package io.openliberty.guides.inventory;
 import io.openliberty.guides.inventory.client.SystemClient;
 import io.openliberty.guides.inventory.client.UnknownUriExceptionMapper;
 import io.openliberty.guides.inventory.model.SystemData;
+import jakarta.annotation.Resource;
+import jakarta.enterprise.concurrent.ManagedExecutorService;
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
-import jakarta.ws.rs.client.WebTarget;
 import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
 import org.eclipse.microprofile.rest.client.RestClientBuilder;
 
 import java.net.URI;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 @ApplicationScoped
 public class InventoryAsyncTask {
+
+    @Resource
+    private ManagedExecutorService managedExecutor;
+
     private Client client = ClientBuilder.newClient();
+
     private static String port = System.getProperty("client.https.port");
-
-
-    public String getProperty(String hostname) {
-        WebTarget target = client.target("http://" + hostname + ":" + port + "/property/");
-        Response response = target.request(MediaType.TEXT_PLAIN).get();
-        try {
-            if (response.getStatus() == 200) {
-                return response.readEntity(String.class);
-            } else {
-                throw new WebApplicationException("Get Property Error: " + response.getStatus());
-            }
-        } finally {
-            response.close();
-        }
-    }
 
     private SystemClient getSystemClient(String hostname) {
         String customURIString = "https://" + hostname + ":" + port + "/system";
@@ -54,7 +48,10 @@ public class InventoryAsyncTask {
                 .build(SystemClient.class);
     }
 
-    public SystemData createSystemData(String hostname) {
+    @GET
+    @Path("parallelJob")
+    @Produces(MediaType.TEXT_PLAIN)
+    public SystemData createSystemData(String hostname) throws ExecutionException, InterruptedException {
         SystemClient systemClient = getSystemClient(hostname);
         String osName = systemClient.getProperty("osName");
         String javaVersion = systemClient.getProperty("javaVersion");
@@ -67,8 +64,6 @@ public class InventoryAsyncTask {
         systemData.setOsName(osName);
         systemData.setJavaVersion(javaVersion);
         systemData.setHeapSize(heapSize);
-        systemData.setMemoryUsage(memoryUsed);
-        systemData.setSystemLoad(systemLoad);
 
         return systemData;
     }

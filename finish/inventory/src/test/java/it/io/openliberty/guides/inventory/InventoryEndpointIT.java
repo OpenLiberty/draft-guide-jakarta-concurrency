@@ -94,6 +94,17 @@ public class InventoryEndpointIT {
         String errorMessage = response.readEntity(String.class);
         assertTrue(errorMessage.contains("unknown does not exist"));
     }
+
+    @Test
+    @Order(7)
+    public void testAddSystemClient() {
+        client.addSystemClient("localhost");
+        List<SystemData> systems = client.listContents();
+        assertEquals(1, systems.size());
+        assertEquals("17", systems.get(0).getJavaVersion());
+        assertEquals(Long.valueOf(2048), systems.get(0).getHeapSize());
+    }
+
     public static <T> T createRestClient(Class<T> clazz, String applicationPath) {
         String urlPath = getBaseURL();
         if (applicationPath != null) {
