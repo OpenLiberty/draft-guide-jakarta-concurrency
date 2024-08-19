@@ -12,6 +12,8 @@
 package io.openliberty.guides.inventory;
 
 import java.util.List;
+
+import jakarta.ws.rs.WebApplicationException;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import io.openliberty.guides.inventory.model.SystemData;
@@ -36,6 +38,9 @@ public class InventoryResource {
 
     @Inject
     InventoryManager inventoryManager;
+
+    @Inject
+    InventoryAsyncTask inventoryAsyncTask;
 
     @Inject
     @ConfigProperty(name = "client.https.port")
@@ -110,6 +115,26 @@ public class InventoryResource {
         }
     }
 
+    @POST
+    @Path("/client/{hostname}")
+    // end::addSystemClient[]
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Transactional
+    public SystemData addSystemClient(@PathParam("hostname") String hostname){
+
+        SystemData systemData;
+        try {
+            systemData = inventoryAsyncTask.createSystemData(hostname);
+            inventoryManager.add(systemData);
+        } catch (Exception e) {
+            throw new WebApplicationException
+                    ("Failed to create system data for " + hostname + ".");
+        }
+
+        return systemData;
+    }
+
     private Response success(String message) {
         return Response.ok("{ \"ok\" : \"" + message + "\" }").build();
     }
@@ -119,4 +144,6 @@ public class InventoryResource {
                .entity("{ \"error\" : \"" + message + "\" }")
                .build();
     }
+
+
 }

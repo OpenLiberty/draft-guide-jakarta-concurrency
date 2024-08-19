@@ -13,6 +13,7 @@
 package it.io.openliberty.guides.inventory;
 
 import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
@@ -67,6 +68,41 @@ public class InventoryEndpointIT {
         client.removeSystem("localhost");
         List<SystemData> systems = client.listContents();
         assertEquals(0, systems.size());
+    }
+
+    @Test
+    @Order(4)
+    public void testAdd_HostCheck() {
+        Response response = client.addSystem("localhost", "linux", "17", Long.valueOf(2048));
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus(), "hostname does not exist.");
+    }
+
+    @Test
+    @Order(5)
+    public void testUpdate_HostCheck() {
+        Response response = client.updateSystem("unknown", "linux", "17", Long.valueOf(2048));
+        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+        String errorMessage = response.readEntity(String.class);
+        assertTrue(errorMessage.contains("unknown does not exist"));
+    }
+
+    @Test
+    @Order(6)
+    public void testRemove_HostCheck() {
+        Response response = client.removeSystem("unknown");
+        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+        String errorMessage = response.readEntity(String.class);
+        assertTrue(errorMessage.contains("unknown does not exist"));
+    }
+
+    @Test
+    @Order(7)
+    public void testAddSystemClient() {
+        client.addSystemClient("localhost");
+        List<SystemData> systems = client.listContents();
+        assertEquals(1, systems.size());
+        assertEquals("17", systems.get(0).getJavaVersion());
+        assertEquals(Long.valueOf(2048), systems.get(0).getHeapSize());
     }
 
     public static <T> T createRestClient(Class<T> clazz, String applicationPath) {

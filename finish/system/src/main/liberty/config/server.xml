@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<server description="inventory">
+<server description="system">
 
     <!-- Enable features -->
     <featureManager>
@@ -8,7 +8,7 @@
 
     <!-- To access this server from a remote client add a host attribute to the following element, e.g. host="*" -->
     <httpEndpoint id="defaultHttpEndpoint"
-                  httpPort="9081"
+                  httpPort="9080"
                   httpsPort="9444" />
 
     <!-- Automatically expand WAR files and EAR files -->

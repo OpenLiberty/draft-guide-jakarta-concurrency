@@ -53,6 +53,10 @@ public class SystemData implements Serializable {
     @Column(name = "heapSize")
     private Long heapSize;
 
+    private Long memoryUsage;
+
+    private Double systemLoad;
+
     public SystemData() {
     }
 
@@ -101,6 +105,22 @@ public class SystemData implements Serializable {
 
     public void setHeapSize(Long heapSize) {
         this.heapSize = heapSize;
+    }
+
+    public Double getSystemLoad() {
+        return systemLoad;
+    }
+
+    public void setSystemLoad(Double systemLoad) {
+        this.systemLoad = systemLoad;
+    }
+
+    public Long getMemoryUsage() {
+        return memoryUsage;
+    }
+
+    public void updateMemoryUsage(Long memoryUsage) {
+        memoryUsage =  (long) (memoryUsage * 1.0) / heapSize;
     }
 
     @Override
