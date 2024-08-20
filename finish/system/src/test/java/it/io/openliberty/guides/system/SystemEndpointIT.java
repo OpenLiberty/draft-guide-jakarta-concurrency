@@ -11,25 +11,25 @@
 // end::copyright[]
 package it.io.openliberty.guides.system;
 
-import jakarta.json.JsonObject;
-import jakarta.ws.rs.client.Client;
-import jakarta.ws.rs.client.ClientBuilder;
-import jakarta.ws.rs.client.WebTarget;
-import jakarta.ws.rs.core.Response;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryMXBean;
 
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.core.Response;
 
 public class SystemEndpointIT {
 
     private static final String PORT = System.getProperty("http.port");
-    private static final String URL = "http://localhost:" + PORT + "/system/api/";
+    private static final String URL = "http://localhost:" + PORT + "/api/system";
     private static final MemoryMXBean MEM_BEAN = ManagementFactory.getMemoryMXBean();
 
     private static Client client;
@@ -46,11 +46,10 @@ public class SystemEndpointIT {
 
     @Test
     public void testGetProperty() {
-        WebTarget target = client.target(URL + "property/os.name");
+        WebTarget target = client.target(URL + "/property/os.name");
         Response response = target.request().get();
         assertEquals(200, response.getStatus(),
                 "Incorrect response code from " + target.getUri().getPath());
-
         String osName = response.readEntity(String.class);
         assertEquals(System.getProperty("os.name"), osName);
         response.close();
@@ -58,11 +57,10 @@ public class SystemEndpointIT {
 
     @Test
     public void testGetHeapSize() {
-        WebTarget target = client.target(URL + "heapsize");
+        WebTarget target = client.target(URL + "/heapSize");
         Response response = target.request().get();
         assertEquals(200, response.getStatus(),
                 "Incorrect response code from " + target.getUri().getPath());
-
         Long heapSize = response.readEntity(Long.class);
         assertEquals(MEM_BEAN.getHeapMemoryUsage().getMax(), heapSize);
         response.close();
@@ -70,11 +68,10 @@ public class SystemEndpointIT {
 
     @Test
     public void testGetMemoryUsed() {
-        WebTarget target = client.target(URL + "memoryUsed");
+        WebTarget target = client.target(URL + "/memoryUsed");
         Response response = target.request().get();
         assertEquals(200, response.getStatus(),
                 "Incorrect response code from " + target.getUri().getPath());
-
         Long memoryUsed = response.readEntity(Long.class);
         assertTrue(memoryUsed > 0);
         response.close();
@@ -82,11 +79,10 @@ public class SystemEndpointIT {
 
     @Test
     public void testGetSystemLoad() {
-        WebTarget target = client.target(URL + "systemLoad");
+        WebTarget target = client.target(URL + "/systemLoad");
         Response response = target.request().get();
         assertEquals(200, response.getStatus(),
                 "Incorrect response code from " + target.getUri().getPath());
-
         Double systemLoad = response.readEntity(Double.class);
         assertTrue(systemLoad >= 0.0);
         response.close();

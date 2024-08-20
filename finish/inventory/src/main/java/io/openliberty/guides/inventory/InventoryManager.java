@@ -13,7 +13,7 @@ package io.openliberty.guides.inventory;
 
 import java.util.List;
 
-import io.openliberty.guides.inventory.model.SystemData;
+import io.openliberty.guides.inventory.models.SystemData;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -24,9 +24,14 @@ public class InventoryManager {
     @PersistenceContext(name = "jpa-unit")
     private EntityManager em;
 
+    List<SystemData> systems = null;
+
     public List<SystemData> getSystems() {
-        return em.createNamedQuery("SystemData.findAll", SystemData.class)
-                 .getResultList();
+        if (systems == null) {
+            systems = em.createNamedQuery("SystemData.findAll", SystemData.class)
+                .getResultList();
+        }
+        return systems;
     }
 
     public SystemData getSystem(String hostname) {
@@ -37,20 +42,23 @@ public class InventoryManager {
         return systems == null || systems.isEmpty() ? null : systems.get(0);
     }
 
-    public void add(SystemData systemData) {
-        em.persist(systemData);
+    public boolean add(SystemData system) {
+        if (getSystem(system.getHostname()) != null) {
+            return false;
+        }
+        em.persist(system);
+        getSystems().add(system);
+        return true;
     }
 
-    public void add(String hostname, String osName, String javaVersion, Long heapSize) {
-        em.persist(new SystemData(hostname, osName, javaVersion, heapSize));
-    }
-
-    public void update(SystemData s) {
-        em.merge(s);
-    }
-
-    public void removeSystem(SystemData s) {
+    public boolean removeSystem(String hostname) {
+        SystemData s = getSystem(hostname);
+        if (s == null) {
+            return false;
+        }
         em.remove(s);
+        getSystems().remove(s);
+        return true;
     }
 
 }

@@ -9,7 +9,7 @@
  * SPDX-License-Identifier: EPL-2.0
  *******************************************************************************/
 // end::copyright[]
-package io.openliberty.guides.inventory.model;
+package io.openliberty.guides.inventory.models;
 
 import java.io.Serializable;
 
@@ -53,9 +53,8 @@ public class SystemData implements Serializable {
     @Column(name = "heapSize")
     private Long heapSize;
 
-    private Long memoryUsage;
-
-    private Double systemLoad;
+    private Double memoryUsage = 0.0;
+    private Double systemLoad = 0.0;
 
     public SystemData() {
     }
@@ -115,12 +114,12 @@ public class SystemData implements Serializable {
         this.systemLoad = systemLoad;
     }
 
-    public Long getMemoryUsage() {
+    public Double getMemoryUsage() {
         return memoryUsage;
     }
 
-    public void updateMemoryUsage(Long memoryUsage) {
-        memoryUsage =  (long) (memoryUsage * 1.0) / heapSize;
+    public void setMemoryUsage(Long memoryUsed) {
+        memoryUsage = (memoryUsed * 1.0) / heapSize;
     }
 
     @Override
@@ -135,4 +134,5 @@ public class SystemData implements Serializable {
         }
         return false;
     }
+
 }
