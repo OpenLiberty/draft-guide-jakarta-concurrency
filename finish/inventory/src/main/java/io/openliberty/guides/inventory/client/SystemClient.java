@@ -23,21 +23,21 @@ public interface SystemClient extends AutoCloseable {
     @GET
     @Path("/property/{property}")
     @Produces(MediaType.TEXT_PLAIN)
-    public String getProperty(@PathParam("property") String property);
+    String getProperty(@PathParam("property") String property);
 
     @GET
     @Path("/heapSize")
     @Produces(MediaType.TEXT_PLAIN)
-    public Long getHeapSize();
+    Long getHeapSize();
 
     @GET
     @Path("/systemLoad")
     @Produces(MediaType.TEXT_PLAIN)
-    public Double getSystemLoad();
+    Double getSystemLoad();
 
     @GET
     @Path("/memoryUsed")
     @Produces(MediaType.TEXT_PLAIN)
-    public Long getMemoryUsed();
+    Long getMemoryUsed();
 
 }

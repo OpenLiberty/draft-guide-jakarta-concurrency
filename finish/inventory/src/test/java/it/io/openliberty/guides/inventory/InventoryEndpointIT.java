@@ -43,9 +43,9 @@ public class InventoryEndpointIT {
     private static final String PORT = System.getProperty("http.port");
     private static final String URL = "http://localhost:" + PORT + "/api";
     private static final Jsonb JSONB = JsonbBuilder.create();
-    
+
     private static String hostname;
-    
+
     private CloseableHttpClient client;
 
     @BeforeEach
@@ -61,7 +61,7 @@ public class InventoryEndpointIT {
             e.printStackTrace();
         }
     }
-    
+
     @BeforeAll
     public static void setupTestClass() throws Exception {
         hostname = InetAddress.getLocalHost().getHostName();
@@ -69,27 +69,28 @@ public class InventoryEndpointIT {
 
     private void addSystem(String hostname) throws IOException {
         HttpPost httpPost = new HttpPost(URL + "/inventory/system/" + hostname);
-        client.execute(httpPost, response -> { return response; });
+        client.execute(httpPost, response -> {
+            return response; });
     }
-    
+
     private void putSystemsRequest(String request, int after) throws IOException {
         HttpPut httpPut = new HttpPut(URL + "/inventory/systems/"
                                       + request + "?after=" + after);
-        client.execute(httpPut, response -> { 
+        client.execute(httpPut, response -> {
             assertEquals(200, response.getCode());
             return response; });
     }
-    
+
     private void deleteSystem(String hostname) throws IOException {
         HttpDelete httpDelete = new HttpDelete(URL + "/inventory/system/" + hostname);
-        client.execute(httpDelete, response -> { 
+        client.execute(httpDelete, response -> {
             assertEquals(200, response.getCode());
             return response; });
     }
 
     private void assertSystem(String hostname, String property) throws IOException {
         HttpGet httpGet = new HttpGet(URL + "/inventory/system/" + hostname);
-        client.execute(httpGet, response -> { 
+        client.execute(httpGet, response -> {
             String responseText = EntityUtils.toString(response.getEntity());
             JsonObject system = JSONB.fromJson(responseText, JsonObject.class);
             assertTrue(system.getString("hostname").equals(hostname));
@@ -100,7 +101,7 @@ public class InventoryEndpointIT {
             return response;
         });
     }
-    
+
     private void assertSystems(int expectedSize) throws IOException {
         HttpGet httpGet = new HttpGet(URL + "/inventory/systems");
         client.execute(httpGet, response -> {
@@ -130,7 +131,7 @@ public class InventoryEndpointIT {
     public void testUpdateMemoryUsed() throws Exception {
         putSystemsRequest("memoryUsed", 3);
         Thread.sleep(5000);
-        assertSystem("localhost","memoryUsage");
+        assertSystem("localhost", "memoryUsage");
     }
 
     @Test
@@ -138,7 +139,7 @@ public class InventoryEndpointIT {
     public void testUpdateSystemLoad() throws Exception {
         putSystemsRequest("systemLoad", 3);
         Thread.sleep(5000);
-        assertSystem("localhost","systemLoad");
+        assertSystem("localhost", "systemLoad");
     }
 
     @Test
