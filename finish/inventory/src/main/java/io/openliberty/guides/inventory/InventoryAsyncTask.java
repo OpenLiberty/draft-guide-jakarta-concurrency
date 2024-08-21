@@ -90,13 +90,7 @@ public class InventoryAsyncTask {
                 } catch (Exception e) {
                     e.printStackTrace();
                 } finally {
-                    if (client != null) {
-                        try {
-                            client.close();
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
+                    closeClient(client);
                 }
             });
         }
@@ -118,13 +112,7 @@ public class InventoryAsyncTask {
                 } catch (Exception e) {
                     e.printStackTrace();
                 } finally {
-                    if (client != null) {
-                        try {
-                            client.close();
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
+                    closeClient(client);
                 }
             });
         }
@@ -143,13 +131,7 @@ public class InventoryAsyncTask {
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            if (client != null) {
-                try {
-                    client.close();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
+            closeClient(client);
         }
         return Asynchronous.Result.complete(systemLoad);
     }
@@ -161,6 +143,16 @@ public class InventoryAsyncTask {
                                 .baseUri(customURI)
                                 .register(UnknownUriExceptionMapper.class)
                                 .build(SystemClient.class);
+    }
+
+    private void closeClient(SystemClient client) {
+        if (client != null) {
+            try {
+                client.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 
 }
