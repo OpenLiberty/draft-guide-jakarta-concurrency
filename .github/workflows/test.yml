@@ -61,6 +61,8 @@ jobs:
           sudo cat "$logsPath" | sudo grep Launching
           logsPath=$(sudo find . -name "console.log" | grep system);
           sudo cat "$logsPath" | sudo grep Launching
+          sudo chmod 777 inventory/target/liberty/wlp/usr/servers/defaultServer/logs
+          sudo chmod 777 system/target/liberty/wlp/usr/servers/defaultServer/logs
       - name: Archive finish inventory logs if failed
         if: failure()
         uses: actions/upload-artifact@v2
