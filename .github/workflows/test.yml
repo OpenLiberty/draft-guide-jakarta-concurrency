@@ -53,7 +53,7 @@ jobs:
       - name: Run tests
         run: |
           chmod +x ../scripts/testApp.sh
-          sudo -e ../scripts/testApp.sh
+          sudo -E ../scripts/testApp.sh
       - name: Post tests
         if: always()
         run: |
