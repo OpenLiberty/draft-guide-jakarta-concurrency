@@ -40,8 +40,8 @@ import jakarta.json.bind.JsonbBuilder;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class InventoryEndpointIT {
 
-    private static final String port = System.getProperty("http.port");
-    private static final String baseUrl = "http://localhost:" + port + "/api";
+    private static final String PORT = System.getProperty("http.port");
+    private static final String URL = "http://localhost:" + PORT + "/api";
     private static final Jsonb JSONB = JsonbBuilder.create();
     
     private static String hostname;
@@ -68,27 +68,27 @@ public class InventoryEndpointIT {
     }
 
     private void addSystem(String hostname) throws IOException {
-        HttpPost httpPost = new HttpPost(baseUrl + "/inventory/system/" + hostname);
-        client.execute(httpPost, response -> { return response; });        
+        HttpPost httpPost = new HttpPost(URL + "/inventory/system/" + hostname);
+        client.execute(httpPost, response -> { return response; });
     }
     
     private void putSystemsRequest(String request, int after) throws IOException {
-        HttpPut httpPut = new HttpPut(baseUrl + "/inventory/systems/"
+        HttpPut httpPut = new HttpPut(URL + "/inventory/systems/"
                                       + request + "?after=" + after);
         client.execute(httpPut, response -> { 
             assertEquals(200, response.getCode());
-            return response; });        
+            return response; });
     }
     
     private void deleteSystem(String hostname) throws IOException {
-        HttpDelete httpDelete = new HttpDelete(baseUrl + "/inventory/system/" + hostname);
+        HttpDelete httpDelete = new HttpDelete(URL + "/inventory/system/" + hostname);
         client.execute(httpDelete, response -> { 
             assertEquals(200, response.getCode());
-            return response; });        
+            return response; });
     }
 
     private void assertSystem(String hostname, String property) throws IOException {
-        HttpGet httpGet = new HttpGet(baseUrl + "/inventory/system/" + hostname);
+        HttpGet httpGet = new HttpGet(URL + "/inventory/system/" + hostname);
         client.execute(httpGet, response -> { 
             String responseText = EntityUtils.toString(response.getEntity());
             JsonObject system = JSONB.fromJson(responseText, JsonObject.class);
@@ -97,21 +97,22 @@ public class InventoryEndpointIT {
             assertTrue(javaVersion.contains("17") || javaVersion.contains("21"));
             assertTrue(system.getJsonNumber("heapSize").longValue() > 0);
             assertTrue(system.getJsonNumber(property).doubleValue() > 0.0);
-            return response; 
+            return response;
         });
     }
     
     private void assertSystems(int expectedSize) throws IOException {
-        HttpGet httpGet = new HttpGet(baseUrl + "/inventory/systems");
+        HttpGet httpGet = new HttpGet(URL + "/inventory/systems");
         client.execute(httpGet, response -> {
             assertEquals(200, response.getCode());
             String responseText = EntityUtils.toString(response.getEntity());
             JsonArray systems = JSONB.fromJson(responseText, JsonArray.class);
             assertEquals(expectedSize, systems.size());
-            String javaVersion = systems.getJsonObject(0).getString("javaVersion");
+            JsonObject system = systems.getJsonObject(0);
+            String javaVersion = system.getString("javaVersion");
             assertTrue(javaVersion.contains("17") || javaVersion.contains("21"));
-            assertTrue(systems.getJsonObject(0).getJsonNumber("heapSize").longValue() > 0);
-            return response; 
+            assertTrue(system.getJsonNumber("heapSize").longValue() > 0);
+            return response;
         });
     }
 

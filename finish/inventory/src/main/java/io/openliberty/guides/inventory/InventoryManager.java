@@ -21,7 +21,8 @@ import jakarta.enterprise.context.ApplicationScoped;
 @ApplicationScoped
 public class InventoryManager {
 
-    List<SystemData> systems = Collections.synchronizedList(new ArrayList<SystemData>());
+    List<SystemData> systems =
+        Collections.synchronizedList(new ArrayList<SystemData>());
 
     public List<SystemData> getSystems() {
         return systems;

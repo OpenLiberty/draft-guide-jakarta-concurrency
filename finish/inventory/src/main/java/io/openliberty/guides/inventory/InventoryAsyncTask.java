@@ -54,16 +54,16 @@ public class InventoryAsyncTask {
                 String javaVer = client.getProperty("java.version");
                 client.close();
                 logger.info("Got Java version from " + hostname + ": " + javaVer);
-                return javaVer;});
+                return javaVer; });
             Future<Long> heapSizeFuture = managedExecutor.submit(() -> {
                 SystemClient client = getSystemClient(hostname);
                 Long heapSize = client.getHeapSize();
                 client.close();
                 logger.info("Got heap size from " + hostname + ": "  + heapSize);
-                return heapSize;});
+                return heapSize; });
             return new SystemData(hostname,
                         osNameFuture.get(),
-                        javaVerFuture.get(), 
+                        javaVerFuture.get(),
                         heapSizeFuture.get());
         } catch (Exception e) {
             e.printStackTrace();
@@ -73,8 +73,8 @@ public class InventoryAsyncTask {
 
     // @Asynchronous(runAt = { @Schedule(cron = "*/15 * * * * *")})
     public void updateSystemsUsage(List<SystemData> systems, int after) {
-        for (SystemData system : systems) {
-            String hostname = system.getHostname();
+        for (SystemData s : systems) {
+            String hostname = s.getHostname();
             logger.info("Updating " + hostname + "...");
             managedExecutor.submit(() -> {
                 SystemClient client = null;
@@ -83,8 +83,8 @@ public class InventoryAsyncTask {
                     client = getSystemClient(hostname);
                     Long memoryUsed = client.getMemoryUsed();
                     Double systemLoad = client.getSystemLoad();
-                    system.setMemoryUsage(memoryUsed);
-                    system.setSystemLoad(systemLoad);
+                    s.setMemoryUsage(memoryUsed);
+                    s.setSystemLoad(systemLoad);
                     logger.info(hostname + " => memoryUsed: " + memoryUsed + ", "
                                 + "systemLoad: " + systemLoad);
                 } catch (Exception e) {
@@ -101,11 +101,11 @@ public class InventoryAsyncTask {
             });
         }
     }
-    
+
     @Asynchronous
     public void updateSystemsMemoryUsed(List<SystemData> systems, int after) {
-        for (SystemData system : systems) {
-            String hostname = system.getHostname();
+        for (SystemData s : systems) {
+            String hostname = s.getHostname();
             logger.info("Updating " + hostname + " memory usage...");
             managedExecutor.submit(() -> {
                 SystemClient client = null;
@@ -113,8 +113,8 @@ public class InventoryAsyncTask {
                     Thread.sleep(after);
                     client = getSystemClient(hostname);
                     Long memoryUsed = client.getMemoryUsed();
-                    system.setMemoryUsage(memoryUsed);
-                    logger.info(hostname + " memory usage = " + system.getMemoryUsage());
+                    s.setMemoryUsage(memoryUsed);
+                    logger.info(hostname + " memory usage = " + s.getMemoryUsage());
                 } catch (Exception e) {
                     e.printStackTrace();
                 } finally {
