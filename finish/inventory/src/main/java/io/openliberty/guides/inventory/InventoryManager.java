@@ -11,43 +11,36 @@
 // end::copyright[]
 package io.openliberty.guides.inventory;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import io.openliberty.guides.inventory.models.SystemData;
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 
 @ApplicationScoped
 public class InventoryManager {
 
-    @PersistenceContext(name = "jpa-unit")
-    private EntityManager em;
-
-    List<SystemData> systems = null;
+    List<SystemData> systems = Collections.synchronizedList(new ArrayList<SystemData>());
 
     public List<SystemData> getSystems() {
-        if (systems == null) {
-            systems = em.createNamedQuery("SystemData.findAll", SystemData.class)
-                .getResultList();
-        }
         return systems;
     }
 
     public SystemData getSystem(String hostname) {
-        List<SystemData> systems =
-                em.createNamedQuery("SystemData.findSystem", SystemData.class)
-                  .setParameter("hostname", hostname)
-                  .getResultList();
-        return systems == null || systems.isEmpty() ? null : systems.get(0);
+        for (SystemData s : systems) {
+            if (s.getHostname().equalsIgnoreCase(hostname)) {
+                return s;
+            }
+        }
+        return null;
     }
 
-    public boolean add(SystemData system) {
-        if (getSystem(system.getHostname()) != null) {
+    public boolean add(SystemData s) {
+        if (getSystem(s.getHostname()) != null) {
             return false;
         }
-        em.persist(system);
-        getSystems().add(system);
+        systems.add(s);
         return true;
     }
 
@@ -56,8 +49,7 @@ public class InventoryManager {
         if (s == null) {
             return false;
         }
-        em.remove(s);
-        getSystems().remove(s);
+        systems.remove(s);
         return true;
     }
 

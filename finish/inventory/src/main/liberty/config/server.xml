@@ -21,15 +21,6 @@
 
     <webApplication contextRoot="/" location="guide-concurrency-intro-inventory.war" />
 
-    <library id="derbyJDBCLib">
-        <fileset dir="${shared.resource.dir}/" includes="derby*.jar" />
-    </library>
-
-    <dataSource id="eventjpadatasource" jndiName="jdbc/inventory">
-        <jdbcDriver libraryRef="derbyJDBCLib" />
-        <properties.derby.embedded databaseName="InventoryDB" createDatabase="create" />
-    </dataSource>
-
     <logging consoleLogLevel="INFO"/>
 
 </server>

@@ -48,7 +48,7 @@ public class SystemResource {
         doSomething();
         return MEM_BEAN.getHeapMemoryUsage().getMax();
     }
-    
+
     @GET
     @Path("/memoryUsed")
     @Produces(MediaType.TEXT_PLAIN)
@@ -64,7 +64,7 @@ public class SystemResource {
         doSomething();
         return OS_MEAN.getCpuLoad();
     }
-    
+
     private void doSomething() {
         try {
             Thread.sleep(RANDOM.nextInt(1000));
@@ -72,4 +72,5 @@ public class SystemResource {
             e.printStackTrace();
         }
     }
+
 }

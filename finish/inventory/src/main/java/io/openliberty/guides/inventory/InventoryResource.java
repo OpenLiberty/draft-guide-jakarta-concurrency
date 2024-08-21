@@ -18,7 +18,6 @@ import java.util.concurrent.TimeUnit;
 import io.openliberty.guides.inventory.models.SystemData;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import jakarta.transaction.Transactional;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
@@ -56,12 +55,10 @@ public class InventoryResource {
     }
 
     @POST
-    @Path("/system/client/{hostname}")
+    @Path("/system/{hostname}")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_JSON)
-    @Transactional
     public Response addSystemClient(@PathParam("hostname") String hostname) {
-
         SystemData system = task.getClientData(hostname);
         if (system == null) {
             return fail("Failed to get data from " + hostname);
@@ -71,13 +68,11 @@ public class InventoryResource {
         } else {
             return fail(hostname + " already exists.");
         }
-
     }
 
     @DELETE
     @Path("/system/{hostname}")
     @Produces(MediaType.APPLICATION_JSON)
-    @Transactional
     public Response removeSystem(@PathParam("hostname") String hostname) {
         if (manager.removeSystem(hostname)) {
             return success(hostname + " was removed.");
@@ -99,7 +94,7 @@ public class InventoryResource {
     @PUT
     @Path("/systems/memoryUsed")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response updateMemoryUsed(@QueryParam("after") Long after) {
+    public Response updateMemoryUsed(@QueryParam("after") Integer after) {
         task.updateSystemsMemoryUsed(manager.getSystems(), after.intValue() * 1000);
         return success("Check after " + after + " seconds");
     }
@@ -107,7 +102,7 @@ public class InventoryResource {
     @PUT
     @Path("/systems/systemLoad")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response updateSystemLoad(@QueryParam("after") Long after) {
+    public Response updateSystemLoad(@QueryParam("after") Integer after) {
         List<SystemData> systems = manager.getSystems();
         CountDownLatch remainingSystems = new CountDownLatch(systems.size());
         for (SystemData s : systems) {
@@ -129,7 +124,7 @@ public class InventoryResource {
         }
         return success("Successfully updated the system load.");
     }
-    
+
     private Response success(String message) {
         return Response.ok("{ \"ok\" : \"" + message + "\" }").build();
     }
