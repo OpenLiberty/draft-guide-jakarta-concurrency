@@ -12,13 +12,12 @@
 package io.openliberty.guides.inventory.client;
 
 import jakarta.ws.rs.GET;
-import jakarta.ws.rs.HeaderParam;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 
-@Path("/api")
+@Path("/system")
 public interface SystemClient extends AutoCloseable {
 
     @GET
@@ -27,18 +26,18 @@ public interface SystemClient extends AutoCloseable {
     String getProperty(@PathParam("property") String property);
 
     @GET
-    @Path("/heapsize")
+    @Path("/heapSize")
     @Produces(MediaType.TEXT_PLAIN)
     Long getHeapSize();
-
-    @GET
-    @Path("/memoryUsed")
-    @Produces(MediaType.TEXT_PLAIN)
-    Long getMemoryUsed();
 
     @GET
     @Path("/systemLoad")
     @Produces(MediaType.TEXT_PLAIN)
     Double getSystemLoad();
+
+    @GET
+    @Path("/memoryUsed")
+    @Produces(MediaType.TEXT_PLAIN)
+    Long getMemoryUsed();
 
 }

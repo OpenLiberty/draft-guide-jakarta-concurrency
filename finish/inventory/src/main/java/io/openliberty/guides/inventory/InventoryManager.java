@@ -11,46 +11,47 @@
 // end::copyright[]
 package io.openliberty.guides.inventory;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
-import io.openliberty.guides.inventory.model.SystemData;
+import io.openliberty.guides.inventory.models.SystemData;
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 
 @ApplicationScoped
 public class InventoryManager {
 
-    @PersistenceContext(name = "jpa-unit")
-    private EntityManager em;
+    List<SystemData> systems =
+        Collections.synchronizedList(new ArrayList<SystemData>());
 
     public List<SystemData> getSystems() {
-        return em.createNamedQuery("SystemData.findAll", SystemData.class)
-                 .getResultList();
+        return systems;
     }
 
     public SystemData getSystem(String hostname) {
-        List<SystemData> systems =
-                em.createNamedQuery("SystemData.findSystem", SystemData.class)
-                  .setParameter("hostname", hostname)
-                  .getResultList();
-        return systems == null || systems.isEmpty() ? null : systems.get(0);
+        for (SystemData s : systems) {
+            if (s.getHostname().equalsIgnoreCase(hostname)) {
+                return s;
+            }
+        }
+        return null;
     }
 
-    public void add(SystemData systemData) {
-        em.persist(systemData);
+    public boolean add(SystemData s) {
+        if (getSystem(s.getHostname()) != null) {
+            return false;
+        }
+        systems.add(s);
+        return true;
     }
 
-    public void add(String hostname, String osName, String javaVersion, Long heapSize) {
-        em.persist(new SystemData(hostname, osName, javaVersion, heapSize));
-    }
-
-    public void update(SystemData s) {
-        em.merge(s);
-    }
-
-    public void removeSystem(SystemData s) {
-        em.remove(s);
+    public boolean removeSystem(String hostname) {
+        SystemData s = getSystem(hostname);
+        if (s == null) {
+            return false;
+        }
+        systems.remove(s);
+        return true;
     }
 
 }

@@ -9,118 +9,144 @@
  * SPDX-License-Identifier: EPL-2.0
  *******************************************************************************/
 // end::copyright[]
-// tag::testClass[]
 package it.io.openliberty.guides.inventory;
 
-import jakarta.ws.rs.client.ClientBuilder;
-import jakarta.ws.rs.core.Response;
-import jakarta.ws.rs.core.UriBuilder;
-import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
-import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.io.IOException;
+import java.net.InetAddress;
+
+import org.apache.hc.client5.http.classic.methods.HttpDelete;
+import org.apache.hc.client5.http.classic.methods.HttpGet;
+import org.apache.hc.client5.http.classic.methods.HttpPut;
+import org.apache.hc.client5.http.classic.methods.HttpPost;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
+import org.apache.hc.core5.http.io.entity.EntityUtils;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
+import jakarta.json.JsonArray;
+import jakarta.json.JsonObject;
+import jakarta.json.bind.Jsonb;
+import jakarta.json.bind.JsonbBuilder;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class InventoryEndpointIT {
-    private static String port;
-    private static String baseUrl;
-    private static String hostname;
-    private static String appPath = "inventory/api/";
 
-    private static InventoryResourceClient client;
+    private static final String PORT = System.getProperty("http.port");
+    private static final String URL = "http://localhost:" + PORT + "/api";
+    private static final Jsonb JSONB = JsonbBuilder.create();
+
+    private static String hostname;
+
+    private CloseableHttpClient client;
+
+    @BeforeEach
+    public void setup() {
+        client = HttpClientBuilder.create().build();
+    }
+
+    @AfterEach
+    public void teardown() {
+        try {
+            client.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     @BeforeAll
     public static void setupTestClass() throws Exception {
-        client = createRestClient(
-                InventoryResourceClient.class, appPath);
+        hostname = InetAddress.getLocalHost().getHostName();
+    }
+
+    private void addSystem(String hostname) throws IOException {
+        HttpPost httpPost = new HttpPost(URL + "/inventory/system/" + hostname);
+        client.execute(httpPost, response -> {
+            return response; });
+    }
+
+    private void putSystemsRequest(String request, int after) throws IOException {
+        HttpPut httpPut = new HttpPut(URL + "/inventory/systems/"
+                                      + request + "?after=" + after);
+        client.execute(httpPut, response -> {
+            assertEquals(200, response.getCode());
+            return response; });
+    }
+
+    private void deleteSystem(String hostname) throws IOException {
+        HttpDelete httpDelete = new HttpDelete(URL + "/inventory/system/" + hostname);
+        client.execute(httpDelete, response -> {
+            assertEquals(200, response.getCode());
+            return response; });
+    }
+
+    private void assertSystem(String hostname, String property) throws IOException {
+        HttpGet httpGet = new HttpGet(URL + "/inventory/system/" + hostname);
+        client.execute(httpGet, response -> {
+            String responseText = EntityUtils.toString(response.getEntity());
+            JsonObject system = JSONB.fromJson(responseText, JsonObject.class);
+            assertTrue(system.getString("hostname").equals(hostname));
+            String javaVersion = system.getString("javaVersion");
+            assertTrue(javaVersion.contains("17") || javaVersion.contains("21"));
+            assertTrue(system.getJsonNumber("heapSize").longValue() > 0);
+            assertTrue(system.getJsonNumber(property).doubleValue() > 0.0);
+            return response;
+        });
+    }
+
+    private void assertSystems(int expectedSize) throws IOException {
+        HttpGet httpGet = new HttpGet(URL + "/inventory/systems");
+        client.execute(httpGet, response -> {
+            assertEquals(200, response.getCode());
+            String responseText = EntityUtils.toString(response.getEntity());
+            JsonArray systems = JSONB.fromJson(responseText, JsonArray.class);
+            assertEquals(expectedSize, systems.size());
+            JsonObject system = systems.getJsonObject(0);
+            String javaVersion = system.getString("javaVersion");
+            assertTrue(javaVersion.contains("17") || javaVersion.contains("21"));
+            assertTrue(system.getJsonNumber("heapSize").longValue() > 0);
+            return response;
+        });
     }
 
     @Test
     @Order(1)
-    public void testAddSystem() {
-        client.addSystem("localhost", "linux", "17", Long.valueOf(2048));
-        List<SystemData> systems = client.listContents();
-        assertEquals(1, systems.size());
-        assertEquals("17", systems.get(0).getJavaVersion());
-        assertEquals(Long.valueOf(2048), systems.get(0).getHeapSize());
+    public void testAddSystems() throws Exception {
+        addSystem("localhost");
+        addSystem("127.0.0.1");
+        addSystem(hostname);
+        assertSystems(3);
     }
 
     @Test
     @Order(2)
-    public void testUpdateSystem() {
-        client.updateSystem("localhost", "linux", "8", Long.valueOf(1024));
-        SystemData system = client.getSystem("localhost");
-        assertEquals("8", system.getJavaVersion());
-        assertEquals(Long.valueOf(1024), system.getHeapSize());
+    public void testUpdateMemoryUsed() throws Exception {
+        putSystemsRequest("memoryUsed", 3);
+        Thread.sleep(5000);
+        assertSystem("localhost", "memoryUsage");
     }
 
     @Test
     @Order(3)
-    public void testRemoveSystem() {
-        client.removeSystem("localhost");
-        List<SystemData> systems = client.listContents();
-        assertEquals(0, systems.size());
-    }
-
-    @Test
-    @Order(4)
-    public void testAdd_HostCheck() {
-        Response response = client.addSystem("localhost", "linux", "17", Long.valueOf(2048));
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus(), "hostname does not exist.");
+    public void testUpdateSystemLoad() throws Exception {
+        putSystemsRequest("systemLoad", 3);
+        Thread.sleep(5000);
+        assertSystem("localhost", "systemLoad");
     }
 
     @Test
     @Order(5)
-    public void testUpdate_HostCheck() {
-        Response response = client.updateSystem("unknown", "linux", "17", Long.valueOf(2048));
-        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
-        String errorMessage = response.readEntity(String.class);
-        assertTrue(errorMessage.contains("unknown does not exist"));
-    }
-
-    @Test
-    @Order(6)
-    public void testRemove_HostCheck() {
-        Response response = client.removeSystem("unknown");
-        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
-        String errorMessage = response.readEntity(String.class);
-        assertTrue(errorMessage.contains("unknown does not exist"));
-    }
-
-    @Test
-    @Order(7)
-    public void testAddSystemClient() {
-        client.addSystemClient("localhost");
-        List<SystemData> systems = client.listContents();
-        assertEquals(1, systems.size());
-        assertEquals("17", systems.get(0).getJavaVersion());
-        assertEquals(Long.valueOf(2048), systems.get(0).getHeapSize());
-    }
-
-    public static <T> T createRestClient(Class<T> clazz, String applicationPath) {
-        String urlPath = getBaseURL();
-        if (applicationPath != null) {
-            urlPath += applicationPath;
-        }
-        ClientBuilder builder = ResteasyClientBuilder.newBuilder();
-        ResteasyClient client = (ResteasyClient) builder.build();
-        ResteasyWebTarget target = client.target(UriBuilder.fromPath(urlPath));
-        return target.proxy(clazz);
-    }
-
-    public static String getBaseURL() {
-        port = System.getProperty("http.port");
-        baseUrl = "http://localhost:" + port + "/";
-        System.out.println("TEST: " + baseUrl);
-        return baseUrl;
+    public void testRemoveSystem() throws Exception {
+        deleteSystem("127.0.0.1");
+        assertSystems(2);
     }
 
 }

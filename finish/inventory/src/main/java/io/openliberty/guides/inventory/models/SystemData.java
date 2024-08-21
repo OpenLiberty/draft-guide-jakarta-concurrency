@@ -9,53 +9,16 @@
  * SPDX-License-Identifier: EPL-2.0
  *******************************************************************************/
 // end::copyright[]
-package io.openliberty.guides.inventory.model;
+package io.openliberty.guides.inventory.models;
 
-import java.io.Serializable;
+public class SystemData {
 
-import org.eclipse.microprofile.openapi.annotations.media.Schema;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.NamedQuery;
-import jakarta.persistence.SequenceGenerator;
-import jakarta.persistence.Table;
-
-@Schema(name = "SystemData",
-        description = "POJO that represents a single inventory entry.")
-@Entity
-@Table(name = "SystemData")
-@NamedQuery(name = "SystemData.findAll", query = "SELECT e FROM SystemData e")
-@NamedQuery(name = "SystemData.findSystem",
-            query = "SELECT e FROM SystemData e WHERE e.hostname = :hostname")
-public class SystemData implements Serializable {
-    private static final long serialVersionUID = 1L;
-
-    @SequenceGenerator(name = "SEQ",
-            sequenceName = "systemData_id_seq",
-            allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "SEQ")
-    @Id
-    @Column(name = "id")
-    private int id;
-
-    @Schema(required = true)
-    @Column(name = "hostname")
     private String hostname;
-
-    @Column(name = "osName")
     private String osName;
-    @Column(name = "javaVersion")
     private String javaVersion;
-    @Column(name = "heapSize")
-    private Long heapSize;
-
-    private Long memoryUsage;
-
-    private Double systemLoad;
+    private Long   heapSize;
+    private Double memoryUsage = 0.0;
+    private Double systemLoad = 0.0;
 
     public SystemData() {
     }
@@ -65,14 +28,6 @@ public class SystemData implements Serializable {
         this.osName = osName;
         this.javaVersion = javaVer;
         this.heapSize = heapSize;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 
     public String getHostname() {
@@ -115,24 +70,19 @@ public class SystemData implements Serializable {
         this.systemLoad = systemLoad;
     }
 
-    public Long getMemoryUsage() {
+    public Double getMemoryUsage() {
         return memoryUsage;
     }
 
-    public void updateMemoryUsage(Long memoryUsage) {
-        memoryUsage =  (long) (memoryUsage * 1.0) / heapSize;
+    public void setMemoryUsage(Long memoryUsed) {
+        this.memoryUsage = ((double) memoryUsed) / this.heapSize;
     }
 
-    @Override
-    public int hashCode() {
-        return hostname.hashCode();
-    }
-
-    @Override
     public boolean equals(Object host) {
         if (host instanceof SystemData) {
             return hostname.equals(((SystemData) host).getHostname());
         }
         return false;
     }
+
 }

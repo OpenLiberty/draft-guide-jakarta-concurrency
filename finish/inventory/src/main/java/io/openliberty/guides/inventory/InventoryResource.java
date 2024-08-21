@@ -12,14 +12,12 @@
 package io.openliberty.guides.inventory;
 
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
-import jakarta.ws.rs.WebApplicationException;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
-
-import io.openliberty.guides.inventory.model.SystemData;
+import io.openliberty.guides.inventory.models.SystemData;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import jakarta.transaction.Transactional;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
@@ -33,106 +31,98 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 @ApplicationScoped
-@Path("/systems")
+@Path("/inventory")
 public class InventoryResource {
 
     @Inject
-    InventoryManager inventoryManager;
+    private InventoryManager manager;
 
     @Inject
-    InventoryAsyncTask inventoryAsyncTask;
-
-    @Inject
-    @ConfigProperty(name = "client.https.port")
-    String CLIENT_PORT;
+    private InventoryAsyncTask task;
 
     @GET
-    @Path("/")
+    @Path("/systems")
     @Produces(MediaType.APPLICATION_JSON)
     public List<SystemData> listContents() {
-        return inventoryManager.getSystems();
+        return manager.getSystems();
     }
 
     @GET
-    @Path("/{hostname}")
+    @Path("/system/{hostname}")
     @Produces(MediaType.APPLICATION_JSON)
-    public SystemData getSystem(
-        @PathParam("hostname") String hostname) {
-        return inventoryManager.getSystem(hostname);
+    public SystemData getSystem(@PathParam("hostname") String hostname) {
+        return manager.getSystem(hostname);
     }
 
     @POST
+    @Path("/system/{hostname}")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_JSON)
-    @Transactional
-    public Response addSystem(
-        @QueryParam("hostname") String hostname,
-        @QueryParam("osName") String osName,
-        @QueryParam("javaVersion") String javaVersion,
-        @QueryParam("heapSize") Long heapSize) {
-
-        SystemData s = inventoryManager.getSystem(hostname);
-        if (s != null) {
+    public Response addSystemClient(@PathParam("hostname") String hostname) {
+        SystemData system = task.getClientData(hostname);
+        if (system == null) {
+            return fail("Failed to get data from " + hostname);
+        }
+        if (manager.add(system)) {
+            return success(hostname + " was added.");
+        } else {
             return fail(hostname + " already exists.");
         }
-        inventoryManager.add(hostname, osName, javaVersion, heapSize);
-        return success(hostname + " was added.");
-    }
-
-    @PUT
-    @Path("/{hostname}")
-    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    @Produces(MediaType.APPLICATION_JSON)
-    @Transactional
-    public Response updateSystem(
-        @PathParam("hostname") String hostname,
-        @QueryParam("osName") String osName,
-        @QueryParam("javaVersion") String javaVersion,
-        @QueryParam("heapSize") Long heapSize) {
-
-        SystemData s = inventoryManager.getSystem(hostname);
-        if (s == null) {
-            return fail(hostname + " does not exists.");
-        }
-        s.setOsName(osName);
-        s.setJavaVersion(javaVersion);
-        s.setHeapSize(heapSize);
-        inventoryManager.update(s);
-        return success(hostname + " was updated.");
     }
 
     @DELETE
-    @Path("/{hostname}")
+    @Path("/system/{hostname}")
     @Produces(MediaType.APPLICATION_JSON)
-    @Transactional
     public Response removeSystem(@PathParam("hostname") String hostname) {
-        SystemData s = inventoryManager.getSystem(hostname);
-        if (s != null) {
-            inventoryManager.removeSystem(s);
+        if (manager.removeSystem(hostname)) {
             return success(hostname + " was removed.");
-        } else {
-            return fail(hostname + " does not exists.");
         }
+        return fail("Failed to remove " + hostname);
     }
 
-    @POST
-    @Path("/client/{hostname}")
-    // end::addSystemClient[]
-    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @PUT
+    @Path("/systems/reset")
     @Produces(MediaType.APPLICATION_JSON)
-    @Transactional
-    public SystemData addSystemClient(@PathParam("hostname") String hostname){
-
-        SystemData systemData;
-        try {
-            systemData = inventoryAsyncTask.createSystemData(hostname);
-            inventoryManager.add(systemData);
-        } catch (Exception e) {
-            throw new WebApplicationException
-                    ("Failed to create system data for " + hostname + ".");
+    public Response resetSystems() {
+        for (SystemData s : manager.getSystems()) {
+            s.setSystemLoad(0.0);
+            s.setMemoryUsage((long) 0);
         }
+        return success("Reset the systems.");
+    }
 
-        return systemData;
+    @PUT
+    @Path("/systems/memoryUsed")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response updateMemoryUsed(@QueryParam("after") Integer after) {
+        task.updateSystemsMemoryUsed(manager.getSystems(), after.intValue() * 1000);
+        return success("Check after " + after + " seconds");
+    }
+
+    @PUT
+    @Path("/systems/systemLoad")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response updateSystemLoad(@QueryParam("after") Integer after) {
+        List<SystemData> systems = manager.getSystems();
+        CountDownLatch remainingSystems = new CountDownLatch(systems.size());
+        for (SystemData s : systems) {
+            task.getSystemLoad(s.getHostname(), after.intValue() * 1000)
+                .thenAcceptAsync(systemLoad -> {
+                       s.setSystemLoad(systemLoad);
+                       remainingSystems.countDown();
+                })
+                .exceptionally(ex -> {
+                    ex.printStackTrace();
+                    remainingSystems.countDown();
+                    return null;
+               });
+        }
+        try {
+            remainingSystems.await(30, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        return success("Successfully updated the system load.");
     }
 
     private Response success(String message) {
@@ -141,9 +131,7 @@ public class InventoryResource {
 
     private Response fail(String message) {
         return Response.status(Response.Status.BAD_REQUEST)
-               .entity("{ \"error\" : \"" + message + "\" }")
-               .build();
+                       .entity("{ \"error\" : \"" + message + "\" }")
+                       .build();
     }
-
-
 }
