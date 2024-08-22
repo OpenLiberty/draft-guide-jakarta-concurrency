@@ -9,21 +9,21 @@
 :page-layout: guide-multipane
 :page-duration: 20 minutes
 :page-releasedate: 2024-10-31
-:page-description: Learn how to run tasks asynchronously or parallelly in Java microservices by using Jakarta Concurrency APIs.
+:page-description: Learn how to run tasks parallelly or asynchronously in Jakarta EE application by using JakartaConcurrency APIs.
 :page-tags: ['jakartaee']
 :page-permalink: /guides/{projectid}
 :imagesdir: /img/guide/{projectid}
 :page-related-guides: ['reactive-rest-client', 'microprofile-rest-client-async']
 :common-includes: https://raw.githubusercontent.com/OpenLiberty/guides-common/prod
 :source-highlighter: prettify
-:page-seo-title: Running tasks asynchronously or parallelly in Java microservices by using Jakarta Concurrency APIs
-:page-seo-description: A getting started tutorial with examples on how to run tasks asynchronously or parallelly in Java microservices by using Jakarta Concurrency APIs.
-= Running tasks asynchronously or parallelly in Java microservices
+:page-seo-title: Running tasks parallelly or asynchronously in Jakarta EE application by using Jakarta ConcurrencyAPIs
+:page-seo-description: A getting started tutorial with examples on how to run tasks parallelly or asynchronously in JakartaEE application by using Jakarta Concurrency APIs.
+= Running tasks parallelly or asynchronously in Jakarta EE application
 
 [.hidden]
 NOTE: This repository contains the guide documentation source. To view the guide in published form, view it on the https://openliberty.io/guides/{projectid}.html[Open Liberty website].
 
-Learn how to run tasks asynchronously or parallelly in Java microservices by using Jakarta Concurrency APIs.
+Learn how to run tasks parallelly or asynchronously in Jakarta EE application by using JakartaConcurrency APIs.
 
 == What you'll learn
 
