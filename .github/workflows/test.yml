@@ -65,13 +65,13 @@ jobs:
           sudo chmod 777 system/target/liberty/wlp/usr/servers/defaultServer/logs
       - name: Archive finish inventory logs if failed
         if: failure()
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: finish-inventory-logs
           path: finish/inventory/target/liberty/wlp/usr/servers/defaultServer/logs/
       - name: Archive finish system logs if failed
         if: failure()
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: finish-system-logs
           path: finish/system/target/liberty/wlp/usr/servers/defaultServer/logs/
