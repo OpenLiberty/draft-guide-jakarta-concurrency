@@ -28,9 +28,10 @@ Learn how to run tasks parallelly or asynchronously in Jakarta EE application by
 == What you'll learn
 
 Introduction
-
 - explain Jakarta Concurrency APIs
 - describe the application
+
+Diagarm
 
 image::architecture.png[Application architecture where inventory service uses the Jakarta Concurrency APIs to call the system service.,align="center"]
 
@@ -62,21 +63,39 @@ mvn -pl system liberty:run
 
 Visit http://localhost:9080/openapi/ui for inventory REST APIs that perform asynchronous or parallel tasks
 
-== Creating asynchronous tasks in the InventoryManager bean
-
+== Running tasks in parallel
+Retrieve the system properties in parallel
 - start the dev mode
-- create the InventoryAsyncTask utility class
-  - create and explain asynchronous task
-- replace the InventoryResource class
-  - add/update REST endpoint to call asynchronous task
+- Replace the InventoryAsyncTask
+  - Create a method that calls the system service in parallel to get different properties
+  - Explain using the Managed Executor API to submit multiple tasks at once and sync by the Future.get API
+- Replace the InventoryResource to 
+  - Create the POST REST api to use the above method
 
-== Calling the system service in parallel
 
-- start the dev mode
-- replace the InventoryAsyncTask utility class
-  - create and explain parallel task
-- replace the InventoryResource class
-  - add/update REST endpoint to call parallel task  
+== Creating asynchronous tasks
+
+- Replace the InventoryAsyncTask
+  - Create a method that calls all systems in the inventory asynchronously to get their memory usage
+  - Explain @Asynchronous and using the Managed Executor API to submit asynchronous tasks
+- Replace the InventoryResource to 
+  - Create the /systems/memoryUsed PUT REST api to update the memory usage of all systems by using the above method
+
+
+== Synchronizing asynchronous tasks
+- Replace the InventoryAsyncTask
+  - Create an asynchronous method that calls the system to get the system load
+  - Explain @Asynchronous and returning CompletableFuture
+- Replace the InventoryResource
+  - Create the /systems/systemLoad PUT REST api to update the system load of all systems by using the above method
+
+
+== Scheduling asynchronous task
+This section will be available when Liberty supports concurrency-3.1 (now is in beta)
+
+- Replace the InventoryAsyncTask
+  - Create a scheduling method that updates the memory usage and system load of all systems in every 20 seconds
+
 
 == Running the application
 
