@@ -15,6 +15,7 @@ import java.net.URI;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;
@@ -25,7 +26,7 @@ import io.openliberty.guides.inventory.client.UnknownUriExceptionMapper;
 import io.openliberty.guides.inventory.models.SystemData;
 import jakarta.annotation.Resource;
 import jakarta.enterprise.concurrent.Asynchronous;
-import jakarta.enterprise.concurrent.ManagedExecutorService;
+import jakarta.enterprise.concurrent.ManagedScheduledExecutorService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
@@ -39,7 +40,7 @@ public class InventoryAsyncTask {
     String CLIENT_PORT;
 
     @Resource
-    ManagedExecutorService managedExecutor;
+    ManagedScheduledExecutorService managedExecutor;
 
     public SystemData getClientData(String hostname) {
         try {
@@ -76,10 +77,9 @@ public class InventoryAsyncTask {
         for (SystemData s : systems) {
             String hostname = s.getHostname();
             logger.info("Updating " + hostname + "...");
-            managedExecutor.submit(() -> {
+            managedExecutor.schedule(() -> {
                 SystemClient client = null;
                 try {
-                    Thread.sleep(after);
                     client = getSystemClient(hostname);
                     Long memoryUsed = client.getMemoryUsed();
                     Double systemLoad = client.getSystemLoad();
@@ -92,7 +92,7 @@ public class InventoryAsyncTask {
                 } finally {
                     closeClient(client);
                 }
-            });
+            }, after, TimeUnit.SECONDS);
         }
     }
 
@@ -101,10 +101,9 @@ public class InventoryAsyncTask {
         for (SystemData s : systems) {
             String hostname = s.getHostname();
             logger.info("Updating " + hostname + " memory usage...");
-            managedExecutor.submit(() -> {
+            managedExecutor.schedule(() -> {
                 SystemClient client = null;
                 try {
-                    Thread.sleep(after);
                     client = getSystemClient(hostname);
                     Long memoryUsed = client.getMemoryUsed();
                     s.setMemoryUsage(memoryUsed);
@@ -114,7 +113,7 @@ public class InventoryAsyncTask {
                 } finally {
                     closeClient(client);
                 }
-            });
+            }, after, TimeUnit.SECONDS);
         }
     }
 
@@ -124,7 +123,7 @@ public class InventoryAsyncTask {
         Double systemLoad = null;
         SystemClient client = null;
         try {
-            Thread.sleep(after);
+            Thread.sleep(after * 1000);
             client = getSystemClient(hostname);
             systemLoad = client.getSystemLoad();
             logger.info(hostname + " recent system load = " + systemLoad);

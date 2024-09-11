@@ -108,11 +108,11 @@ public class InventoryResource {
     public Response updateMemoryUsed(
         @Parameter(
             name = "after", in = ParameterIn.QUERY,
-            description = "to update the memory usage after the specified number of seconds",
+            description = "update the memory usage after the specified seconds",
             required = true, example = "5",
             schema = @Schema(type = SchemaType.INTEGER))
         @QueryParam("after") Integer after) {
-        task.updateSystemsMemoryUsed(manager.getSystems(), after.intValue() * 1000);
+        task.updateSystemsMemoryUsed(manager.getSystems(), after.intValue());
         return success("Check after " + after + " seconds");
     }
 
@@ -122,14 +122,14 @@ public class InventoryResource {
     public Response updateSystemLoad(
         @Parameter(
             name = "after", in = ParameterIn.QUERY,
-            description = "to update the system load after the specified number of seconds",
+            description = "update the system load after the specified seconds",
             required = true, example = "5",
             schema = @Schema(type = SchemaType.INTEGER))
         @QueryParam("after") Integer after) {
         List<SystemData> systems = manager.getSystems();
         CountDownLatch remainingSystems = new CountDownLatch(systems.size());
         for (SystemData s : systems) {
-            task.getSystemLoad(s.getHostname(), after.intValue() * 1000)
+            task.getSystemLoad(s.getHostname(), after.intValue())
                 .thenAcceptAsync(systemLoad -> {
                        s.setSystemLoad(systemLoad);
                        remainingSystems.countDown();
