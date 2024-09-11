@@ -15,6 +15,11 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.microprofile.openapi.annotations.enums.ParameterIn;
+import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
+
 import io.openliberty.guides.inventory.models.SystemData;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -58,7 +63,13 @@ public class InventoryResource {
     @Path("/system/{hostname}")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response addSystemClient(@PathParam("hostname") String hostname) {
+    public Response addSystemClient(
+        @Parameter(
+           name = "hostname", in = ParameterIn.PATH,
+           description = "the hostname of the system",
+           required = true, example = "localhost",
+           schema = @Schema(type = SchemaType.STRING))
+        @PathParam("hostname") String hostname) {
         SystemData system = task.getClientData(hostname);
         if (system == null) {
             return fail("Failed to get data from " + hostname);
@@ -94,7 +105,13 @@ public class InventoryResource {
     @PUT
     @Path("/systems/memoryUsed")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response updateMemoryUsed(@QueryParam("after") Integer after) {
+    public Response updateMemoryUsed(
+        @Parameter(
+            name = "after", in = ParameterIn.QUERY,
+            description = "to update the memory usage after the specified number of seconds",
+            required = true, example = "5",
+            schema = @Schema(type = SchemaType.INTEGER))
+        @QueryParam("after") Integer after) {
         task.updateSystemsMemoryUsed(manager.getSystems(), after.intValue() * 1000);
         return success("Check after " + after + " seconds");
     }
@@ -102,7 +119,13 @@ public class InventoryResource {
     @PUT
     @Path("/systems/systemLoad")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response updateSystemLoad(@QueryParam("after") Integer after) {
+    public Response updateSystemLoad(
+        @Parameter(
+            name = "after", in = ParameterIn.QUERY,
+            description = "to update the system load after the specified number of seconds",
+            required = true, example = "5",
+            schema = @Schema(type = SchemaType.INTEGER))
+        @QueryParam("after") Integer after) {
         List<SystemData> systems = manager.getSystems();
         CountDownLatch remainingSystems = new CountDownLatch(systems.size());
         for (SystemData s : systems) {
