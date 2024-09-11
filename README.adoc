@@ -112,7 +112,7 @@ Visit the http://localhost:9081/api/inventory/systems URL to see the inventory. 
 
 Repeat the above POST endpoint with `127.0.0.1` and your local system hostname.
 
-Then, make a PUT request to the `/api/inventory/systems/memoryUsed` endpoint with `5` for the `after` parameter and a PUT request to the `/api/inventory/systems/systemLoad` endpoint with `5` for the `after` parameter. After 5 seconds, visit the http://localhost:9081/api/inventory/systems URL again to see that the `memoryUsage` and `systemLoad` values are updated to be non zero. If you interest, try out the other endpoints. 
+Then, make a PUT request to the `/api/inventory/systems/memoryUsed` endpoint with `5` for the `after` parameter and a PUT request to the `/api/inventory/systems/systemLoad` endpoint with `5` for the `after` parameter. After 5 seconds, visit the http://localhost:9081/api/inventory/systems URL again to see that the `memoryUsage` and `systemLoad` values are updated to be non zero. If you interest, try out the other endpoints.
 endif::[]
 
 
@@ -142,51 +142,51 @@ Let the `system` service run and start to imlplement the `inventory` service in 
 
 == Running tasks in parallel
 Retrieve the system properties in parallel
-- start the dev mode
-- Replace the InventoryAsyncTask
-  - Create a method that calls the system service in parallel to get different properties
-  - Explain using the Managed Executor API to submit multiple tasks at once and sync by the Future.get API
-- Replace the InventoryResource to 
-  - Create the POST REST api to use the above method
+* start the dev mode
+* Replace the InventoryAsyncTask
+  * Create a method that calls the system service in parallel to get different properties
+  * Explain using the Managed Executor API to submit multiple tasks at once and sync by the Future.get API
+* Replace the InventoryResource to 
+  * Create the POST REST api to use the above method
 
 
 == Creating asynchronous tasks
 
-- Replace the InventoryAsyncTask
-  - Create a method that calls all systems in the inventory asynchronously to get their memory usage
-  - Explain @Asynchronous and using the Managed Executor API to submit asynchronous tasks
-- Replace the InventoryResource to 
-  - Create the /systems/memoryUsed PUT REST api to update the memory usage of all systems by using the above method
+* Replace the InventoryAsyncTask
+  * Create a method that calls all systems in the inventory asynchronously to get their memory usage
+  * Explain @Asynchronous and using the Managed Executor API to submit asynchronous tasks
+* Replace the InventoryResource to 
+  * Create the /systems/memoryUsed PUT REST api to update the memory usage of all systems by using the above method
 
 
 == Synchronizing asynchronous tasks
-- Replace the InventoryAsyncTask
-  - Create an asynchronous method that calls the system to get the system load
-  - Explain @Asynchronous and returning CompletableFuture
-- Replace the InventoryResource
-  - Create the /systems/systemLoad PUT REST api to update the system load of all systems by using the above method
+* Replace the InventoryAsyncTask
+  * Create an asynchronous method that calls the system to get the system load
+  * Explain @Asynchronous and returning CompletableFuture
+* Replace the InventoryResource
+  * Create the /systems/systemLoad PUT REST api to update the system load of all systems by using the above method
 
 
 == Scheduling asynchronous task
 This section will be available when Liberty supports concurrency-3.1 (now is in beta)
 
-- Replace the InventoryAsyncTask
-  - Create a scheduling method that updates the memory usage and system load of all systems in every 20 seconds
+* Replace the InventoryAsyncTask
+  * Create a scheduling method that updates the memory usage and system load of all systems in every 20 seconds
 
 
 == Running the application
 
-- similar to the https://openliberty.io/guides/cdi-intro.html#running-the-application
+* similar to the https://openliberty.io/guides/cdi-intro.html#running-the-application
 
 == Testing the inventory application
 
-- similar to https://openliberty.io/guides/cdi-intro.html#testing-the-inventory-application
-- explain the test
+* similar to https://openliberty.io/guides/cdi-intro.html#testing-the-inventory-application
+* explain the test
 
 === Running the tests
 
-- similar to https://openliberty.io/guides/cdi-intro.html#running-the-tests
-- stop the dev mode of the system and inventory services
+* similar to https://openliberty.io/guides/cdi-intro.html#running-the-tests
+* stop the dev mode of the system and inventory services
 
 == Great work! You're done!
 
