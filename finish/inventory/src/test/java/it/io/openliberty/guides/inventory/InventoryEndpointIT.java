@@ -50,6 +50,28 @@ public class InventoryEndpointIT {
         hostname = InetAddress.getLocalHost().getHostName();
     }
 
+    private void assertSystem(String hostname,
+        Boolean isMemoryUsageZero, Boolean isSystemLoadZero) {
+        
+        SystemData s = client.getSystem(hostname);
+        assertEquals(hostname, s.getHostname());
+        if (isMemoryUsageZero != null) {
+            if (isMemoryUsageZero) {
+                assertEquals(0.0, s.getMemoryUsage());
+            } else {
+                assertTrue(s.getMemoryUsage() > 0.0);
+            }
+        }
+        if (isSystemLoadZero != null) {
+            if (isSystemLoadZero) {
+                assertEquals(0.0, s.getSystemLoad());
+            } else {
+                assertTrue(s.getSystemLoad() > 0.0);
+            }
+        }
+
+    }
+
     // tag::testAddSystems[]
     @Test
     @Order(1)
@@ -61,12 +83,9 @@ public class InventoryEndpointIT {
 
         assertEquals(3, client.listContents().size());
 
-        SystemData s = client.getSystem("localhost");
-        assertEquals("localhost", s.getHostname());
-        s = client.getSystem("127.0.0.1");
-        assertEquals("127.0.0.1", s.getHostname());
-        s = client.getSystem(hostname);
-        assertEquals(hostname, s.getHostname());
+        assertSystem("localhost", null, null);
+        assertSystem("127.0.0.1", null, null);
+        assertSystem(hostname, null, null);
 
     }
     // end::testAddSystems[]
@@ -79,17 +98,9 @@ public class InventoryEndpointIT {
         client.updateMemoryUsed(3);
         Thread.sleep(5000);
 
-        SystemData s = client.getSystem("localhost");
-        assertEquals("localhost", s.getHostname());
-        assertTrue(s.getMemoryUsage() > 0.0);
-
-        s = client.getSystem("127.0.0.1");
-        assertEquals("127.0.0.1", s.getHostname());
-        assertTrue(s.getMemoryUsage() > 0.0);
-
-        s = client.getSystem(hostname);
-        assertEquals(hostname, s.getHostname());
-        assertTrue(s.getMemoryUsage() > 0.0);
+        assertSystem("localhost", false, null);
+        assertSystem("127.0.0.1", false, null);
+        assertSystem(hostname, false, null);
 
     }
     // end::testUpdateMemoryUsed[]
@@ -101,17 +112,9 @@ public class InventoryEndpointIT {
 
         client.updateSystemLoad(3);
 
-        SystemData s = client.getSystem("localhost");
-        assertEquals("localhost", s.getHostname());
-        assertTrue(s.getSystemLoad() > 0.0);
-
-        s = client.getSystem("127.0.0.1");
-        assertEquals("127.0.0.1", s.getHostname());
-        assertTrue(s.getSystemLoad() > 0.0);
-
-        s = client.getSystem(hostname);
-        assertEquals(hostname, s.getHostname());
-        assertTrue(s.getSystemLoad() > 0.0);
+        assertSystem("localhost", null, false);
+        assertSystem("127.0.0.1", null, false);
+        assertSystem(hostname, null, false);
 
     }
     // end::testUpdateSystemLoad[]
@@ -123,20 +126,9 @@ public class InventoryEndpointIT {
 
         client.resetSystems();
 
-        SystemData s = client.getSystem("localhost");
-        assertEquals("localhost", s.getHostname());
-        assertEquals(0.0, s.getMemoryUsage());
-        assertEquals(0.0, s.getSystemLoad());
-
-        s = client.getSystem("127.0.0.1");
-        assertEquals("127.0.0.1", s.getHostname());
-        assertEquals(0.0, s.getMemoryUsage());
-        assertEquals(0.0, s.getSystemLoad());
-
-        s = client.getSystem(hostname);
-        assertEquals(hostname, s.getHostname());
-        assertEquals(0.0, s.getMemoryUsage());
-        assertEquals(0.0, s.getSystemLoad());
+        assertSystem("localhost", true, true);
+        assertSystem("127.0.0.1", true, true);
+        assertSystem(hostname, true, true);
 
     }
     // end::testResetSystems[]
@@ -147,21 +139,11 @@ public class InventoryEndpointIT {
     public void testRemoveSystem() throws Exception {
 
         client.removeSystem("127.0.0.1");
-
         assertEquals(2, client.listContents().size());
 
-        SystemData s = client.getSystem("localhost");
-        assertEquals("localhost", s.getHostname());
-        assertEquals(0.0, s.getMemoryUsage());
-        assertEquals(0.0, s.getSystemLoad());
-
-        s = client.getSystem("127.0.0.1");
-        assertNull(s);
-
-        s = client.getSystem(hostname);
-        assertEquals(hostname, s.getHostname());
-        assertEquals(0.0, s.getMemoryUsage());
-        assertEquals(0.0, s.getSystemLoad());
+        assertSystem("localhost", true, true);
+        assertNull(client.getSystem("127.0.0.1"));
+        assertSystem(hostname, true, true);
 
     }
     // end::testRemoveSystem[]
