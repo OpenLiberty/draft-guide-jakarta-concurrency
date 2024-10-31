@@ -55,28 +55,28 @@ public interface InventoryResourceClient {
     @PUT
     @Path("/systems/memoryUsed")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response updateMemoryUsed(@QueryParam("after") Integer after);
+    Response updateMemoryUsed(@QueryParam("after") Integer after);
     // end::updateMemoryUsed[]
 
     // tag::updateSystemLoad[]
     @PUT
     @Path("/systems/systemLoad")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response updateSystemLoad(@QueryParam("after") Integer after);
+    Response updateSystemLoad(@QueryParam("after") Integer after);
     // end::updateSystemLoad[]
 
     // tag::removeSystem[]
     @DELETE
     @Path("/system/{hostname}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response removeSystem(@PathParam("hostname") String hostname);
+    Response removeSystem(@PathParam("hostname") String hostname);
     // end::removeSystem[]
 
     // tag::resetSystems[]
     @PUT
     @Path("/systems/reset")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response resetSystems();
+    Response resetSystems();
     // end::resetSystems[]
 
 }

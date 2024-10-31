@@ -58,7 +58,7 @@ public class InventoryEndpointIT {
         client.addSystemClient("localhost");
         client.addSystemClient("127.0.0.1");
         client.addSystemClient(hostname);
-        
+
         assertEquals(3, client.listContents().size());
 
         SystemData s = client.getSystem("localhost");
@@ -122,7 +122,7 @@ public class InventoryEndpointIT {
     public void testResetSystems() throws Exception {
 
         client.resetSystems();
-        
+
         SystemData s = client.getSystem("localhost");
         assertEquals("localhost", s.getHostname());
         assertEquals(0.0, s.getMemoryUsage());
@@ -147,9 +147,9 @@ public class InventoryEndpointIT {
     public void testRemoveSystem() throws Exception {
 
         client.removeSystem("127.0.0.1");
-        
+
         assertEquals(2, client.listContents().size());
-        
+
         SystemData s = client.getSystem("localhost");
         assertEquals("localhost", s.getHostname());
         assertEquals(0.0, s.getMemoryUsage());

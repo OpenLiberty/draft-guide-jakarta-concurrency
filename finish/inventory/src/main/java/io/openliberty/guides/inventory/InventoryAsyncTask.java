@@ -48,10 +48,10 @@ public class InventoryAsyncTask {
     public SystemData getClientData(String hostname) {
         try {
             // tag::submit1[]
-            Future<String> osNameFuture = managedExecutor.submit(() ->
+            Future<String> osNameFuture = managedExecutor.submit(
             // end::submit1[]
             // tag::submitTask1[]
-                {
+                () -> {
                     // tag::getSystemClient1[]
                     SystemClient client = getSystemClient(hostname);
                     // end::getSystemClient1[]
@@ -64,10 +64,10 @@ public class InventoryAsyncTask {
                 });
             // end::submitTask1[]
             // tag::submit2[]
-            Future<String> javaVerFuture = managedExecutor.submit(() ->
+            Future<String> javaVerFuture = managedExecutor.submit(
             // end::submit2[]
                 // tag::submitTask2[]
-                {
+                () -> {
                     // tag::getSystemClient2[]
                     SystemClient client = getSystemClient(hostname);
                     // end::getSystemClient2[]
@@ -80,10 +80,10 @@ public class InventoryAsyncTask {
                 });
                 // end::submitTask2[]
             // tag::submit3[]
-            Future<Long> heapSizeFuture = managedExecutor.submit(() ->
+            Future<Long> heapSizeFuture = managedExecutor.submit(
             // end::submit3[]
                 // tag::submitTask3[]
-                {
+                () -> {
                     // tag::getSystemClient3[]
                     SystemClient client = getSystemClient(hostname);
                     // end::getSystemClient3[]
