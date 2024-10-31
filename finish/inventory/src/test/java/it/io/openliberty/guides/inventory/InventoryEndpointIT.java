@@ -52,7 +52,7 @@ public class InventoryEndpointIT {
 
     private void assertSystem(String hostname,
         Boolean isMemoryUsageZero, Boolean isSystemLoadZero) {
-        
+
         SystemData s = client.getSystem(hostname);
         assertEquals(hostname, s.getHostname());
         if (isMemoryUsageZero != null) {
