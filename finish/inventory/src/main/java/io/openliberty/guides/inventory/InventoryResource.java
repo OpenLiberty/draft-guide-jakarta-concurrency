@@ -42,8 +42,10 @@ public class InventoryResource {
     @Inject
     private InventoryManager manager;
 
+    // tag::inventoryAsyncTask[]
     @Inject
     private InventoryAsyncTask task;
+    // end::inventoryAsyncTask[]
 
     @GET
     @Path("/systems")
@@ -59,6 +61,7 @@ public class InventoryResource {
         return manager.getSystem(hostname);
     }
 
+    // tag::addSystemClient[]
     @POST
     @Path("/system/{hostname}")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
@@ -70,6 +73,7 @@ public class InventoryResource {
            required = true, example = "localhost",
            schema = @Schema(type = SchemaType.STRING))
         @PathParam("hostname") String hostname) {
+        // tag::getClientData[]
         SystemData system = task.getClientData(hostname);
         if (system == null) {
             return fail("Failed to get data from " + hostname);
@@ -79,7 +83,77 @@ public class InventoryResource {
         } else {
             return fail(hostname + " already exists.");
         }
+        // end::getClientData[]
     }
+    // end::addSystemClient[]
+
+    // tag::updateMemoryUsed[]
+    @PUT
+    @Path("/systems/memoryUsed")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response updateMemoryUsed(
+        @Parameter(
+            name = "after", in = ParameterIn.QUERY,
+            description = "update the memory usage after the specified seconds",
+            required = true, example = "5",
+            schema = @Schema(type = SchemaType.INTEGER))
+        @QueryParam("after") Integer after) {
+        // tag::updateSystemsMemoryUsed[]
+        task.updateSystemsMemoryUsed(manager.getSystems(), after.intValue());
+        // end::updateSystemsMemoryUsed[]
+        return success("Check after " + after + " seconds");
+    }
+    // end::updateMemoryUsed[]
+
+    // tag::updateSystemLoad[]
+    @PUT
+    @Path("/systems/systemLoad")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response updateSystemLoad(
+        @Parameter(
+            name = "after", in = ParameterIn.QUERY,
+            description = "update the system load after the specified seconds",
+            required = true, example = "5",
+            schema = @Schema(type = SchemaType.INTEGER))
+        @QueryParam("after") Integer after) {
+        List<SystemData> systems = manager.getSystems();
+        // tag::countDownLatch[]
+        CountDownLatch remainingSystems = new CountDownLatch(systems.size());
+        // end::countDownLatch[]
+        // tag::getSystemLoad[]
+        for (SystemData s : systems) {
+            task.getSystemLoad(s.getHostname(), after.intValue())
+        // end::getSystemLoad[]
+                // tag::thenAcceptAsync[]
+                .thenAcceptAsync(systemLoad -> {
+                       // tag::setSystemLoad[]
+                       s.setSystemLoad(systemLoad);
+                       // end::setSystemLoad[]
+                       // tag::countDown1[]
+                       remainingSystems.countDown();
+                       // end::countDown1[]
+                    })
+                // end::thenAcceptAsync[]
+                // tag::exceptionally[]
+                .exceptionally(ex -> {
+                    ex.printStackTrace();
+                    // tag::countDown2[]
+                    remainingSystems.countDown();
+                    // end::countDown2[]
+                    return null;
+               });
+               // end::exceptionally[]
+            }
+        try {
+            // tag::await[]
+            remainingSystems.await(30, TimeUnit.SECONDS);
+            // end::await[]
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        return success("Successfully updated the system load.");
+    }
+    // end::updateSystemLoad[]
 
     @DELETE
     @Path("/system/{hostname}")
@@ -97,55 +171,9 @@ public class InventoryResource {
     public Response resetSystems() {
         for (SystemData s : manager.getSystems()) {
             s.setSystemLoad(0.0);
-            s.setMemoryUsage((long) 0);
+            s.setMemoryUsed((long) 0);
         }
         return success("Reset the systems.");
-    }
-
-    @PUT
-    @Path("/systems/memoryUsed")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response updateMemoryUsed(
-        @Parameter(
-            name = "after", in = ParameterIn.QUERY,
-            description = "update the memory usage after the specified seconds",
-            required = true, example = "5",
-            schema = @Schema(type = SchemaType.INTEGER))
-        @QueryParam("after") Integer after) {
-        task.updateSystemsMemoryUsed(manager.getSystems(), after.intValue());
-        return success("Check after " + after + " seconds");
-    }
-
-    @PUT
-    @Path("/systems/systemLoad")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response updateSystemLoad(
-        @Parameter(
-            name = "after", in = ParameterIn.QUERY,
-            description = "update the system load after the specified seconds",
-            required = true, example = "5",
-            schema = @Schema(type = SchemaType.INTEGER))
-        @QueryParam("after") Integer after) {
-        List<SystemData> systems = manager.getSystems();
-        CountDownLatch remainingSystems = new CountDownLatch(systems.size());
-        for (SystemData s : systems) {
-            task.getSystemLoad(s.getHostname(), after.intValue())
-                .thenAcceptAsync(systemLoad -> {
-                       s.setSystemLoad(systemLoad);
-                       remainingSystems.countDown();
-                })
-                .exceptionally(ex -> {
-                    ex.printStackTrace();
-                    remainingSystems.countDown();
-                    return null;
-               });
-        }
-        try {
-            remainingSystems.await(30, TimeUnit.SECONDS);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        return success("Successfully updated the system load.");
     }
 
     private Response success(String message) {

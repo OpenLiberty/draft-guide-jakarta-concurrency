@@ -31,7 +31,7 @@ public class SystemData {
     }
 
     public String getHostname() {
-        return hostname;
+        return this.hostname;
     }
 
     public void setHostname(String hostname) {
@@ -39,7 +39,7 @@ public class SystemData {
     }
 
     public String getOsName() {
-        return osName;
+        return this.osName;
     }
 
     public void setOsName(String osName) {
@@ -47,7 +47,7 @@ public class SystemData {
     }
 
     public String getJavaVersion() {
-        return javaVersion;
+        return this.javaVersion;
     }
 
     public void setJavaVersion(String javaVersion) {
@@ -55,7 +55,7 @@ public class SystemData {
     }
 
     public Long getHeapSize() {
-        return heapSize;
+        return this.heapSize;
     }
 
     public void setHeapSize(Long heapSize) {
@@ -63,7 +63,7 @@ public class SystemData {
     }
 
     public Double getSystemLoad() {
-        return systemLoad;
+        return this.systemLoad;
     }
 
     public void setSystemLoad(Double systemLoad) {
@@ -71,16 +71,20 @@ public class SystemData {
     }
 
     public Double getMemoryUsage() {
-        return memoryUsage;
+        return this.memoryUsage;
     }
 
-    public void setMemoryUsage(Long memoryUsed) {
+    public void setMemoryUsage(Double memoryUsage) {
+        this.memoryUsage = memoryUsage;
+    }
+
+    public void setMemoryUsed(Long memoryUsed) {
         this.memoryUsage = ((double) memoryUsed) / this.heapSize;
     }
 
     public boolean equals(Object host) {
         if (host instanceof SystemData) {
-            return hostname.equals(((SystemData) host).getHostname());
+            return this.hostname.equals(((SystemData) host).getHostname());
         }
         return false;
     }

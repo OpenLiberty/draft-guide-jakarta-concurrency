@@ -25,11 +25,11 @@ public class InventoryManager {
         Collections.synchronizedList(new ArrayList<SystemData>());
 
     public List<SystemData> getSystems() {
-        return systems;
+        return this.systems;
     }
 
     public SystemData getSystem(String hostname) {
-        for (SystemData s : systems) {
+        for (SystemData s : this.systems) {
             if (s.getHostname().equalsIgnoreCase(hostname)) {
                 return s;
             }
@@ -41,7 +41,7 @@ public class InventoryManager {
         if (getSystem(s.getHostname()) != null) {
             return false;
         }
-        systems.add(s);
+        this.systems.add(s);
         return true;
     }
 
@@ -50,7 +50,7 @@ public class InventoryManager {
         if (s == null) {
             return false;
         }
-        systems.remove(s);
+        this.systems.remove(s);
         return true;
     }
 
