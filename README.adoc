@@ -208,8 +208,24 @@ cd /home/project/guide-concurrency-intrp/start
 ```
 endif::[]
 
+When you run Open Liberty in https://openliberty.io/docs/latest/development-mode.html[dev mode^], dev mode listens for file changes and automatically recompiles and deploys your updates whenever you save a new change.
+
+Run the following goal to start the `inventory` microservice in dev mode:
+
 [role='command']
-include::{common-includes}/devmode-lmp33-start.adoc[]
+----
+mvn -pl inventory liberty:dev
+----
+
+When you see the following message, your Liberty instance is ready in dev mode:
+
+[role="no_copy"]
+----
+**************************************************************
+*    Liberty is running in dev mode.
+----
+
+Dev mode holds your command-line session to listen for file changes. Open another command-line session to continue, or open the project in your editor.
 
 server.xml
 [source,xml,linenums,role="code_column hide_tags=copyright"]
