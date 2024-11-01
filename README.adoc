@@ -10,6 +10,7 @@
 :page-duration: 20 minutes
 :page-releasedate: 2024-11-29
 :page-description: Learn how to run tasks parallelly or asynchronously in Java microservices by using JakartaConcurrency APIs.
+:guide-author: Open Liberty
 :page-tags: ['jakarta-ee']
 :page-permalink: /guides/{projectid}
 :imagesdir: /img/guide/{projectid}
