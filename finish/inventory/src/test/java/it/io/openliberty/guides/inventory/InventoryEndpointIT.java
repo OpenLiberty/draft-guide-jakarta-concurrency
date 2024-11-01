@@ -80,17 +80,13 @@ public class InventoryEndpointIT {
     @Test
     @Order(1)
     public void testAddSystems() throws Exception {
-
         client.addSystemClient("localhost");
         client.addSystemClient("127.0.0.1");
         client.addSystemClient(hostname);
-
         assertEquals(3, client.listContents().size());
-
         assertSystem("localhost", null, null);
         assertSystem("127.0.0.1", null, null);
         assertSystem(hostname, null, null);
-
     }
     // end::testAddSystems[]
 
@@ -98,14 +94,11 @@ public class InventoryEndpointIT {
     @Test
     @Order(2)
     public void testUpdateMemoryUsed() throws Exception {
-
         client.updateMemoryUsed(3);
         Thread.sleep(5000);
-
         assertSystem("localhost", false, null);
         assertSystem("127.0.0.1", false, null);
         assertSystem(hostname, false, null);
-
     }
     // end::testUpdateMemoryUsed[]
 
@@ -113,13 +106,10 @@ public class InventoryEndpointIT {
     @Test
     @Order(3)
     public void testUpdateSystemLoad() throws Exception {
-
         client.updateSystemLoad(3);
-
         assertSystem("localhost", null, false);
         assertSystem("127.0.0.1", null, false);
         assertSystem(hostname, null, false);
-
     }
     // end::testUpdateSystemLoad[]
 
@@ -127,13 +117,10 @@ public class InventoryEndpointIT {
     @Test
     @Order(4)
     public void testResetSystems() throws Exception {
-
         client.resetSystems();
-
         assertSystem("localhost", true, true);
         assertSystem("127.0.0.1", true, true);
         assertSystem(hostname, true, true);
-
     }
     // end::testResetSystems[]
 
@@ -141,14 +128,11 @@ public class InventoryEndpointIT {
     @Test
     @Order(5)
     public void testRemoveSystem() throws Exception {
-
         client.removeSystem("127.0.0.1");
         assertEquals(2, client.listContents().size());
-
         assertSystem("localhost", true, true);
         assertNull(client.getSystem("127.0.0.1"));
         assertSystem(hostname, true, true);
-
     }
     // end::testRemoveSystem[]
 }

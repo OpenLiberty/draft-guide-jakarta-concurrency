@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<server description="Sample Liberty server">
+
+    <featureManager>
+        <feature>cdi-4.0</feature>
+        <!-- tag::concurrent[] -->
+        <feature>concurrent-3.0</feature>
+        <!-- end::concurrent[] -->
+        <feature>jsonb-3.0</feature>
+        <feature>mpConfig-3.1</feature>
+        <feature>mpOpenAPI-3.1</feature>
+        <feature>mpRestClient-3.0</feature>
+        <feature>persistence-3.1</feature>
+        <feature>restfulWS-3.1</feature>
+    </featureManager>
+
+    <variable name="http.port" defaultValue="9081" />
+    <variable name="https.port" defaultValue="9444" />
+
+    <httpEndpoint id="defaultHttpEndpoint" host="*"
+                  httpPort="${http.port}"
+                  httpsPort="${https.port}" />
+
+    <webApplication contextRoot="/" location="guide-concurrency-intro-inventory.war" />
+
+    <logging consoleLogLevel="INFO"/>
+
+</server>

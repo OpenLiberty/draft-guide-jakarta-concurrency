@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<server description="system">
+
+    <featureManager>
+        <feature>restfulWS-3.1</feature>
+        <feature>mpOpenAPI-3.1</feature>
+    </featureManager>
+
+    <variable name="http.port" defaultValue="9080"/>
+    <variable name="https.port" defaultValue="9443"/>
+
+    <httpEndpoint id="defaultHttpEndpoint" host="*"
+                  httpPort="${http.port}"
+                  httpsPort="${https.port}" />
+
+    <webApplication contextRoot="/" location="guide-concurrency-intro-system.war"/>
+
+</server>
