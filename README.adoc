@@ -238,7 +238,7 @@ The https://openliberty.io/docs/latest/reference/feature/concurrent-3.0.html[Jak
 In this section, you will learn how to implement a task that calls the `system` microservice in parallel to get different system data.
 
 InventoryAsyncTask.java
-[source, Java, linenums, role='code_column hide_tags=copyright,updateSystemsUsage,asynchronous1,updateSystemsMemoryUsed,asynchronous2,getSystemLoad']
+[source, Java, linenums, role='code_column hide_tags=copyright,updateSystemsUsage,updateSystemsMemoryUsed,getSystemLoad']
 ----
 include::finish/inventory/src/main/java/io/openliberty/guides/inventory/InventoryAsyncTask.java[]
 ----
@@ -338,7 +338,7 @@ endif::[]
 In this section, you will learn how to implement an asynchronous task to update the memory usage of the systems in the inventory.
 
 InventoryAsyncTask.java
-[source, Java, linenums, role='code_column hide_tags=copyright,updateSystemsUsage,asynchronous2,getSystemLoad']
+[source, Java, linenums, role='code_column hide_tags=copyright,updateSystemsUsage,getSystemLoad']
 ----
 include::finish/inventory/src/main/java/io/openliberty/guides/inventory/InventoryAsyncTask.java[]
 ----
@@ -349,7 +349,7 @@ include::finish/inventory/src/main/java/io/openliberty/guides/inventory/Inventor
 `inventory/src/main/java/io/openliberty/guides/inventory/InventoryAsyncTask.java`
 ----
 
-The [hotspot=updateSystemsMemoryUsed file=0]`updateSystemsMemoryUsed()` method uses the [hotspot=systems hotspot=schedule file=0]`managedExecutor` to schedule multiple tasks that will be delayed with the given [hotspot=parameters hotspot=after file=0]`after` seconds and executed in parallel. Each task calls the client's [hotspot=getMemoryUsed file=0]`getMemoryUsed()` method to retieve the memory usage, and calls the system's [hotspot=setMemoryUsed file=0]`setMemoryUsed()` method to calculate the memory usage.
+The [hotspot=updateSystemsMemoryUsedMethod file=0]`updateSystemsMemoryUsed()` method uses the [hotspot=systems hotspot=schedule file=0]`managedExecutor` to schedule multiple tasks that will be delayed with the given [hotspot=parameters hotspot=after file=0]`after` seconds and executed in parallel. Each task calls the client's [hotspot=getMemoryUsed file=0]`getMemoryUsed()` method to retieve the memory usage, and calls the system's [hotspot=setMemoryUsed file=0]`setMemoryUsed()` method to calculate the memory usage.
 
 Annotate the [hotspot=asynchronous1 file=0]`updateSystemsMemoryUsed()` method with the `@Asynchronous` annotation to make it running asynchronously.
 
@@ -400,7 +400,7 @@ include::finish/inventory/src/main/java/io/openliberty/guides/inventory/Inventor
 #Replace the `InventoryAsyncTask.java` file.#
 `inventory/src/main/java/io/openliberty/guides/inventory/InventoryAsyncTask.java`
 ----
-The [hotspot=getSystemLoad file=0]`getSystemLoad()` method calls the client's [hotspot=clientGetSystemLoad file=0]`getSystemLoad()` method to retieve the system load, and returns the system load in [hotspot=getSystemLoadSignature file=0]`CompletableFuture<Double>` type by using the [hotspot=return file=0]`Asynchronous.Result.complete()` method.
+The [hotspot=getSystemLoadMethod file=0]`getSystemLoad()` method calls the client's [hotspot=clientGetSystemLoad file=0]`getSystemLoad()` method to retieve the system load, and returns the system load in [hotspot=getSystemLoadSignature file=0]`CompletableFuture<Double>` type by using the [hotspot=return file=0]`Asynchronous.Result.complete()` method.
 
 Annotate the [hotspot=asynchronous2 file=0]`getSystemLoad()` method with the `@Asynchronous` annotation to make it running asynchronously.
 

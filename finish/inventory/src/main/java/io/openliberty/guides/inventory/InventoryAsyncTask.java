@@ -133,9 +133,10 @@ public class InventoryAsyncTask {
     }
     // end::updateSystemsUsage[]
 
+    // tag::updateSystemsMemoryUsed[]
     // tag::asynchronous1[]
     @Asynchronous
-    // tag::updateSystemsMemoryUsed[]
+    // tag::updateSystemsMemoryUsedMethod[]
     // tag::parameters[]
     public void updateSystemsMemoryUsed(List<SystemData> systems, int after) {
     // end::parameters[]
@@ -172,11 +173,13 @@ public class InventoryAsyncTask {
             // end::after[]
         }
     }
+    // end::updateSystemsMemoryUsedMethod[]
     // end::updateSystemsMemoryUsed[]
 
+    // tag::getSystemLoad[]
     // tag::asynchronous2[]
     @Asynchronous()
-    // tag::getSystemLoad[]
+    // tag::getSystemLoadMethod[]
     // tag::getSystemLoadSignature[]
     public CompletableFuture<Double> getSystemLoad(String hostname, int after) {
     // end::getSystemLoadSignature[]
@@ -202,6 +205,7 @@ public class InventoryAsyncTask {
         return Asynchronous.Result.complete(systemLoad);
         // end::return[]
     }
+    // end::getSystemLoadMethod[]
     // end::getSystemLoad[]
 
     // tag::getSystemClientMethod[]
