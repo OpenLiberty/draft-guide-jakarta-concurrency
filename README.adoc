@@ -5,7 +5,7 @@
 //
 // Contributors:
 //   IBM Corporation
-:projectid: concurrency-intro
+:projectid: jakarta-concurrency
 :page-layout: guide-multipane
 :page-duration: 20 minutes
 :page-releasedate: 2024-11-29
@@ -64,7 +64,7 @@ endif::[]
 
 ifdef::cloud-hosted[]
 ```bash
-cd /home/project/guide-concurrency-intro/finish
+cd /home/project/guide-jakarta-concurrency/finish
 mvn -pl system liberty:run
 ```
 endif::[]
@@ -80,7 +80,7 @@ endif::[]
 
 ifdef::cloud-hosted[]
 ```bash
-cd /home/project/guide-concurrency-intro/finish
+cd /home/project/guide-jakarta-concurrency/finish
 mvn -pl inventory liberty:run
 ```
 endif::[]
@@ -187,7 +187,7 @@ endif::[]
 
 ifdef::cloud-hosted[]
 ```bash
-cd /home/project/guide-concurrency-intro/finish
+cd /home/project/guide-jakarta-concurrency/finish
 mvn -pl inventory liberty:stop
 ```
 endif::[]
