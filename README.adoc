@@ -52,35 +52,35 @@ include::{common-includes}/gitclone.adoc[]
 
 The `finish` directory in the root of this guide contains the finished application. Give it a try before you proceed.
 
-To try out the application, navigate to the `finish/system` directory and run the following command to deploy the `system` microservice to Open Liberty:
+To try out the application, navigate to the `finish` directory and run the following command to deploy the `system` microservice to Open Liberty:
 
 ifndef::cloud-hosted[]
 [role="command"]
 ----
-mvn liberty:run
+mvn -pl system liberty:run
 ----
 endif::[]
 
 ifdef::cloud-hosted[]
 ```bash
-cd /home/project/guide-concurrency-intro/finish/system
-mvn liberty:run
+cd /home/project/guide-concurrency-intro/finish
+mvn -pl system liberty:run
 ```
 endif::[]
 
-Open another command-line session. Navigate to the `finish/inventory` directory and run the following command to deploy the `inventory`service to Open Liberty:
+Open another command-line session. Navigate to the `finish` directory and run the following command to deploy the `inventory` service to Open Liberty:
 
 ifndef::cloud-hosted[]
 [role="command"]
 ----
-mvn liberty:run
+mvn -pl inventory liberty:run
 ----
 endif::[]
 
 ifdef::cloud-hosted[]
 ```bash
-cd /home/project/guide-concurrency-intro/finish/inventory
-mvn liberty:run
+cd /home/project/guide-concurrency-intro/finish
+mvn -pl inventory liberty:run
 ```
 endif::[]
 
@@ -175,19 +175,19 @@ curl http://localhost:9081/api/inventory/systems | jq
 ```
 endif::[]
 
-After you are finished checking out the application, stop the Liberty instance by pressing `CTRL+C` in the command-line session where you ran the `inventory` services. Alternatively, you can run the `liberty:stop` goal from the `finish/inventory` directory in another command-line session:
+After you are finished checking out the application, stop the Liberty instance by pressing `CTRL+C` in the command-line session where you ran the `inventory` services. Alternatively, you can run the `liberty:stop` goal from the `finish` directory in another command-line session:
 
 ifndef::cloud-hosted[]
 [role="command"]
 ----
-mvn liberty:stop
+mvn -pl inventory liberty:stop
 ----
 endif::[]
 
 ifdef::cloud-hosted[]
 ```bash
-cd /home/project/guide-concurrency-intro/finish/inventory
-mvn liberty:stop
+cd /home/project/guide-concurrency-intro/finish
+mvn -pl inventory liberty:stop
 ```
 endif::[]
 
@@ -197,14 +197,14 @@ Let the `system` microservice running. In the following sections, you'll impleme
 
 // static guide instructions:
 ifndef::cloud-hosted[]
-Navigate to the `start/inventory` directory to begin.
+Navigate to the `start` directory to begin.
 endif::[]
 
 // cloud-hosted guide instructions:
 ifdef::cloud-hosted[]
-To begin, run the following command to navigate to the ***start/inventory*** directory:
+To begin, run the following command to navigate to the ***start*** directory:
 ```bash
-cd /home/project/guide-concurrency-intrp/start/inventory
+cd /home/project/guide-concurrency-intrp/start
 ```
 endif::[]
 
@@ -230,7 +230,7 @@ include::finish/inventory/src/main/java/io/openliberty/guides/inventory/Inventor
 [role="code_command hotspot file=1", subs="quotes"]
 ----
 #Create the `InventoryAsyncTask.java` file.#
-`src/main/java/io/openliberty/guides/inventory/InventoryAsyncTask.java`
+`inventory/src/main/java/io/openliberty/guides/inventory/InventoryAsyncTask.java`
 ----
 
 This bean provides different utilities for the `inventory` service. Annotating the [hotspot=managedExecutor file=1]`managedExecutor` field with the [hotspot=managedExecutor file=1]`@Resource` annotation, an instance of the `ManagedScheduledExecutorService` requested resource will be injected when the bean is initialized by Liberty runtime.
@@ -250,7 +250,7 @@ include::finish/inventory/src/main/java/io/openliberty/guides/inventory/Inventor
 [role="code_command hotspot file=2", subs="quotes"]
 ----
 #Replace the `InventoryResource.java` file.#
-`src/main/java/io/openliberty/guides/inventory/InventoryResource.java`
+`inventory/src/main/java/io/openliberty/guides/inventory/InventoryResource.java`
 ----
 
 Inject the [hotspot=inventoryAsyncTask file=2]`InventoryAsyncTask` bean into the `InventoryResource` class. Create the POST [hotspot=addSystemClient file=2]`/system/{hostname}` endpoint that uses the bean's [hotspot=getClientData file=2]`getClientData()` method to collect the properties from the `system` microservice and addes the system into the inventory.
@@ -330,7 +330,7 @@ include::finish/inventory/src/main/java/io/openliberty/guides/inventory/Inventor
 [role="code_command hotspot file=0", subs="quotes"]
 ----
 #Replace the `InventoryAsyncTask.java` file.#
-`src/main/java/io/openliberty/guides/inventory/InventoryAsyncTask.java`
+`inventory/src/main/java/io/openliberty/guides/inventory/InventoryAsyncTask.java`
 ----
 
 The [hotspot=updateSystemsMemoryUsed file=0]`updateSystemsMemoryUsed()` method uses the [hotspot=systems hotspot=schedule file=0]`managedExecutor` to schedule multiple tasks that will be delayed with the given [hotspot=parameters hotspot=after file=0]`after` seconds and executed in parallel. Each task calls the client's [hotspot=getMemoryUsed file=0]`getMemoryUsed()` method to retieve the memory usage, and calls the system's [hotspot=setMemoryUsed file=0]`setMemoryUsed()` method to calculate the memory usage.
@@ -346,7 +346,7 @@ include::finish/inventory/src/main/java/io/openliberty/guides/inventory/Inventor
 [role="code_command hotspot file=1", subs="quotes"]
 ----
 #Replace the `InventoryResource.java` file.#
-`src/main/java/io/openliberty/guides/inventory/InventoryResource.java`
+`inventory/src/main/java/io/openliberty/guides/inventory/InventoryResource.java`
 ----
 
 Create the PUT [hotspot=updateMemoryUsed file=1]`/systems/memoryUsed` endpoint that uses the [hotspot=inventoryAsyncTask file=1]`task` bean's [hotspot=updateSystemsMemoryUsed file=1]`updateSystemsMemoryUsed()` method to update the memory usage of all systems in the inventory and returns immediately.
@@ -382,7 +382,7 @@ include::finish/inventory/src/main/java/io/openliberty/guides/inventory/Inventor
 [role="code_command hotspot file=0", subs="quotes"]
 ----
 #Replace the `InventoryAsyncTask.java` file.#
-`src/main/java/io/openliberty/guides/inventory/InventoryAsyncTask.java`
+`inventory/src/main/java/io/openliberty/guides/inventory/InventoryAsyncTask.java`
 ----
 The [hotspot=getSystemLoad file=0]`getSystemLoad()` method calls the client's [hotspot=clientGetSystemLoad file=0]`getSystemLoad()` method to retieve the system load, and returns the system load in [hotspot=getSystemLoadSignature file=0]`CompletableFuture<Double>` type by using the [hotspot=return file=0]`Asynchronous.Result.complete()` method.
 
@@ -397,7 +397,7 @@ include::finish/inventory/src/main/java/io/openliberty/guides/inventory/Inventor
 [role="code_command hotspot file=1", subs="quotes"]
 ----
 #Replace the `InventoryResource.java` file.#
-`src/main/java/io/openliberty/guides/inventory/InventoryResource.java`
+`inventory/src/main/java/io/openliberty/guides/inventory/InventoryResource.java`
 ----
 
 Create the PUT [hotspot=updateSystemLoad file=1]`/systems/systemLoad` endpoint that multiply calls the [hotspot=inventoryAsyncTask file=1]`task` bean's [hotspot=getSystemLoad file=1]`getSystemLoad()` method to retrieve the system load of all systems in the inventory. When the calls return, the [hotspot=thenAcceptAsync file=1]`thenAcceptAsync()` method processes the returned data with the `CompletableFuture<Double>` type and calls the system's [hotspot=setSystemLoad file=1]`setSystemLoad()` method to store the system load. Exceptions are handled in a callback that is provided to the [hotspot=exceptionally file=1]`exceptionally()` method, which behaves like a catch block. 
@@ -446,7 +446,7 @@ include::finish/inventory/src/test/java/it/io/openliberty/guides/inventory/Inven
 [role="code_command hotspot file=0", subs="quotes"]
 ----
 #Create the `InventoryResourceClient.java` file.#
-`src/test/java/it/io/openliberty/guides/inventory/InventoryResourceClient.java`
+`inventory/src/test/java/it/io/openliberty/guides/inventory/InventoryResourceClient.java`
 ----
 
 This interface declares [hotspot=listContents file=0]`listContents()`, [hotspot=getSystem file=0]`getSystem()`, [hotspot=addSystemClient file=0]`addSystemClient()`, [hotspot=updateMemoryUsed file=0]`updateMemoryUsed()`, [hotspot=updateSystemLoad file=0]`updateSystemLoad()`, [hotspot=removeSystem file=0]`removeSystem()`, and [hotspot=resetSystems file=0]`resetSystems()` methods for accessing each of the endpoints that are set up to access the `inventory` microservice.
@@ -460,7 +460,7 @@ include::finish/inventory/src/test/java/it/io/openliberty/guides/inventory/Inven
 [role="code_command hotspot file=1", subs="quotes"]
 ----
 #Create the `InventoryEndpointIT.java` file.#
-`src/test/java/it/io/openliberty/guides/inventory/InventoryEndpointIT.java`
+`inventory/src/test/java/it/io/openliberty/guides/inventory/InventoryEndpointIT.java`
 ----
 
 The [hotspot=testAddSystems file=1]`testAddSystems()` tests the POST `/inventory/system/{hostname}` endpoint and confirms that three systems are added to the inventory.
