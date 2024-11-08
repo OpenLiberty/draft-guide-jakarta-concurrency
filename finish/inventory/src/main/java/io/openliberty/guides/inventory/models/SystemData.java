@@ -13,12 +13,8 @@ package io.openliberty.guides.inventory.models;
 
 import java.io.Serializable;
 
-import org.eclipse.microprofile.openapi.annotations.media.Schema;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.NamedQuery;
 import jakarta.persistence.Table;
@@ -30,12 +26,7 @@ public class SystemData implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @GeneratedValue(strategy = GenerationType.AUTO)
     @Id
-    @Column(name = "systemId")
-    private int id;
-
-    @Schema(required = true)
     @Column(name = "hostname")
     private String hostname;
 
@@ -59,14 +50,6 @@ public class SystemData implements Serializable {
         this.osName = osName;
         this.javaVersion = javaVer;
         this.heapSize = heapSize;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 
     public String getHostname() {

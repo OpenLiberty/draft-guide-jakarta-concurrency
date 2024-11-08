@@ -60,7 +60,7 @@ public class InventoryManager {
         if (s == null) {
             return false;
         }
-        s = em.find(SystemData.class, s.getId());
+        s = em.find(SystemData.class, s.getHostname());
         em.remove(s);
         systems.remove(s);
         return true;
