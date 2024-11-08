@@ -11,25 +11,34 @@
 // end::copyright[]
 package io.openliberty.guides.inventory;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import io.openliberty.guides.inventory.models.SystemData;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 
 @ApplicationScoped
 public class InventoryManager {
+    
+    @PersistenceContext(name = "jpa-unit")
+    private EntityManager em;
 
-    List<SystemData> systems =
-        Collections.synchronizedList(new ArrayList<SystemData>());
+    private static List<SystemData> systems;
+
+    public void init() {
+        systems = em.createNamedQuery("SystemData.findAll", SystemData.class).getResultList();
+    }
 
     public List<SystemData> getSystems() {
-        return this.systems;
+        if (systems == null) {
+            init();
+        }
+        return systems;
     }
 
     public SystemData getSystem(String hostname) {
-        for (SystemData s : this.systems) {
+        for (SystemData s : systems) {
             if (s.getHostname().equalsIgnoreCase(hostname)) {
                 return s;
             }
@@ -41,7 +50,8 @@ public class InventoryManager {
         if (getSystem(s.getHostname()) != null) {
             return false;
         }
-        this.systems.add(s);
+        em.persist(s);
+        systems.add(s);
         return true;
     }
 
@@ -50,7 +60,9 @@ public class InventoryManager {
         if (s == null) {
             return false;
         }
-        this.systems.remove(s);
+        s = em.find(SystemData.class, s.getId());
+        em.remove(s);
+        systems.remove(s);
         return true;
     }
 
