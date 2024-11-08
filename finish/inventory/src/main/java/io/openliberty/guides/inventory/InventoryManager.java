@@ -21,7 +21,7 @@ import jakarta.persistence.PersistenceContext;
 
 @ApplicationScoped
 public class InventoryManager {
-    
+
     @PersistenceContext(name = "jpa-unit")
     private EntityManager em;
 
@@ -29,7 +29,8 @@ public class InventoryManager {
 
     @PostConstruct
     public void init() {
-        systems = em.createNamedQuery("SystemData.findAll", SystemData.class).getResultList();
+        systems = em.createNamedQuery("SystemData.findAll", SystemData.class)
+                    .getResultList();
     }
 
     public List<SystemData> getSystems() {
