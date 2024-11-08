@@ -10,6 +10,7 @@
         <feature>mpConfig-3.1</feature>
         <feature>mpOpenAPI-3.1</feature>
         <feature>mpRestClient-3.0</feature>
+        <feature>persistence-3.1</feature>
         <feature>restfulWS-3.1</feature>
     </featureManager>
 
@@ -20,6 +21,15 @@
                   httpPort="${http.port}"
                   httpsPort="${https.port}" />
 
+    <library id="derbyJDBCLib">
+        <fileset dir="${shared.resource.dir}/" includes="derby*.jar" />
+    </library>
+
+    <dataSource id="DefaultDataSource" jndiName="jdbc/inventoryDS">
+        <jdbcDriver libraryRef="derbyJDBCLib" />
+        <properties.derby.embedded databaseName="InventoryDB" createDatabase="create" />
+    </dataSource>
+    
     <webApplication contextRoot="/" location="guide-concurrency-intro-inventory.war" />
 
     <logging consoleLogLevel="INFO"/>

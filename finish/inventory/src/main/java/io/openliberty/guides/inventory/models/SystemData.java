@@ -1,6 +1,6 @@
 // tag::copyright[]
 /*******************************************************************************
- * Copyright (c) 2022, 2023 IBM Corporation and others.
+ * Copyright (c) 2024 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
@@ -11,12 +11,34 @@
 // end::copyright[]
 package io.openliberty.guides.inventory.models;
 
-public class SystemData {
+import java.io.Serializable;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.NamedQuery;
+import jakarta.persistence.Table;
+
+@Entity
+@Table(name = "SystemData")
+@NamedQuery(name = "SystemData.findAll", query = "SELECT sd FROM SystemData sd")
+public class SystemData implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
+    @Id
+    @Column(name = "hostname")
     private String hostname;
+
+    @Column(name = "osName")
     private String osName;
+
+    @Column(name = "javaVersion")
     private String javaVersion;
+
+    @Column(name = "heapSize")
     private Long   heapSize;
+
     private Double memoryUsage = 0.0;
     private Double systemLoad = 0.0;
 
@@ -80,6 +102,11 @@ public class SystemData {
 
     public void setMemoryUsed(Long memoryUsed) {
         this.memoryUsage = ((double) memoryUsed) / this.heapSize;
+    }
+
+    @Override
+    public int hashCode() {
+        return hostname.hashCode();
     }
 
     public boolean equals(Object host) {

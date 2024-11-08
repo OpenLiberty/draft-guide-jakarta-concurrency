@@ -23,6 +23,7 @@ import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
 import io.openliberty.guides.inventory.models.SystemData;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
@@ -66,6 +67,7 @@ public class InventoryResource {
     @Path("/system/{hostname}")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_JSON)
+    @Transactional
     public Response addSystemClient(
         @Parameter(
            name = "hostname", in = ParameterIn.PATH,
@@ -158,6 +160,7 @@ public class InventoryResource {
     @DELETE
     @Path("/system/{hostname}")
     @Produces(MediaType.APPLICATION_JSON)
+    @Transactional
     public Response removeSystem(@PathParam("hostname") String hostname) {
         if (manager.removeSystem(hostname)) {
             return success(hostname + " was removed.");
@@ -169,10 +172,7 @@ public class InventoryResource {
     @Path("/systems/reset")
     @Produces(MediaType.APPLICATION_JSON)
     public Response resetSystems() {
-        for (SystemData s : manager.getSystems()) {
-            s.setSystemLoad(0.0);
-            s.setMemoryUsed((long) 0);
-        }
+        manager.init();
         return success("Reset the systems.");
     }
 

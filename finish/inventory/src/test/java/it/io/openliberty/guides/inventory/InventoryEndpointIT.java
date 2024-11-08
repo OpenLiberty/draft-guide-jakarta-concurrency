@@ -58,19 +58,19 @@ public class InventoryEndpointIT {
         if (isMemoryUsageZero != null) {
             if (isMemoryUsageZero) {
                 assertEquals(0.0, s.getMemoryUsage(),
-                    "s.getMemoryUsage() = " + s.getMemoryUsage());
+                    hostname + " s.getMemoryUsage() = " + s.getMemoryUsage());
             } else {
                 assertTrue(s.getMemoryUsage() > 0.0,
-                    "s.getMemoryUsage() = " + s.getMemoryUsage());
+                    hostname + " s.getMemoryUsage() = " + s.getMemoryUsage());
             }
         }
         if (isSystemLoadZero != null) {
             if (isSystemLoadZero) {
                 assertEquals(0.0, s.getSystemLoad(),
-                    "s.getSystemLoad() = " + s.getSystemLoad());
+                    hostname + " s.getSystemLoad() = " + s.getSystemLoad());
             } else {
                 assertTrue(s.getSystemLoad() > 0.0,
-                    "s.getSystemLoad() = " + s.getSystemLoad());
+                    hostname + " s.getSystemLoad() = " + s.getSystemLoad());
             }
         }
 
