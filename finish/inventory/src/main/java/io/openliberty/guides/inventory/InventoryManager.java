@@ -14,6 +14,7 @@ package io.openliberty.guides.inventory;
 import java.util.List;
 
 import io.openliberty.guides.inventory.models.SystemData;
+import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -26,14 +27,12 @@ public class InventoryManager {
 
     private static List<SystemData> systems;
 
+    @PostConstruct
     public void init() {
         systems = em.createNamedQuery("SystemData.findAll", SystemData.class).getResultList();
     }
 
     public List<SystemData> getSystems() {
-        if (systems == null) {
-            init();
-        }
         return systems;
     }
 
@@ -60,9 +59,9 @@ public class InventoryManager {
         if (s == null) {
             return false;
         }
-        s = em.find(SystemData.class, s.getHostname());
-        em.remove(s);
         systems.remove(s);
+        s = em.find(SystemData.class, hostname);
+        em.remove(s);
         return true;
     }
 
