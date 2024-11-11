@@ -16,6 +16,7 @@ import java.util.List;
 import io.openliberty.guides.inventory.models.SystemData;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.PUT;
@@ -49,6 +50,7 @@ public class InventoryResource {
     @DELETE
     @Path("/system/{hostname}")
     @Produces(MediaType.APPLICATION_JSON)
+    @Transactional
     public Response removeSystem(@PathParam("hostname") String hostname) {
         if (manager.removeSystem(hostname)) {
             return success(hostname + " was removed.");
@@ -60,10 +62,7 @@ public class InventoryResource {
     @Path("/systems/reset")
     @Produces(MediaType.APPLICATION_JSON)
     public Response resetSystems() {
-        for (SystemData s : manager.getSystems()) {
-            s.setSystemLoad(0.0);
-            s.setMemoryUsed((long) 0);
-        }
+        manager.init();
         return success("Reset the systems.");
     }
 
