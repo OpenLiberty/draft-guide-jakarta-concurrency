@@ -53,8 +53,9 @@ jobs:
       - run: unset _JAVA_OPTIONS
       - name: Run tests
         run: |
-          chmod +x ../scripts/testApp.sh
-          sudo -E ../scripts/testApp.sh
+          chmod +x ../scripts/test*.sh
+          sudo -E ../scripts/testAppFinish.sh
+          sudo -E ../scripts/testAppStart.sh
       - name: Post tests
         if: always()
         run: |
@@ -76,3 +77,15 @@ jobs:
         with:
           name: finish-system-logs
           path: finish/system/target/liberty/wlp/usr/servers/defaultServer/logs/
+      - name: Archive start inventory logs if failed
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: start-inventory-logs
+          path: start/inventory/target/liberty/wlp/usr/servers/defaultServer/logs/
+      - name: Archive start system logs if failed
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: start-system-logs
+          path: start/system/target/liberty/wlp/usr/servers/defaultServer/logs/

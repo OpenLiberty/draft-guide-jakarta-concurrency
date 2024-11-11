@@ -34,4 +34,3 @@ mvn -ntp -pl inventory failsafe:verify
 
 mvn -ntp -pl inventory liberty:stop
 mvn -ntp -pl system liberty:stop
-
