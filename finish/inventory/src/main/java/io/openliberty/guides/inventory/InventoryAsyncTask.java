@@ -141,9 +141,9 @@ public class InventoryAsyncTask {
     public void updateSystemsMemoryUsed(List<SystemData> systems, int after) {
     // end::parameters[]
     // end::asynchronous1[]
-    // tag::systems[]
-    for (SystemData s : systems) {
-    // end::systems[]
+        // tag::systems[]
+        for (SystemData s : systems) {
+        // end::systems[]
             // tag::getHostname[]
             String hostname = s.getHostname();
             // end::getHostname[]
