@@ -113,7 +113,7 @@ Go to the http://localhost:9081/api/inventory/systems URL to see the inventory. 
 ]
 ----
 
-Repeat the POST endpoint for the `hostname` parameter with the value of `127.0.0.1` and your local system hostname.
+Repeat the POST endpoint for the `hostname` parameter with the value of `127.0.0.1` and your local system hostname. Totally 3 systems are added to the inventory.
 
 Then, make a PUT request to the `/api/inventory/systems/memoryUsed` endpoint with the `after` parameter set to `5` seconds. Make a PUT request to the `/api/inventory/systems/systemLoad` endpoint with the `after` parameter set to `5` seconds. After 5 seconds, go to the http://localhost:9081/api/inventory/systems URL again. Verify that the `memoryUsage` and `systemLoad` values are updated to nonzero. If you're interested, try out the other available endpoints.
 endif::[]
@@ -158,6 +158,8 @@ curl -X POST http://localhost:9081/api/inventory/system/127.0.0.1
 ```bash
 curl -X POST http://localhost:9081/api/inventory/system/`hostname`
 ```
+
+Totally 3 systems are added to the inventory.
 
 Then, make a PUT request to the `/api/inventory/systems/memoryUsed` endpoint and the `/api/inventory/systems/systemLoad` endpoints by the following commands:
 
@@ -236,7 +238,7 @@ include::finish/inventory/src/main/liberty/config/server.xml[]
 
 The https://openliberty.io/docs/latest/reference/feature/concurrent-3.0.html[Jakarta Concurrency^] feature is enabled for you in the Liberty [hotspot=concurrent file=0]`server.xml` configuration file.
 
-In this section, you will learn how to implement a task that calls the `system` microservice in parallel to get different system data.
+Implement a task that calls the `system` microservice in parallel to get different system data.
 
 InventoryAsyncTask.java
 [source, Java, linenums, role='code_column hide_tags=copyright,updateSystemsUsage,updateSystemsMemoryUsed,getSystemLoad']
@@ -250,7 +252,7 @@ include::finish/inventory/src/main/java/io/openliberty/guides/inventory/Inventor
 `inventory/src/main/java/io/openliberty/guides/inventory/InventoryAsyncTask.java`
 ----
 
-This bean provides different utilities for the `inventory` service. Annotating the [hotspot=managedExecutor file=1]`managedExecutor` field with the [hotspot=managedExecutor file=1]`@Resource` annotation, an instance of the `ManagedScheduledExecutorService` resource will be injected when the bean is initialized by Liberty runtime.
+The `InventoryAsyncTask` bean provides different utilities for the `inventory` service. Annotating the [hotspot=managedExecutor file=1]`managedExecutor` field with the [hotspot=managedExecutor file=1]`@Resource` annotation, an instance of the `ManagedScheduledExecutorService` resource will be injected when the bean is initialized by Liberty runtime.
 
 The [hotspot=getClientData file=1]`getClientData()` method uses the [hotspot=submit1 hotspot=submit2 hotspot=submit3 file=1]`managedExecutor` service to submit multiple tasks in parallel. Each task uses the [hotspot=getSystemClient1 hotspot=getSystemClient2 hotspot=getSystemClient3 hotspot=getSystemClientMethod file=1]`getSystemClient()` method to get the REST client for the system hostname. Each client retrieves the [hotspot=osName hotspot=javaVer hotspot=heapSize file=1]`os.name` property, [hotspot=osName hotspot=javaVer hotspot=heapSize file=1]`java.version` property, and the [hotspot=osName hotspot=javaVer hotspot=heapSize file=1]`heap size` of the system.
 
@@ -334,9 +336,11 @@ curl -X POST  http://localhost:9081/api/inventory/system/`hostname`
 ```
 endif::[]
 
+Totally 3 systems are added to the inventory.
+
 == Creating asynchronous task
 
-In this section, you will learn how to implement an asynchronous task to update the memory usage of the systems in the inventory.
+Implement an asynchronous task to update the memory usage of the systems in the inventory.
 
 InventoryAsyncTask.java
 [source, Java, linenums, role='code_column hide_tags=copyright,updateSystemsUsage,getSystemLoad']
@@ -350,7 +354,7 @@ include::finish/inventory/src/main/java/io/openliberty/guides/inventory/Inventor
 `inventory/src/main/java/io/openliberty/guides/inventory/InventoryAsyncTask.java`
 ----
 
-The [hotspot=updateSystemsMemoryUsedMethod file=0]`updateSystemsMemoryUsed()` method uses the [hotspot=systems hotspot=schedule file=0]`managedExecutor` to schedule multiple tasks that will be delayed with the given [hotspot=parameters hotspot=after file=0]`after` seconds and ran in parallel. Each task calls the client's [hotspot=getMemoryUsed file=0]`getMemoryUsed()` method to retrieve the memory usage, and calls the system's [hotspot=setMemoryUsage file=0]`setMemoryUsed()` method to calculate the memory usage.
+The [hotspot=updateSystemsMemoryUsedMethod file=0]`updateSystemsMemoryUsed()` method uses the [hotspot=systems hotspot=schedule file=0]`managedExecutor` service to schedule multiple tasks that will be delayed with the given [hotspot=parameters hotspot=after file=0]`after` seconds and ran in parallel. Each task calls the client's [hotspot=getMemoryUsed file=0]`getMemoryUsed()` method to retrieve the memory usage, and calls the system's [hotspot=setMemoryUsage file=0]`setMemoryUsed()` method to calculate the memory usage.
 
 Annotate the [hotspot=asynchronous1 file=0]`updateSystemsMemoryUsed()` method with the `@Asynchronous` annotation to make it running asynchronously.
 
@@ -388,7 +392,7 @@ endif::[]
 
 == Synchronizing asynchronous tasks
 
-In this section, you will learn how to synchronize asynchronous tasks to update the system load of the systems in the inventory.
+Synchronize asynchronous tasks to update the system load of the systems in the inventory.
 
 InventoryAsyncTask.java
 [source, Java, linenums, role='code_column hide_tags=copyright,updateSystemsUsage']
@@ -450,7 +454,7 @@ endif::[]
 
 == Testing the inventory application
 
-Although you can test your application manually, automated tests make sure consistent code quality by triggering a failure whenever a code change introduces a defect. In this section, you’ll create integration tests for the `inventory` microservice.
+Although you can test your application manually, automated tests make sure consistent code quality by triggering a failure whenever a code change introduces a defect. Now, create integration tests for the `inventory` microservice.
 
 Create a RESTful client interface for the `inventory` microservice.
 

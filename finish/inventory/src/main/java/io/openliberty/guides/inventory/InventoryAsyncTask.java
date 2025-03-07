@@ -184,7 +184,7 @@ public class InventoryAsyncTask {
     public CompletableFuture<Double> getSystemLoad(String hostname, int after) {
     // end::getSystemLoadSignature[]
     // end::asynchronous2[]
-    logger.info("Getting " + hostname + " recent system load...");
+        logger.info("Getting " + hostname + " recent system load...");
         Double systemLoad = null;
         SystemClient client = null;
         try {
