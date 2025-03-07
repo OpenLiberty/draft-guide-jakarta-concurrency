@@ -2,16 +2,18 @@
 <server description="Sample Liberty server">
 
     <featureManager>
-        <feature>cdi-4.0</feature>
+        <platform>jakartaee-10.0</platform>
+        <platform>microprofile-7.0</platform>
+        <feature>cdi</feature>
         <!-- tag::concurrent[] -->
-        <feature>concurrent-3.0</feature>
+        <feature>concurrent</feature>
         <!-- end::concurrent[] -->
-        <feature>jsonb-3.0</feature>
-        <feature>mpConfig-3.1</feature>
-        <feature>mpOpenAPI-3.1</feature>
-        <feature>mpRestClient-3.0</feature>
-        <feature>persistence-3.1</feature>
-        <feature>restfulWS-3.1</feature>
+        <feature>jsonb</feature>
+        <feature>mpConfig</feature>
+        <feature>mpOpenAPI</feature>
+        <feature>mpRestClient</feature>
+        <feature>persistence</feature>
+        <feature>restfulWS</feature>
     </featureManager>
 
     <variable name="http.port" defaultValue="9081" />
