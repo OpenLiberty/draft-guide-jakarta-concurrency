@@ -28,10 +28,10 @@ Learn how to run tasks parallelly or asynchronously in Java microservices by usi
 
 == What you'll learn
 
-Jakarta Concurrency is a Java API specification of Jakarta EE that provides a framework for developing concurrent and asynchronous Java applications. The Jakarta Concurrency APIs provide concurrency utilities to make developers easier writing thread-safe and scalable applications to execute tasks parallelly or asynchronously and coordinate the completion of multiple asynchronous tasks in a more efficient manner. To learn more about Jakarta Concurrency, see the https://jakarta.ee/specifications/concurrency[Jakarta Concurrency specification^].
+Jakarta Concurrency is a Java API specification of Jakarta EE that provides a framework for developing concurrent and asynchronous Java applications. The Jakarta Concurrency APIs provide concurrency utilities to make developers easier to write thread-safe and scalable applications. The applications can run tasks parallelly or asynchronously and coordinate the completion of multiple asynchronous tasks in a more efficient manner. To learn more about Jakarta Concurrency, see the https://jakarta.ee/specifications/concurrency[Jakarta Concurrency specification^].
 
 
-The application in this guide consists of two microservices, `system` and `inventory`. The `system` microservice provides GET REST APIs to retreive the Java system properties, heap size, memory usage, and system load. The `inventory` microservice provides different REST APIs to register systems, update their memory usage and system load, and query their information from the inventory.
+The application in this guide consists of two microservices, `system` and `inventory`. The `system` microservice provides GET REST APIs to retrieve the Java system properties, heap size, memory usage, and system load. The `inventory` microservice provides different REST APIs to register systems, update their memory usage and system load, and query their information from the inventory.
 // Also, the `inventory` microservice is scheduled for every 60 seconds to call the `system` microservice to update the memory usage and system load of the systems in the inventory.
 
 {empty} +
@@ -93,11 +93,11 @@ The defaultServer server is ready to run a smarter planet.
 ----
 
 ifndef::cloud-hosted[]
-Visit the http://localhost:9081/openapi/ui URL to try out the REST endpoints of the `inventory` microservice.
+Go to the http://localhost:9081/openapi/ui URL to try out the REST endpoints of the `inventory` microservice.
 
 First, make a POST request to the `/api/inventory/system/{hostname}` endpoint. To make this request, expand the POST endpoint on the UI, click the `Try it out` button, provide  `localhost` for the `hostname` parameter, then click the `Execute` button. The POST request registers the `localhost` system to the inventory.
 
-Visit the http://localhost:9081/api/inventory/systems URL to see the inventory. You will see an output similar to the following:
+Go to the http://localhost:9081/api/inventory/systems URL to see the inventory. You will see an output similar to the following:
 
 [role="no_copy"]
 ----
@@ -113,16 +113,16 @@ Visit the http://localhost:9081/api/inventory/systems URL to see the inventory. 
 ]
 ----
 
-Repeat the above POST endpoint for the `hostname` parameter with the value of `127.0.0.1` and your local system hostname.
+Repeat the POST endpoint for the `hostname` parameter with the value of `127.0.0.1` and your local system hostname.
 
-Then, make a PUT request to the `/api/inventory/systems/memoryUsed` endpoint with the `after` parameter set to `5` seconds, and a PUT request to the `/api/inventory/systems/systemLoad` endpoint with the `after` parameter set to `5` seconds. After 5 seconds, visit the http://localhost:9081/api/inventory/systems URL again to verify that the `memoryUsage` and `systemLoad` values have been updated to non-zero. If you're interested, try out the other available endpoints.
+Then, make a PUT request to the `/api/inventory/systems/memoryUsed` endpoint with the `after` parameter set to `5` seconds. Make a PUT request to the `/api/inventory/systems/systemLoad` endpoint with the `after` parameter set to `5` seconds. After 5 seconds, go to the http://localhost:9081/api/inventory/systems URL again. Verify that the `memoryUsage` and `systemLoad` values are updated to nonzero. If you're interested, try out the other available endpoints.
 endif::[]
 
 
 ifdef::cloud-hosted[]
 Try out the REST endpoints of the `inventory` microservice.
 
-First, make a POST request to the `/api/inventory/system/{hostname}` endpoint to register the `localhost` system to the inventory by runnning the following command:
+First, make a POST request to the `/api/inventory/system/{hostname}` endpoint to register the `localhost` system to the inventory by running the following command:
 
 ```bash
 curl -X POST  http://localhost:9081/api/inventory/system/localhost
@@ -149,7 +149,7 @@ You will see an output similar to the following:
 ]
 ```
 
-Repeat the above POST endpoint with the value of `127.0.0.1` and the local system hostname by the following commands:
+Repeat the POST endpoint with the value of `127.0.0.1` and the local system hostname by the following commands:
 
 ```bash
 curl -X POST http://localhost:9081/api/inventory/system/127.0.0.1
@@ -169,7 +169,7 @@ curl -X PUT http://localhost:9081/api/inventory/systems/memoryUsed?after=5
 curl -X PUT http://localhost:9081/api/inventory/systems/systemLoad?after=5
 ```
 
-After 5 seconds, visit the `/api/inventory/systems` endpoint again to see that the `memoryUsage` and `systemLoad` values are updated to non-zero by the following command:
+After 5 seconds, go to the `/api/inventory/systems` endpoint again to see that the `memoryUsage` and `systemLoad` values are updated to nonzero by the following command:
 
 ```bash
 curl http://localhost:9081/api/inventory/systems | jq
@@ -192,7 +192,7 @@ mvn -pl inventory liberty:stop
 ```
 endif::[]
 
-Let the `system` microservice running. In the following sections, you'll implement the `inventory` microservice to learn how to create parallel or asynchronous tasks.
+Leave the `system` microservice to run. In the following sections, you'll implement the `inventory` microservice to learn how to create parallel or asynchronous tasks.
 
 == Running tasks in parallel
 
@@ -234,7 +234,7 @@ server.xml
 include::finish/inventory/src/main/liberty/config/server.xml[]
 ----
 
-The https://openliberty.io/docs/latest/reference/feature/concurrent-3.0.html[Jakarta Concurrency^] feature has already been enabled for you in the Liberty [hotspot=concurrent file=0]`server.xml` configuration file.
+The https://openliberty.io/docs/latest/reference/feature/concurrent-3.0.html[Jakarta Concurrency^] feature is enabled for you in the Liberty [hotspot=concurrent file=0]`server.xml` configuration file.
 
 In this section, you will learn how to implement a task that calls the `system` microservice in parallel to get different system data.
 
@@ -250,11 +250,11 @@ include::finish/inventory/src/main/java/io/openliberty/guides/inventory/Inventor
 `inventory/src/main/java/io/openliberty/guides/inventory/InventoryAsyncTask.java`
 ----
 
-This bean provides different utilities for the `inventory` service. Annotating the [hotspot=managedExecutor file=1]`managedExecutor` field with the [hotspot=managedExecutor file=1]`@Resource` annotation, an instance of the `ManagedScheduledExecutorService` requested resource will be injected when the bean is initialized by Liberty runtime.
+This bean provides different utilities for the `inventory` service. Annotating the [hotspot=managedExecutor file=1]`managedExecutor` field with the [hotspot=managedExecutor file=1]`@Resource` annotation, an instance of the `ManagedScheduledExecutorService` resource will be injected when the bean is initialized by Liberty runtime.
 
-The [hotspot=getClientData file=1]`getClientData()` method uses the [hotspot=submit1 hotspot=submit2 hotspot=submit3 file=1]`managedExecutor` to submit multiple tasks in parallel. Each task uses the [hotspot=getSystemClient1 hotspot=getSystemClient2 hotspot=getSystemClient3 hotspot=getSystemClientMethod file=1]`getSystemClient()` method to get the REST client for the given system hostname, and use the client to retieve the [hotspot=osName hotspot=javaVer hotspot=heapSize file=1]`os.name` property, [hotspot=osName hotspot=javaVer hotspot=heapSize file=1]`java.version` property, and the [hotspot=osName hotspot=javaVer hotspot=heapSize file=1]`heap size` of the system.
+The [hotspot=getClientData file=1]`getClientData()` method uses the [hotspot=submit1 hotspot=submit2 hotspot=submit3 file=1]`managedExecutor` to submit multiple tasks in parallel. Each task uses the [hotspot=getSystemClient1 hotspot=getSystemClient2 hotspot=getSystemClient3 hotspot=getSystemClientMethod file=1]`getSystemClient()` method to get the REST client for the system hostname. Each client retrieves the [hotspot=osName hotspot=javaVer hotspot=heapSize file=1]`os.name` property, [hotspot=osName hotspot=javaVer hotspot=heapSize file=1]`java.version` property, and the [hotspot=osName hotspot=javaVer hotspot=heapSize file=1]`heap size` of the system.
 
-The [hotspot=submitTask1 hotspot=submitTask2 hotspot=submitTask3 file=1]`submit()` tasks run in parallel and return [hotspot=submit1 hotspot=submit2 hotspot=submit3 file=1]`Future<>` object immediatedly for the result of asynchronous task. Use the [hotspot=get file=1]`get()` method to wait the task to complete, and then retrieve the result.
+The [hotspot=submitTask1 hotspot=submitTask2 hotspot=submitTask3 file=1]`submit()` tasks run in parallel. Each task returns a [hotspot=submit1 hotspot=submit2 hotspot=submit3 file=1]`Future<>` object immediately for the result of the asynchronous task. Use the [hotspot=get file=1]`get()` method to wait for the task to complete, and then retrieve the result.
 
 Implement the POST `/api/inventory/system/{hostname}` endpoint of the `inventory` microservice to register a system to the inventory.
 
@@ -270,12 +270,12 @@ include::finish/inventory/src/main/java/io/openliberty/guides/inventory/Inventor
 `inventory/src/main/java/io/openliberty/guides/inventory/InventoryResource.java`
 ----
 
-Inject the [hotspot=inventoryAsyncTask file=2]`InventoryAsyncTask` bean into the `InventoryResource` class. Create the POST [hotspot=addSystemClient file=2]`/system/{hostname}` endpoint that uses the bean's [hotspot=getClientData file=2]`getClientData()` method to collect the properties from the `system` microservice and addes the system into the inventory.
+Inject the [hotspot=inventoryAsyncTask file=2]`InventoryAsyncTask` bean into the `InventoryResource` class. Create the POST [hotspot=addSystemClient file=2]`/system/{hostname}` endpoint that uses the bean's [hotspot=getClientData file=2]`getClientData()` method to collect the properties from the `system` microservice and adds the system into the inventory.
 
-You started the Open Liberty in dev mode at the beginning of the this section, so all the changes were automatically picked up.
+You started the Open Liberty in dev mode at the beginning of this section, so all the changes were automatically picked up.
 
 ifndef::cloud-hosted[]
-Visit the http://localhost:9081/openapi/ui URL and make a POST request to the `/api/inventory/system/{hostname}` endpoint with the value of `localhost`. Then, visit the http://localhost:9081/api/inventory/systems URL to see the inventory. You will see an output similar to the following:
+Go to the http://localhost:9081/openapi/ui URL and make a POST request to the `/api/inventory/system/{hostname}` endpoint with the value of `localhost`. Then, go to the http://localhost:9081/api/inventory/systems URL to see the inventory. You will see an output similar to the following:
 
 [role="no_copy"]
 ----
@@ -291,12 +291,12 @@ Visit the http://localhost:9081/openapi/ui URL and make a POST request to the `/
 ]
 ----
 
-Repeat the above POST endpoint for the `hostname` parameter with the value of `127.0.0.1` and your local system hostname.
+Repeat the POST endpoint for the `hostname` parameter with the value of `127.0.0.1` and your local system hostname.
 endif::[]
 
 
 ifdef::cloud-hosted[]
-Make a POST request to the `/api/inventory/system/{hostname}` endpoint to register the `localhost` system to the inventory by runnning the following command:
+Make a POST request to the `/api/inventory/system/{hostname}` endpoint to register the `localhost` system to the inventory by running the following command:
 
 ```bash
 curl -X POST http://localhost:9081/api/inventory/system/localhost
@@ -323,7 +323,7 @@ You will see an output similar to the following:
 ]
 ```
 
-Repeat the above POST endpoint with the value of `127.0.0.1` and the local system hostname by the following commands:
+Repeat the POST endpoint with the value of `127.0.0.1` and the local system hostname by the following commands:
 
 ```bash
 curl -X POST  http://localhost:9081/api/inventory/system/127.0.0.1
@@ -350,7 +350,7 @@ include::finish/inventory/src/main/java/io/openliberty/guides/inventory/Inventor
 `inventory/src/main/java/io/openliberty/guides/inventory/InventoryAsyncTask.java`
 ----
 
-The [hotspot=updateSystemsMemoryUsedMethod file=0]`updateSystemsMemoryUsed()` method uses the [hotspot=systems hotspot=schedule file=0]`managedExecutor` to schedule multiple tasks that will be delayed with the given [hotspot=parameters hotspot=after file=0]`after` seconds and executed in parallel. Each task calls the client's [hotspot=getMemoryUsed file=0]`getMemoryUsed()` method to retieve the memory usage, and calls the system's [hotspot=setMemoryUsage file=0]`setMemoryUsed()` method to calculate the memory usage.
+The [hotspot=updateSystemsMemoryUsedMethod file=0]`updateSystemsMemoryUsed()` method uses the [hotspot=systems hotspot=schedule file=0]`managedExecutor` to schedule multiple tasks that will be delayed with the given [hotspot=parameters hotspot=after file=0]`after` seconds and ran in parallel. Each task calls the client's [hotspot=getMemoryUsed file=0]`getMemoryUsed()` method to retrieve the memory usage, and calls the system's [hotspot=setMemoryUsage file=0]`setMemoryUsed()` method to calculate the memory usage.
 
 Annotate the [hotspot=asynchronous1 file=0]`updateSystemsMemoryUsed()` method with the `@Asynchronous` annotation to make it running asynchronously.
 
@@ -369,7 +369,7 @@ include::finish/inventory/src/main/java/io/openliberty/guides/inventory/Inventor
 Create the PUT [hotspot=updateMemoryUsed file=1]`/systems/memoryUsed` endpoint that uses the [hotspot=inventoryAsyncTask file=1]`task` bean's [hotspot=updateSystemsMemoryUsed file=1]`updateSystemsMemoryUsed()` method to update the memory usage of all systems in the inventory and returns immediately.
 
 ifndef::cloud-hosted[]
-Visit the http://localhost:9081/openapi/ui URL and make a PUT request to the `/api/inventory/systems/memoryUsed` endpoint with the `after` parameter set to `5` seconds. After 5 seconds, visit the http://localhost:9081/api/inventory/systems URL to see that the `memoryUsage` values are updated to non-zero.
+Go to the http://localhost:9081/openapi/ui URL and make a PUT request to the `/api/inventory/systems/memoryUsed` endpoint with the `after` parameter set to `5` seconds. After 5 seconds, go to the http://localhost:9081/api/inventory/systems URL to see that the `memoryUsage` values are updated to nonzero.
 endif::[]
 
 ifdef::cloud-hosted[]
@@ -379,7 +379,7 @@ Make a PUT request to the `/api/inventory/systems/memoryUsed` endpoint by the fo
 curl -X PUT http://localhost:9081/api/inventory/systems/memoryUsed?after=5
 ```
 
-After 5 seconds, visit the `/api/inventory/systems` endpoint again to see that the `memoryUsage` values are updated to non-zero by the following command:
+After 5 seconds, go to the `/api/inventory/systems` endpoint again to see that the `memoryUsage` values are updated to nonzero by the following command:
 
 ```bash
 curl http://localhost:9081/api/inventory/systems | jq
@@ -401,7 +401,7 @@ include::finish/inventory/src/main/java/io/openliberty/guides/inventory/Inventor
 #Replace the `InventoryAsyncTask.java` file.#
 `inventory/src/main/java/io/openliberty/guides/inventory/InventoryAsyncTask.java`
 ----
-The [hotspot=getSystemLoadMethod file=0]`getSystemLoad()` method calls the client's [hotspot=clientGetSystemLoad file=0]`getSystemLoad()` method to retieve the system load, and returns the system load in [hotspot=getSystemLoadSignature file=0]`CompletableFuture<Double>` type by using the [hotspot=return file=0]`Asynchronous.Result.complete()` method.
+The [hotspot=getSystemLoadMethod file=0]`getSystemLoad()` method calls the client's [hotspot=clientGetSystemLoad file=0]`getSystemLoad()` method to retrieve the system load, and returns the system load in [hotspot=getSystemLoadSignature file=0]`CompletableFuture<Double>` type by using the [hotspot=return file=0]`Asynchronous.Result.complete()` method.
 
 Annotate the [hotspot=asynchronous2 file=0]`getSystemLoad()` method with the `@Asynchronous` annotation to make it running asynchronously.
 
@@ -422,7 +422,7 @@ Create the PUT [hotspot=updateSystemLoad file=1]`/systems/systemLoad` endpoint t
 A [hotspot=countDownLatch file=1]`CountDownLatch` object is used to track asynchronous requests. The [hotspot=countDown1 hotspot=countDown2 file=1]`countDown()` method is called whenever a request is complete. When the [hotspot=countDownLatch hotspot=countDown1 hotspot=countDown2 file=1]`CountDownLatch` is at zero, it indicates that all asynchronous requests are complete. By using the [hotspot=await file=1]`await()` method of the `CountDownLatch`, the program waits for all the asynchronous requests to be complete. When all asynchronous requests are complete, the program resumes execution with all required data processed.
 
 ifndef::cloud-hosted[]
-Visit the http://localhost:9081/openapi/ui URL and make a PUT request to the `/api/inventory/systems/systemLoad` endpoint with the `after` parameter set to `5` seconds. The request will take 5 seconds to complete. Visit the http://localhost:9081/api/inventory/systems URL to see that the `systemLoad` values are updated to non-zero.
+Go to the http://localhost:9081/openapi/ui URL and make a PUT request to the `/api/inventory/systems/systemLoad` endpoint with the `after` parameter set to `5` seconds. The request takes 5 seconds to complete. Go to the http://localhost:9081/api/inventory/systems URL to see that the `systemLoad` values are updated to nonzero.
 endif::[]
 
 ifdef::cloud-hosted[]
@@ -432,9 +432,9 @@ Make a PUT request to the `/api/inventory/systems/systemLoad` endpoint by the fo
 curl -X PUT http://localhost:9081/api/inventory/systems/systemLoad?after=5
 ```
 
-The request will take 5 seconds to complete.
+The request takes 5 seconds to complete.
 
-Visit the `/api/inventory/systems` endpoint to see that the `systemLoad` values are updated to non-zero by the following command:
+Go to the `/api/inventory/systems` endpoint to see that the `systemLoad` values are updated to nonzero by the following command:
 
 ```bash
 curl http://localhost:9081/api/inventory/systems | jq
@@ -450,7 +450,7 @@ endif::[]
 
 == Testing the inventory application
 
-Although you can test your application manually, automated tests ensure consistent code quality by triggering a failure whenever a code change introduces a defect. In this section, you’ll create integration tests for the `inventory` microservice.
+Although you can test your application manually, automated tests make sure consistent code quality by triggering a failure whenever a code change introduces a defect. In this section, you’ll create integration tests for the `inventory` microservice.
 
 Create a RESTful client interface for the `inventory` microservice.
 
