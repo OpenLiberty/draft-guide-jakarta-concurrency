@@ -194,7 +194,7 @@ mvn -pl inventory liberty:stop
 ```
 endif::[]
 
-Leave the `system` microservice to run. In the following sections, you'll implement the `inventory` microservice to learn how to create parallel or asynchronous tasks.
+**NOTE:** Leave the `system` microservice to run. In the following sections, you'll implement the `inventory` microservice to learn how to create parallel or asynchronous tasks.
 
 == Running tasks in parallel
 
