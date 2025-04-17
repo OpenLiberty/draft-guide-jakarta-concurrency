@@ -65,7 +65,7 @@ public class SystemEndpointIT {
         SystemClient client1 = new SystemClient(uri);
         SystemClient client2 = new SystemClient(uri);
         SystemClient client3 = new SystemClient(uri);
-        WebTarget target = client.target(URL + "/refresh");
+        WebTarget target = client.target(URL + "/refresh/5");
         Response response = target.request().get();
         assertEquals(204, response.getStatus(),
             "Incorrect response code from " + target.getUri().getPath());

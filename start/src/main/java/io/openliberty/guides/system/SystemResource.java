@@ -37,16 +37,20 @@ public class SystemResource {
          return bean.getProperties(prefix);
     }
 
-    @Path("/refresh")
+    @Path("/refresh/{after}")
     @GET
-    public void refresh() {
-        bean.refresh();
+    @Produces(MediaType.TEXT_PLAIN)
+    public String refresh(@PathParam("after") Integer after) {
+        bean.refresh(after);
+        return "Check after " + after + " seconds.";
     }
 
     @Path("/schedule")
     @GET
-    public void schedule() {
+    @Produces(MediaType.TEXT_PLAIN)
+    public String schedule() {
         bean.schedule();
+        return "New system load will be boardcast for every 10 seconds.";
     }
 
 }

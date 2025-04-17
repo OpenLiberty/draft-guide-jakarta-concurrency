@@ -19,7 +19,12 @@ webSocket.onerror = function (event) {
     console.log(event);
 };
 
-async function restCall(call) {
-    var response = await fetch("/api/system/" + call);
+async function refreshCall() {
+    var response = await fetch("/api/system/refresh/5");
+    console.log(response.status)
+}
+
+async function scheduleCall() {
+    var response = await fetch("/api/system/schedule");
     console.log(response.status)
 }

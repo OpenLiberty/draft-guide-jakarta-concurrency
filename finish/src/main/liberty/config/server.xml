@@ -3,13 +3,11 @@
 
     <featureManager>
         <platform>jakartaee-11.0</platform>
-        <platform>microprofile-7.0</platform>
         <feature>cdi</feature>
         <!-- tag::concurrent[] -->
         <feature>concurrent</feature>
         <!-- end::concurrent[] -->
         <feature>jsonb</feature>
-        <feature>mpOpenAPI</feature>
         <feature>restfulWS</feature>
         <feature>websocket</feature>
     </featureManager>

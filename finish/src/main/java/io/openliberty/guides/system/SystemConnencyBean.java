@@ -57,36 +57,37 @@ public class SystemConnencyBean {
     @Inject
     SystemLoadService sessions;
 
-    public Map<String, String> getProperties(String prefix) throws InterruptedException, ExecutionException {
-        Map<String, Future<String>> osProperties = new HashMap<String, Future<String>>();
-        List<String> osKeys = System.getProperties().stringPropertyNames().stream()
+    public Map<String, String> getProperties(String prefix)
+           throws InterruptedException, ExecutionException {
+
+        Map<String, Future<String>> properties = new HashMap<String, Future<String>>();
+        List<String> keys = System.getProperties().stringPropertyNames().stream()
                                   .filter(k -> k.startsWith(prefix + "."))
                                   .collect(Collectors.toList());
-        for (String k : osKeys) {
-            osProperties.put(k, virtualManagedExecutor.submit(() -> {
+        for (String k : keys) {
+            properties.put(k, virtualManagedExecutor.submit(() -> {
                 // get system property task
-                logger.info("Getting the " + k + " property");
+                logger.info("Getting the " + k + " property...");
                 doSomething();          
                 return System.getProperty(k);
             }));
         }
-        return osProperties.entrySet().stream()
-               .collect(Collectors.toMap(Map.Entry::getKey, entry -> {
-                   try {
-                       Future<String> propertyValue = entry.getValue();
-                       String value = propertyValue.get();
-                       logger.info("Got the " + entry.getKey() + " property value: " + value);
-                       doSomething();          
-                       return value;
-                   } catch (Exception e) {
+        return properties.entrySet().stream().collect(
+            Collectors.toMap(Map.Entry::getKey, e -> {
+                try {
+                    Future<String> propertyValue = e.getValue();
+                    String v = propertyValue.get();
+                    logger.info("The value of the " + e.getKey() + " property: " + v);
+                    return v;
+                 } catch (Exception ex) {
                        return null;
-                   }
-                }));
+                 }
+            }));
     }
 
     @Asynchronous
-    public void refresh() {
-        logger.info("Refresh the system load after 5 seconds");
+    public void refresh(int after) {
+        logger.info("New system load will be boardcast after " + after + " seconds.");
         virtualManagedExecutor.schedule(() -> {
             JsonObjectBuilder builder = Json.createObjectBuilder();
             builder.add("time", Calendar.getInstance().getTime().toString());
@@ -96,8 +97,8 @@ public class SystemConnencyBean {
             builder.add("memoryUsage", Double.valueOf(heapUsed * 100.0 / heapMax));
             JsonObject systemLoad = builder.build();
             sessions.sendToAllSessions(systemLoad);
-            logger.info("New system load was boardcasted");
-       }, 5, TimeUnit.SECONDS);
+            logger.info("New system load was boardcast");
+       }, after, TimeUnit.SECONDS);
     }
 
     @Asynchronous(runAt = { @Schedule(cron = "*/10 * * * * *")}) 
@@ -110,12 +111,12 @@ public class SystemConnencyBean {
         builder.add("memoryUsage", Double.valueOf(heapUsed * 100.0 / heapMax));
         JsonObject systemLoad = builder.build();
         sessions.sendToAllSessions(systemLoad);
-        logger.info("New system load was boardcasted");
+        logger.info("New system load was boardcast");
     }
 
     private void doSomething() {
         try {
-            Thread.sleep(RANDOM.nextInt(1500));
+            Thread.sleep(RANDOM.nextInt(1000));
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

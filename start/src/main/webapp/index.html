@@ -40,8 +40,15 @@
                     <div class="headerTitle" id="sysPropTitle">
                       <h2>
                         <label>System Loads</label>
-                        <img class="refreshButton" src="img/refresh.svg" title="Refresh system load after 5 seconds" onclick="restCall('refresh')"></img>
-                        <img class="scheduleButton" src="img/schedule.svg" title="Schedule to refresh system load for every 10 seconds" onclick="restCall('schedule')"></img>
+                        <img class="refreshButton"
+                             src="img/refresh.svg"
+                             title="Refresh system load after 5 seconds"
+                             onclick="refreshCall()"/>
+                        <img class="scheduleButton"
+                             src="img/schedule.svg"
+                             title="Schedule to refresh system load for every 10 seconds"
+                             onclick="scheduleCall()"/>
+                             
                       </h2>
                     </div>
                 </div>
