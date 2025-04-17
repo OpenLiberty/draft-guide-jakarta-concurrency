@@ -60,15 +60,19 @@ public class SystemEndpointIT {
 
     @Test
     public void testRefresh() throws Exception {
-        startCountDown(1);
+        startCountDown(3);
         URI uri = new URI("ws://localhost:9080/systemLoad");
-        SystemClient sysClient = new SystemClient(uri);
+        SystemClient client1 = new SystemClient(uri);
+        SystemClient client2 = new SystemClient(uri);
+        SystemClient client3 = new SystemClient(uri);
         WebTarget target = client.target(URL + "/refresh");
         Response response = target.request().get();
         assertEquals(204, response.getStatus(),
             "Incorrect response code from " + target.getUri().getPath());
         countDown.await(10, TimeUnit.SECONDS);
-        sysClient.close();
+        client1.close();
+        client2.close();
+        client3.close();
         assertEquals(0, countDown.getCount(),
                 "The countDown was not 0.");
     }
