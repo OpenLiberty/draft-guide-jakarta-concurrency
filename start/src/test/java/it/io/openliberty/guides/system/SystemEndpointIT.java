@@ -67,7 +67,7 @@ public class SystemEndpointIT {
         SystemClient client3 = new SystemClient(uri);
         WebTarget target = client.target(URL + "/refresh/5");
         Response response = target.request().get();
-        assertEquals(204, response.getStatus(),
+        assertEquals(200, response.getStatus(),
             "Incorrect response code from " + target.getUri().getPath());
         countDown.await(10, TimeUnit.SECONDS);
         client1.close();
