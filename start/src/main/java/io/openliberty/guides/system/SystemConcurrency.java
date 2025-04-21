@@ -43,7 +43,7 @@ import jakarta.json.JsonObjectBuilder;
                            qualifiers = WithVirtualThreads.class,
                            virtual = true)
 @ApplicationScoped
-public class SystemConnency {
+public class SystemConcurrency {
 
     private static final OperatingSystemMXBean OS =
         (OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
