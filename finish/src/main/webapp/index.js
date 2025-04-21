@@ -26,5 +26,7 @@ async function refreshCall() {
 
 async function scheduleCall() {
     var response = await fetch("/api/system/schedule");
-    console.log(response.status)
+	console.log(response.status)
+	var responseText = await response.text();
+    document.getElementById('status').textContent = responseText;
 }

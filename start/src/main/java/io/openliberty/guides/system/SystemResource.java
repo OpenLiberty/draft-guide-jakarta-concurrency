@@ -27,21 +27,21 @@ import jakarta.ws.rs.core.MediaType;
 public class SystemResource {
 
     @Inject
-    SystemConnencyBean bean;
+    SystemConnency concurrenyBean;
 
     @GET
     @Path("/properties/{prefix}")
     @Produces(MediaType.APPLICATION_JSON)
     public Map<String, String> getProperties(@PathParam("prefix") String prefix)
         throws InterruptedException, ExecutionException {
-         return bean.getProperties(prefix);
+         return concurrenyBean.getProperties(prefix);
     }
 
     @Path("/refresh/{after}")
     @GET
     @Produces(MediaType.TEXT_PLAIN)
     public String refresh(@PathParam("after") Integer after) {
-        bean.refresh(after);
+        concurrenyBean.refresh(after);
         return "Check after " + after + " seconds.";
     }
 
@@ -49,8 +49,14 @@ public class SystemResource {
     @GET
     @Produces(MediaType.TEXT_PLAIN)
     public String schedule() {
-        bean.schedule();
-        return "New system load will be boardcast for every 10 seconds.";
+        if (SystemConnency.isSchedulerEnabled()) {
+            SystemConnency.setSchedulerEnabled(false);
+            return "...";
+        } else {
+            concurrenyBean.schedule();
+            SystemConnency.setSchedulerEnabled(true);
+            return "New system load will be boardcast for every 10 seconds.";
+        }
     }
 
 }

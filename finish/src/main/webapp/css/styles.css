@@ -260,76 +260,8 @@ button a {
     background-color: #EEEFF3;
 }
 
-#guidesButton {
-    background-color:#abd155;
-    width:269px;
-    font-weight: 500;
-    font-size:16px;
-    transition: background-color .2s;
-}
-#guidesButton:hover {
-    background-color: #C7EE63;
-}
-#mpGuidesButton {
-    border:2px solid #f4914d8c;
-    border-radius:100px;
-    font-size:20px;
-    letter-spacing:0;
-    padding-left: 40px;
-    padding-right: 40px;
-    background-color: white;
-    transition: background-color .2s, color .2s;
-}
-#mpGuidesButton:hover {
-    background-color: #f4914d;
-    color: white;
-}
-
-section#openLibertyAndMp {
-    background:#f4f4f5;
-    background-size: 100% calc(100% - 70px);
-    background-repeat: no-repeat;
-}
-
-#healthBox {
-    text-align: left;
-    display: table-cell;
-    vertical-align: middle;
-    width: 47%;
-}
-
-#healthBox > div {
-    display: table-cell;
-    vertical-align: middle;
-}
-
-#healthIcon {
-    padding-left: 73px;
-    padding-top: 56px;
-    padding-bottom: 56px;
-}
-#healthStatusIcon {
-    width: 104px;
-    height: 104px;
-}
-
-#healthText {
-    padding: 50px;
-}
-
-#serviceStatus {
-    font-size: 50px;
-    font-family: BunueloLight;
-    margin-top: 30px;
-}
-
-#healthNote {
-    text-align: left;
-    display: table-cell;
-    vertical-align: middle;
-    padding-left: 43px;
-    line-height: 26px;
-    width: 53%;
+.status {
+	font-size:20px;
 }
 
 table {
@@ -353,55 +285,11 @@ td {
 #systemLoadsTable tr:first-child {
     background: #D6D9E4;
 }
-#configTable tr:first-child {
-    background: #F8D7C1;;
-}
-#metricsTable tr:first-child {
-    background: #EEF3C3;
-}
 
 #systemLoadsTable tr:nth-child(2n+3) {
     background: #EEEFF3;
 }
-#configTable tr:nth-child(2n+2) {
-    background: #FEF8F4;
-}
-#metricsTable tr:nth-child(2n+2) {
-    background: #FBFCEE;
-}
 
-#systemLoadsTable .sourceRow,
-#healthTable .sourceRow {
-    border-top: 4px solid #D6D9E4;
-}
-#systemLoadsTable .sourceRow a,
-#healthTable .sourceRow a {
-    color: #5D6A8E;
-}
-#configTable .sourceRow {
-    border-top: 4px solid #F8D7C1;
-}
-#configTable .sourceRow a {
-    color: #E57000;
-}
-#metricsTable .sourceRow {
-    border-top: 4px solid #EEF3C3;
-}
-#metricsTable .sourceRow a {
-    color: #4F6700;
-}
-.sourceRow a {
-    font-weight: 500;
-}
-
-#learnMore {
-    margin-top: 120px;
-    padding: 0px 200px 100px;
-}
-
-#learnMore > h2 {
-    color:#5e6b8d;
-}
 
 .bodyFooter {
   padding: 5px 8%;

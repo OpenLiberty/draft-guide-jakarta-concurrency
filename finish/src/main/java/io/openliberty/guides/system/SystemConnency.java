@@ -13,11 +13,14 @@ package io.openliberty.guides.system;
 
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryMXBean;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -40,15 +43,18 @@ import jakarta.json.JsonObjectBuilder;
                            qualifiers = WithVirtualThreads.class,
                            virtual = true)
 @ApplicationScoped
-public class SystemConnencyBean {
-
-    private static Logger logger = Logger.getLogger(SystemConnencyBean.class.getName());
+public class SystemConnency {
 
     private static final OperatingSystemMXBean OS =
         (OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
     private static final MemoryMXBean MEM =
         ManagementFactory.getMemoryMXBean();
+    private static final SimpleDateFormat TIME_FORMAT =
+            new SimpleDateFormat("HH:mm:ss");
     private static final Random RANDOM = new Random();
+
+    private static Logger logger = Logger.getLogger(SystemConnency.class.getName());
+    private static boolean schedulerEnabled = false;
 
     @Inject
     @WithVirtualThreads
@@ -56,6 +62,14 @@ public class SystemConnencyBean {
 
     @Inject
     SystemLoadService sessions;
+
+    public static boolean isSchedulerEnabled() {
+        return schedulerEnabled;
+    }
+
+    public static void setSchedulerEnabled(boolean enabled) {
+        schedulerEnabled = enabled;
+    }
 
     public Map<String, String> getProperties(String prefix)
            throws InterruptedException, ExecutionException {
@@ -102,16 +116,22 @@ public class SystemConnencyBean {
     }
 
     @Asynchronous(runAt = { @Schedule(cron = "*/10 * * * * *")}) 
-    public void schedule() {
+    public CompletableFuture<Boolean> schedule() {
+        if (!schedulerEnabled) {
+            logger.info("Schedule was completed");
+            return Asynchronous.Result.complete(Boolean.TRUE);
+        }
         JsonObjectBuilder builder = Json.createObjectBuilder();
-        builder.add("time", Calendar.getInstance().getTime().toString());
+        Date currentTime = Calendar.getInstance().getTime();
+        builder.add("time", currentTime.toString());
         builder.add("cpuLoad", Double.valueOf(OS.getCpuLoad() * 100.0));
         long heapMax = MEM.getHeapMemoryUsage().getMax();
         long heapUsed = MEM.getHeapMemoryUsage().getUsed();
         builder.add("memoryUsage", Double.valueOf(heapUsed * 100.0 / heapMax));
         JsonObject systemLoad = builder.build();
         sessions.sendToAllSessions(systemLoad);
-        logger.info("New system load was boardcast");
+        logger.info("New system load at " + TIME_FORMAT.format(currentTime) + " was boardcast");
+        return null;
     }
 
     private void doSomething() {

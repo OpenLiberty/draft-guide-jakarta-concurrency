@@ -39,7 +39,8 @@ public class SystemLoadService {
             try {
                 session.getBasicRemote().sendObject(systemLoad);
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.warning("Failed to send system load to " + 
+                    session.getId() + ":" + e.getMessage());
             }
         });
     }
