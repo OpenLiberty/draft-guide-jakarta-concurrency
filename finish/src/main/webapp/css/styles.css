@@ -240,6 +240,16 @@ button a {
 	background-color: white;
 }
 
+.cleanButton {
+	width: 40px;
+	height: 40px;
+    vertical-align: middle;
+}
+
+.cleanButton:hover {
+    background-color: #EEEFF3;
+}
+
 .refreshButton {
 	width: 40px;
 	height: 40px;

@@ -27,7 +27,7 @@
     <body>
         <section id="appIntro">
             <div id="titleSection">
-                <h1 id="appTitle">Open Liberty System Load</h1>
+                <h1 id="appTitle">Open Liberty System Load Application</h1>
                 <div class="line"></div>
                 <div class="headerImage"></div>
             </div>
@@ -40,13 +40,17 @@
                     <div class="headerTitle" id="sysPropTitle">
                       <h2>
                         <label>System Loads</label>
+                        <img class="cleanButton"
+                             src="img/clean.svg"
+                             title="Clean all system loads."
+                             onclick="cleanCall()"/>
                         <img class="refreshButton"
                              src="img/refresh.svg"
-                             title="Refresh system load after 5 seconds"
+                             title="Get system load after 5 seconds."
                              onclick="refreshCall()"/>
                         <img class="scheduleButton"
                              src="img/schedule.svg"
-                             title="Toggle to refresh system load for every 10 seconds"
+                             title="Toggle to get system load in every 10 seconds."
                              onclick="scheduleCall()"/>
                         <label id="status" class="status">...</label>
                              

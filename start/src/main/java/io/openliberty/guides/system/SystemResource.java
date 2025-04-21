@@ -27,7 +27,7 @@ import jakarta.ws.rs.core.MediaType;
 public class SystemResource {
 
     @Inject
-    SystemConnency concurrenyBean;
+    SystemConcurrency concurrenyBean;
 
     @GET
     @Path("/properties/{prefix}")
@@ -48,14 +48,12 @@ public class SystemResource {
     @Path("/schedule")
     @GET
     @Produces(MediaType.TEXT_PLAIN)
-    public String schedule() {
-        if (SystemConnency.isSchedulerEnabled()) {
-            SystemConnency.setSchedulerEnabled(false);
-            return "...";
+    public void schedule() {
+        if (SystemConcurrency.isScheduleEnabled()) {
+            SystemConcurrency.enableSchedule(false);
         } else {
+            SystemConcurrency.enableSchedule(true);
             concurrenyBean.schedule();
-            SystemConnency.setSchedulerEnabled(true);
-            return "New system load will be boardcast for every 10 seconds.";
         }
     }
 

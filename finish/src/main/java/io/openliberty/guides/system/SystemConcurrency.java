@@ -49,12 +49,12 @@ public class SystemConcurrency {
         (OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
     private static final MemoryMXBean MEM =
         ManagementFactory.getMemoryMXBean();
-    private static final SimpleDateFormat TIME_FORMAT =
+    private static final SimpleDateFormat SDF =
             new SimpleDateFormat("HH:mm:ss");
     private static final Random RANDOM = new Random();
 
-    private static Logger logger = Logger.getLogger(SystemConnency.class.getName());
-    private static boolean schedulerEnabled = false;
+    private static Logger logger = Logger.getLogger(SystemConcurrency.class.getName());
+    private static boolean scheduleEnabled = false;
 
     @Inject
     @WithVirtualThreads
@@ -63,12 +63,12 @@ public class SystemConcurrency {
     @Inject
     SystemLoadService sessions;
 
-    public static boolean isSchedulerEnabled() {
-        return schedulerEnabled;
+    public static boolean isScheduleEnabled() {
+        return scheduleEnabled;
     }
 
-    public static void setSchedulerEnabled(boolean enabled) {
-        schedulerEnabled = enabled;
+    public static void enableSchedule(boolean enabled) {
+        scheduleEnabled = enabled;
     }
 
     public Map<String, String> getProperties(String prefix)
@@ -104,34 +104,39 @@ public class SystemConcurrency {
         logger.info("New system load will be boardcast after " + after + " seconds.");
         virtualManagedExecutor.schedule(() -> {
             JsonObjectBuilder builder = Json.createObjectBuilder();
-            builder.add("time", Calendar.getInstance().getTime().toString());
+            Date current = Calendar.getInstance().getTime();
+            builder.add("time", current.toString());
             builder.add("cpuLoad", Double.valueOf(OS.getCpuLoad() * 100.0));
             long heapMax = MEM.getHeapMemoryUsage().getMax();
             long heapUsed = MEM.getHeapMemoryUsage().getUsed();
             builder.add("memoryUsage", Double.valueOf(heapUsed * 100.0 / heapMax));
             JsonObject systemLoad = builder.build();
             sessions.sendToAllSessions(systemLoad);
-            logger.info("New system load was boardcast");
+            logger.info("System load at " + SDF.format(current) + " was boardcast.");
        }, after, TimeUnit.SECONDS);
     }
 
     @Asynchronous(runAt = { @Schedule(cron = "*/10 * * * * *")}) 
     public CompletableFuture<Boolean> schedule() {
-        if (!schedulerEnabled) {
-            logger.info("Schedule was completed");
+        JsonObjectBuilder builder = Json.createObjectBuilder();
+        builder.add("schedule", scheduleEnabled);
+        if (scheduleEnabled) {
+            Date current = Calendar.getInstance().getTime();
+            builder.add("time", current.toString());
+            builder.add("cpuLoad", Double.valueOf(OS.getCpuLoad() * 100.0));
+            long heapMax = MEM.getHeapMemoryUsage().getMax();
+            long heapUsed = MEM.getHeapMemoryUsage().getUsed();
+            builder.add("memoryUsage", Double.valueOf(heapUsed * 100.0 / heapMax));
+            JsonObject systemLoad = builder.build();
+            sessions.sendToAllSessions(systemLoad);
+            logger.info("System load at " + SDF.format(current) + " was boardcast.");
+            return null;
+        } else {
+            logger.info("Schedule was disabled.");
+            JsonObject systemLoad = builder.build();
+            sessions.sendToAllSessions(systemLoad);
             return Asynchronous.Result.complete(Boolean.TRUE);
         }
-        JsonObjectBuilder builder = Json.createObjectBuilder();
-        Date currentTime = Calendar.getInstance().getTime();
-        builder.add("time", currentTime.toString());
-        builder.add("cpuLoad", Double.valueOf(OS.getCpuLoad() * 100.0));
-        long heapMax = MEM.getHeapMemoryUsage().getMax();
-        long heapUsed = MEM.getHeapMemoryUsage().getUsed();
-        builder.add("memoryUsage", Double.valueOf(heapUsed * 100.0 / heapMax));
-        JsonObject systemLoad = builder.build();
-        sessions.sendToAllSessions(systemLoad);
-        logger.info("New system load at " + TIME_FORMAT.format(currentTime) + " was boardcast");
-        return null;
     }
 
     private void doSomething() {
