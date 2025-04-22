@@ -18,12 +18,12 @@
   src: url("/fonts/BunueloCleanPro-SemiBold.otf");
 }
 
-body{
+body {
   font-family: BunueloSemiBold;
   font-size: 16px;
   color: #24243b;
   background-color: white;
-  margin: 0px;
+  margin: 0;
 }
 
 section {
@@ -56,8 +56,9 @@ section {
 
 p {
   line-height: 22px;
-  margin-top: 0px;
+  margin-top: 0;
 }
+
 h1 {
   font-family: BunueloSemiBold;
   font-size: 40px;
@@ -65,19 +66,22 @@ h1 {
   letter-spacing: 0;
   text-align: left;
 }
+
 h2 {
   font-size: 24px;
   font-weight: 400;
 }
+
 h4 {
   margin-top: 52px;
 }
+
 a {
   text-decoration: none;
 }
 
 #appIntro {
-  background-image: linear-gradient(#141427 0%, #2c2e50 100%);
+  background-image: linear-gradient(#141427 0%,  #2c2e50 100%);
   background-size: 100% calc(100% - 70px);
   background-repeat: no-repeat;
 }
@@ -96,8 +100,9 @@ a {
   height: 100px;
   position: relative;
   z-index: 2;
-  box-shadow: 0 2px 4px 0 rgba(0,0,0,0.50);
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 50%);
 }
+
 .headerRow > div {
   display: inline-block;
 }
@@ -106,20 +111,25 @@ a {
   transition: border 400ms ease-out, box-shadow 200ms linear;
   cursor: pointer;
 }
+
 .collapsibleRow:hover .headerTitle {
   background-color: #f4f4f4;
   transition: background-color 0.1s;
 }
+
 .collapsed .collapsibleRow {
   box-shadow: none;
   border-bottom: 4px solid;
 }
+
 .collapsed#healthSection > .headerRow {
   border-bottom-color: #d6d9e4;
 }
+
 .collapsed#configSection > .headerRow {
   border-bottom-color: #f8d7c1;
 }
+
 .collapsed#metricsSection > .headerRow {
   border-bottom-color: #eef3c3;
 }
@@ -127,14 +137,17 @@ a {
 .collapsed .collapsibleContent { /* collapsing animation */
   transition: all 400ms ease-out, opacity 300ms ease-in;
 }
+
 .expanded .collapsibleContent { /* expanding animation */
   transition: all 400ms ease-out, opacity 450ms ease-out;
 }
+
 .collapsed .collapsibleContent {
   opacity: 0;
   max-height: 0;
   visibility: hidden;
 }
+
 .expanded .collapsibleContent {
   opacity: 1;
   max-height: 1000px;
@@ -147,6 +160,7 @@ a {
   float: left;
   background-color: #e8eaef;
 }
+
 .headerIcon img {
   display:block;
   margin:auto;
@@ -172,12 +186,15 @@ a {
   padding-top: 10px;
   width: calc(100% - 200px); /* 160 from icon, 40 from padding */
 }
+
 #healthSection h2 {
   color: #5d6a8e;
 }
+
 #configSection h2 {
   color: #e57000;
 }
+
 #metricsSection h2 {
   color: #4f6700;
 }
@@ -201,13 +218,14 @@ a {
 .collapsed#configSection .caret {
   background-image: url("../img/carets/caret_down_orange.svg")
 }
+
 .expanded#configSection .caret {
   background-image: url("../img/carets/caret_up_orange.svg")
 }
 
 .msSection {
   background: white;
-  box-shadow: 0 2px 4px 0 rgba(63,70,89,0.31);
+  box-shadow: 0 2px 4px 0 rgba(63, 70, 89, 0.31);
 }
 
 .sectionContent {
@@ -286,12 +304,15 @@ th {
   padding-left: 41px;
   font-size: 16px;
 }
+
 tr {
   height: 45px;
 }
+
 td {
   padding-left: 41px;
 }
+
 #systemLoadsTable tr:first-child {
   background: #d6d9e4;
 }
@@ -316,7 +337,7 @@ td {
   font-weight: 300;
   font-size: 14px;
   letter-spacing: 0;
-  border-bottom: solid 1px #C8D3D3;
+  border-bottom: solid 1px #c8d3d3;
   margin-top: 30px;
   margin-right: 130px;
   padding-bottom: 5px;
