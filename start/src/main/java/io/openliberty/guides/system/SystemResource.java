@@ -27,36 +27,14 @@ import jakarta.ws.rs.core.MediaType;
 public class SystemResource {
 
     @Inject
-    SystemConcurrency concurrenyBean;
+    SystemConcurrency bean;
 
     @GET
     @Path("/properties/{prefix}")
     @Produces(MediaType.APPLICATION_JSON)
     public Map<String, String> getProperties(@PathParam("prefix") String prefix)
         throws InterruptedException, ExecutionException {
-         return concurrenyBean.getProperties(prefix);
-    }
-
-    @Path("/refresh/{after}")
-    @GET
-    @Produces(MediaType.TEXT_PLAIN)
-    public String refresh(@PathParam("after") Integer after) {
-        concurrenyBean.refresh(after);
-        return "Check after " + after + " seconds.";
-    }
-
-    @Path("/schedule")
-    @GET
-    @Produces(MediaType.TEXT_PLAIN)
-    public String schedule() {
-        if (SystemConcurrency.isScheduleEnabled()) {
-            SystemConcurrency.enableSchedule(false);
-            return "Disabling the schedule...";
-        } else {
-            SystemConcurrency.enableSchedule(true);
-            concurrenyBean.schedule();
-            return "Enabling the schedule...";
-        }
+        return bean.getProperties(prefix);
     }
 
 }

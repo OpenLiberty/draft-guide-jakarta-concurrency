@@ -47,10 +47,8 @@ public class SystemConcurrency {
 
     private static final OperatingSystemMXBean OS =
         (OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
-    private static final MemoryMXBean MEM =
-        ManagementFactory.getMemoryMXBean();
-    private static final SimpleDateFormat SDF =
-            new SimpleDateFormat("HH:mm:ss");
+    private static final MemoryMXBean MEM = ManagementFactory.getMemoryMXBean();
+    private static final SimpleDateFormat SDF = new SimpleDateFormat("HH:mm:ss");
     private static final Random RANDOM = new Random();
 
     private static Logger logger = Logger.getLogger(SystemConcurrency.class.getName());
@@ -61,7 +59,7 @@ public class SystemConcurrency {
     ManagedScheduledExecutorService virtualManagedExecutor;
 
     @Inject
-    SystemLoadService sessions;
+    WebSocketService service;
 
     public static boolean isScheduleEnabled() {
         return scheduleEnabled;
@@ -69,6 +67,20 @@ public class SystemConcurrency {
 
     public static void enableSchedule(boolean enabled) {
         scheduleEnabled = enabled;
+    }
+
+    private void doSomething(int t) {
+        try {
+            Thread.sleep(RANDOM.nextInt(t * 1000));
+        } catch (InterruptedException e) {
+            logger.warning(e.getMessage());
+        }
+    }
+
+    private String getSystemPropertyTask(String key) {
+        logger.info("Getting the " + key + " property...");
+        doSomething(1);
+        return System.getProperty(key);
     }
 
     public Map<String, String> getProperties(String prefix)
@@ -80,10 +92,7 @@ public class SystemConcurrency {
                                   .collect(Collectors.toList());
         for (String k : keys) {
             properties.put(k, virtualManagedExecutor.submit(() -> {
-                // get system property task
-                logger.info("Getting the " + k + " property...");
-                doSomething();          
-                return System.getProperty(k);
+                return getSystemPropertyTask(k);
             }));
         }
         return properties.entrySet().stream().collect(
@@ -100,7 +109,7 @@ public class SystemConcurrency {
     }
 
     @Asynchronous
-    public void refresh(int after) {
+    public void getSystemLoad(int after) {
         logger.info("New system load will be boardcast after " + after + " seconds.");
         virtualManagedExecutor.schedule(() -> {
             JsonObjectBuilder builder = Json.createObjectBuilder();
@@ -111,7 +120,7 @@ public class SystemConcurrency {
             long heapUsed = MEM.getHeapMemoryUsage().getUsed();
             builder.add("memoryUsage", Double.valueOf(heapUsed * 100.0 / heapMax));
             JsonObject systemLoad = builder.build();
-            sessions.sendToAllSessions(systemLoad);
+            service.sendToAllSessions(systemLoad);
             logger.info("System load at " + SDF.format(current) + " was boardcast.");
        }, after, TimeUnit.SECONDS);
     }
@@ -128,22 +137,14 @@ public class SystemConcurrency {
             long heapUsed = MEM.getHeapMemoryUsage().getUsed();
             builder.add("memoryUsage", Double.valueOf(heapUsed * 100.0 / heapMax));
             JsonObject systemLoad = builder.build();
-            sessions.sendToAllSessions(systemLoad);
+            service.sendToAllSessions(systemLoad);
             logger.info("System load at " + SDF.format(current) + " was boardcast.");
             return null;
         } else {
             logger.info("Schedule was disabled.");
             JsonObject systemLoad = builder.build();
-            sessions.sendToAllSessions(systemLoad);
+            service.sendToAllSessions(systemLoad);
             return Asynchronous.Result.complete(Boolean.TRUE);
-        }
-    }
-
-    private void doSomething() {
-        try {
-            Thread.sleep(RANDOM.nextInt(1000));
-        } catch (InterruptedException e) {
-            e.printStackTrace();
         }
     }
 

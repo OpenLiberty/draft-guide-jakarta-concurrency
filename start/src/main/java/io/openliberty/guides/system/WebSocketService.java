@@ -28,9 +28,9 @@ import jakarta.websocket.server.ServerEndpoint;
 @ServerEndpoint(value = "/systemLoad",
                 decoders = { SystemLoadDecoder.class },
                 encoders = { SystemLoadEncoder.class })
-public class SystemLoadService {
+public class WebSocketService {
 
-    private static Logger logger = Logger.getLogger(SystemLoadService.class.getName());
+    private static Logger logger = Logger.getLogger(WebSocketService.class.getName());
 
     private Set<Session> sessions = new CopyOnWriteArraySet<Session>();
 

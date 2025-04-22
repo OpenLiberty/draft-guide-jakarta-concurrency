@@ -11,13 +11,13 @@ webSocket.onmessage = function (event) {
     if (data.schedule == null || data.schedule) {
         statusLabel.textContent = data.schedule ?
             "New system load will be boardcast in every 10 seconds." : "...";
-        var tableRow = document.createElement('tr');
         var cpuLoad = data.cpuLoad == null ? '-' : data.cpuLoad.toFixed(7);
         var memoryUsage = data.memoryUsage == null ? '-' : data.memoryUsage.toFixed(2);
-        tableRow.innerHTML = '<td>' + data.time + '</td>' +
-                             '<td>' + cpuLoad + '</td>' +
-                             '<td>' + memoryUsage + '</td>';
-        document.getElementById('systemLoadsTableBody').appendChild(tableRow);
+        var table = document.getElementById('systemLoadsTable');
+        var row = table.insertRow(1);
+        row.insertCell(0).innerHTML = data.time;
+        row.insertCell(1).innerHTML = cpuLoad;
+        row.insertCell(2).innerHTML = memoryUsage;
     } else {
         statusLabel.textContent = "...";
     }
@@ -28,16 +28,16 @@ webSocket.onerror = function (event) {
 };
 
 function cleanCall() {
-    var tBody = document.getElementById('systemLoadsTableBody');
-    for (var i = tBody.rows.length - 1; i > 0; i--) {
-        tBody.deleteRow(i);
+    var table = document.getElementById('systemLoadsTable');
+    for (var i = table.rows.length - 1; i > 0; i--) {
+        table.deleteRow(i);
     }
 }
 
 async function refreshCall() {
     var statusLabel = document.getElementById('status');
     statusLabel.textContent = "New system load will be boardcast after 5 seconds.";
-    var response = await fetch("/api/system/refresh/5");
+    var response = await fetch("/api/system/systemLoad/5");
     console.log(response.status)
 }
 

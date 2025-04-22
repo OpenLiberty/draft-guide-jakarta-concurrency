@@ -59,13 +59,13 @@ public class SystemEndpointIT {
     }
 
     @Test
-    public void testRefresh() throws Exception {
+    public void testGetSystemLoad() throws Exception {
         startCountDown(3);
         URI uri = new URI("ws://localhost:9080/systemLoad");
         SystemClient client1 = new SystemClient(uri);
         SystemClient client2 = new SystemClient(uri);
         SystemClient client3 = new SystemClient(uri);
-        WebTarget target = client.target(URL + "/refresh/5");
+        WebTarget target = client.target(URL + "/systemLoad/5");
         Response response = target.request().get();
         assertEquals(200, response.getStatus(),
             "Incorrect response code from " + target.getUri().getPath());
@@ -88,6 +88,6 @@ public class SystemEndpointIT {
             || systemLoad.getJsonNumber("memoryUsage") != null
         );
         countDown.countDown();
-	}
+    }
 
 }

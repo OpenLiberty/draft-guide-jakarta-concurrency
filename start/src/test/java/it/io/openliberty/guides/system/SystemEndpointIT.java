@@ -88,6 +88,6 @@ public class SystemEndpointIT {
             || systemLoad.getJsonNumber("memoryUsage") != null
         );
         countDown.countDown();
-	}
+    }
 
 }
