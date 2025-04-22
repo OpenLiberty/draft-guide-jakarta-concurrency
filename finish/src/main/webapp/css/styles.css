@@ -9,295 +9,295 @@
 *     IBM Corporation - initial API and implementation
 *******************************************************************************/
 @font-face {
-    font-family: BunueloLight;
-    src: url("/fonts/BunueloCleanPro-Light.otf");
+  font-family: BunueloLight;
+  src: url("/fonts/BunueloCleanPro-Light.otf");
 }
 
 @font-face {
-    font-family: BunueloSemiBold;
-    src: url("/fonts/BunueloCleanPro-SemiBold.otf");
+  font-family: BunueloSemiBold;
+  src: url("/fonts/BunueloCleanPro-SemiBold.otf");
 }
 
 body{
-    font-family: BunueloSemiBold;
-    font-size: 16px;
-    color:#24243b;
-    background-color: white;
-    margin: 0px;
+  font-family: BunueloSemiBold;
+  font-size: 16px;
+  color: #24243b;
+  background-color: white;
+  margin: 0px;
 }
 
 section {
-    padding-top: 55px;
-    padding-left: 8%;
-    padding-right: 8%;
-    /* font-weight: 400; */
-    letter-spacing:0;
-    text-align:left;
+  padding-top: 55px;
+  padding-left: 8%;
+  padding-right: 8%;
+  /* font-weight: 400; */
+  letter-spacing: 0;
+  text-align: left;
 }
 
 .line {
-    margin-right: 200px;
-    height: 1px;
-    background-color: #C8D3D3;
+  margin-right: 200px;
+  height: 1px;
+  background-color: #c8d3d3;
 }
 
 .headerImage {
-    background-image: url(/img/header_ufo.png);
-    background-repeat: no-repeat;
-    background-position: top 20px right 15px;
-    height: 103px;
-    margin-top: -94px;
+  background-image: url(/img/header_ufo.png);
+  background-repeat: no-repeat;
+  background-position: top 20px right 15px;
+  height: 103px;
+  margin-top: -94px;
 }
 
 #whereTo {
-    padding-bottom: 80px;
-    width: 50%;
+  padding-bottom: 80px;
+  width: 50%;
 }
 
 p {
-    line-height: 22px;
-    margin-top: 0px;
+  line-height: 22px;
+  margin-top: 0px;
 }
 h1 {
-    font-family: BunueloSemiBold;
-    font-size: 40px;
-    font-weight: 400;
-    letter-spacing:0;
-    text-align:left;
+  font-family: BunueloSemiBold;
+  font-size: 40px;
+  font-weight: 400;
+  letter-spacing: 0;
+  text-align: left;
 }
 h2 {
-    font-size: 24px;
-    font-weight: 400;
+  font-size: 24px;
+  font-weight: 400;
 }
 h4 {
-    margin-top: 52px;
+  margin-top: 52px;
 }
 a {
-    text-decoration: none;
+  text-decoration: none;
 }
 
 #appIntro {
-    background-image: linear-gradient(#141427 0%, #2c2e50 100%);
-    background-size: 100% calc(100% - 70px);
-    background-repeat: no-repeat;
+  background-image: linear-gradient(#141427 0%, #2c2e50 100%);
+  background-size: 100% calc(100% - 70px);
+  background-repeat: no-repeat;
 }
 
 #titleSection {
-    color: white;
-    margin-bottom: 80px;
+  color: white;
+  margin-bottom: 80px;
 }
 
 #appTitle {
-    font-family: BunueloLight;
-    font-size:55px;
+  font-family: BunueloLight;
+  font-size: 55px;
 }
 
 .headerRow {
-    height: 100px;
-    position:relative;
-    z-index:2;
-    box-shadow: 0 2px 4px 0 rgba(0,0,0,0.50);
+  height: 100px;
+  position: relative;
+  z-index: 2;
+  box-shadow: 0 2px 4px 0 rgba(0,0,0,0.50);
 }
 .headerRow > div {
-    display: inline-block;
+  display: inline-block;
 }
 
 .collapsibleRow {
-    transition: border 400ms ease-out, box-shadow 200ms linear;
-    cursor: pointer;
+  transition: border 400ms ease-out, box-shadow 200ms linear;
+  cursor: pointer;
 }
 .collapsibleRow:hover .headerTitle {
-    background-color: #f4f4f4;
-    transition: background-color 0.1s;
+  background-color: #f4f4f4;
+  transition: background-color 0.1s;
 }
 .collapsed .collapsibleRow {
-    box-shadow: none;
-    border-bottom: 4px solid;
+  box-shadow: none;
+  border-bottom: 4px solid;
 }
 .collapsed#healthSection > .headerRow {
-    border-bottom-color: #D6D9E4;
+  border-bottom-color: #d6d9e4;
 }
 .collapsed#configSection > .headerRow {
-    border-bottom-color: #F8D7C1;
+  border-bottom-color: #f8d7c1;
 }
 .collapsed#metricsSection > .headerRow {
-    border-bottom-color: #EEF3C3;
+  border-bottom-color: #eef3c3;
 }
 
 .collapsed .collapsibleContent { /* collapsing animation */
-    transition: all 400ms ease-out, opacity 300ms ease-in;
+  transition: all 400ms ease-out, opacity 300ms ease-in;
 }
 .expanded .collapsibleContent { /* expanding animation */
-    transition: all 400ms ease-out, opacity 450ms ease-out;
+  transition: all 400ms ease-out, opacity 450ms ease-out;
 }
 .collapsed .collapsibleContent {
-    opacity: 0;
-    max-height: 0;
-    visibility: hidden;
+  opacity: 0;
+  max-height: 0;
+  visibility: hidden;
 }
 .expanded .collapsibleContent {
-    opacity: 1;
-    max-height: 1000px;
-    visibility: visible;
+  opacity: 1;
+  max-height: 1000px;
+  visibility: visible;
 }
 
 .headerIcon {
-    width: 160px;
-    height: 100%;
-    float: left;
-    background-color: #E8EAEF;
+  width: 160px;
+  height: 100%;
+  float: left;
+  background-color: #e8eaef;
 }
 .headerIcon img {
-    display:block;
-    margin:auto;
-    margin-top: 20px;
+  display:block;
+  margin:auto;
+  margin-top: 20px;
 }
 
 #healthSection .headerIcon {
-    background-color: #E8EAEF;
+  background-color: #e8eaef;
 }
 #configSection .headerIcon {
-    background-color: #FDE4D1;
+  background-color: #fde4d1;
 }
 #metricsSection .headerIcon {
-    background-color: #F5F8DA;
+  background-color: #f5f8da;
 }
 
 .headerTitle {
-    background-color: white;
-    color:#5d6a8e;
-    letter-spacing:0;
-    text-align:left;
-    padding-left: 40px;
-    padding-top: 10px;
-    width: calc(100% - 200px); /* 160 from icon, 40 from padding */
+  background-color: white;
+  color: #5d6a8e;
+  letter-spacing: 0;
+  text-align: left;
+  padding-left: 40px;
+  padding-top: 10px;
+  width: calc(100% - 200px); /* 160 from icon, 40 from padding */
 }
 #healthSection h2 {
-    color: #5D6A8E;
+  color: #5d6a8e;
 }
 #configSection h2 {
-    color: #E57000;
+  color: #e57000;
 }
 #metricsSection h2 {
-    color: #4F6700;
+  color: #4f6700;
 }
 
 #sysPropTitle {
-    padding-top: 28px;
+  padding-top: 28px;
 }
 
 .headerTitle > h2 {
-    font-family: BunueloLight;
-    font-size:40px;
-    margin: 0;
+  font-family: BunueloLight;
+  font-size: 40px;
+  margin: 0;
 }
 
 .caret {
-    position: absolute;
-    right: 45px;
-    top: 45px;
+  position: absolute;
+  right: 45px;
+  top: 45px;
 }
 
 .collapsed#configSection .caret {
-    background-image: url("../img/carets/caret_down_orange.svg")
+  background-image: url("../img/carets/caret_down_orange.svg")
 }
 .expanded#configSection .caret {
-    background-image: url("../img/carets/caret_up_orange.svg")
+  background-image: url("../img/carets/caret_up_orange.svg")
 }
 
 .msSection {
-    background: white;
-    box-shadow: 0 2px 4px 0 rgba(63,70,89,0.31);
+  background: white;
+  box-shadow: 0 2px 4px 0 rgba(63,70,89,0.31);
 }
 
 .sectionContent {
-    margin-left: 160px;
+  margin-left: 160px;
 }
 
 #systemLoadsTable {
-    padding-left: 160px;
-    background: white;
+  padding-left: 160px;
+  background: white;
 }
 
 button {
-    border-radius:100px;
-    height:44px;
-    color:#24253a;
-    text-align:center;
-    font-family: BunueloSemiBold;
-    margin-top: 25px;
-    margin-bottom: 70px;
-    cursor: pointer;
-    border: none;
+  border-radius: 100px;
+  height: 44px;
+  color: #24253a;
+  text-align: center;
+  font-family: BunueloSemiBold;
+  margin-top: 25px;
+  margin-bottom: 70px;
+  cursor: pointer;
+  border: none;
 }
 
 button a {
-    text-decoration: none;
-    color:#F4914D;
+  text-decoration: none;
+  color: #f4914d;
 }
 
 #buttonRow {
-	background-color: white;
+  background-color: white;
 }
 
 .cleanButton {
-	width: 40px;
-	height: 40px;
-    vertical-align: middle;
+  width: 40px;
+  height: 40px;
+  vertical-align: middle;
 }
 
 .cleanButton:hover {
-    background-color: #EEEFF3;
+  background-color: #eeeff3;
 }
 
 .refreshButton {
-	width: 40px;
-	height: 40px;
-	vertical-align: middle;
+  width: 40px;
+  height: 40px;
+  vertical-align: middle;
 }
 
 .refreshButton:hover {
-    background-color: #EEEFF3;
+  background-color: #eeeff3;
 }
 
 .scheduleButton {
-	width: 40px;
-	height: 40px;
-    vertical-align: middle;
+  width: 40px;
+  height: 40px;
+  vertical-align: middle;
 }
 
 .scheduleButton:hover {
-    background-color: #EEEFF3;
+  background-color: #eeeff3;
 }
 
 .status {
-	font-size:20px;
+  font-size: 20px;
 }
 
 table {
-    width: 100%;
-    font-size: 14px;
-    text-align: left;
-    border-collapse: collapse;
+  width: 100%;
+  font-size: 14px;
+  text-align: left;
+  border-collapse: collapse;
 }
 
 th {
-    height: 63px;
-    padding-left: 41px;
-    font-size: 16px;
+  height: 63px;
+  padding-left: 41px;
+  font-size: 16px;
 }
 tr {
-    height: 45px;
+  height: 45px;
 }
 td {
-    padding-left: 41px;
+  padding-left: 41px;
 }
 #systemLoadsTable tr:first-child {
-    background: #D6D9E4;
+  background: #d6d9e4;
 }
 
 #systemLoadsTable tr:nth-child(2n+3) {
-    background: #EEEFF3;
+  background: #eeeff3;
 }
 
 
@@ -325,33 +325,32 @@ td {
 }
 
 .bodyFooterLink > a {
-    text-decoration: none;
-    padding: 10px;
-    color: #96bc32;
+  text-decoration: none;
+  padding: 10px;
+  color: #96bc32;
 }
 
 #licenseLink {
-  color: #5E6B8D;
+  color: #5e6b8d;
   text-align: left;
 }
 
-#footer_text {
-    margin-top: 4px;
-    margin-bottom: 4px;
-    font-size: 16px;
+#footerText {
+  margin-top: 4px;
+  margin-bottom: 4px;
+  font-size: 16px;
 }
 
-#footer_copyright {
+#footerCopyright {
   font-size: 11px;
 }
 
 .refreshSection {
-    padding-top: 20px;
-    padding-left: 160px;
-    color: #3A73B4;
+  padding-top: 20px;
+  padding-left: 160px;
+  color: #3a73b4;
 }
 
 label {
-    margin-right: 20px;
+  margin-right: 20px;
 }
-
