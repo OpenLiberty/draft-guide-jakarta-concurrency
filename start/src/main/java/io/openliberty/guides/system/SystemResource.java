@@ -48,12 +48,14 @@ public class SystemResource {
     @Path("/schedule")
     @GET
     @Produces(MediaType.TEXT_PLAIN)
-    public void schedule() {
+    public String schedule() {
         if (SystemConcurrency.isScheduleEnabled()) {
             SystemConcurrency.enableSchedule(false);
+            return "Disabling the schedule...";
         } else {
             SystemConcurrency.enableSchedule(true);
             concurrenyBean.schedule();
+            return "Enabling the schedule...";
         }
     }
 
