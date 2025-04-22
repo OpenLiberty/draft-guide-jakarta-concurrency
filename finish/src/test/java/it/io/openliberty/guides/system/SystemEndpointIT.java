@@ -77,6 +77,37 @@ public class SystemEndpointIT {
                 "The countDown was not 0.");
     }
 
+    @Test
+    public void testEnableSchedule() throws Exception {
+        WebTarget target = client.target(URL + "/schedule");
+        Response response = target.request().get();
+        assertEquals(200, response.getStatus(),
+            "Incorrect response code from " + target.getUri().getPath());
+        String r = response.readEntity(String.class);
+        boolean scheduleWasEnabled = false;
+        if (r.startsWith("Disabling")) {
+            Thread.sleep(11000);
+            response = target.request().get();
+            assertEquals(200, response.getStatus(),
+                "Incorrect response code from " + target.getUri().getPath());
+            scheduleWasEnabled = true;
+        }
+        startCountDown(3);
+        URI uri = new URI("ws://localhost:9080/systemLoad");
+        SystemClient client1 = new SystemClient(uri);
+        SystemClient client2 = new SystemClient(uri);
+        SystemClient client3 = new SystemClient(uri);
+        countDown.await(10, TimeUnit.SECONDS);
+        client1.close();
+        client2.close();
+        client3.close();
+        assertEquals(0, countDown.getCount(),
+                    "The countDown was not 0.");
+        if (!scheduleWasEnabled) {
+            target.request().get();
+        }
+    }
+
     private static void startCountDown(int count) {
         countDown = new CountDownLatch(count);
     }

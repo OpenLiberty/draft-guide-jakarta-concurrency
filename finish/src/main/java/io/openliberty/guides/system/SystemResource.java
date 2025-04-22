@@ -49,11 +49,11 @@ public class SystemResource {
     @GET
     @Produces(MediaType.TEXT_PLAIN)
     public String schedule() {
-        if (SystemConcurrency.isScheduleEnabled()) {
-            SystemConcurrency.enableSchedule(false);
+        if (bean.isScheduleEnabled()) {
+            bean.enableSchedule(false);
             return "Disabling the schedule...";
         } else {
-            SystemConcurrency.enableSchedule(true);
+            bean.enableSchedule(true);
             bean.schedule();
             return "Enabling the schedule...";
         }

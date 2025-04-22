@@ -61,14 +61,6 @@ public class SystemConcurrency {
     @Inject
     WebSocketService service;
 
-    public static boolean isScheduleEnabled() {
-        return scheduleEnabled;
-    }
-
-    public static void enableSchedule(boolean enabled) {
-        scheduleEnabled = enabled;
-    }
-
     private void doSomething(int t) {
         try {
             Thread.sleep(RANDOM.nextInt(t * 1000));
@@ -81,6 +73,14 @@ public class SystemConcurrency {
         logger.info("Getting the " + key + " property...");
         doSomething(1);
         return System.getProperty(key);
+    }
+
+    public boolean isScheduleEnabled() {
+        return scheduleEnabled;
+    }
+
+    public void enableSchedule(boolean enabled) {
+        scheduleEnabled = enabled;
     }
 
     public Map<String, String> getProperties(String prefix)
@@ -126,7 +126,7 @@ public class SystemConcurrency {
     }
 
     @Asynchronous(runAt = { @Schedule(cron = "*/10 * * * * *")}) 
-    public CompletableFuture<Boolean> schedule() {
+    public CompletableFuture<String> schedule() {
         JsonObjectBuilder builder = Json.createObjectBuilder();
         builder.add("schedule", scheduleEnabled);
         if (scheduleEnabled) {
@@ -144,7 +144,7 @@ public class SystemConcurrency {
             logger.info("Schedule was disabled.");
             JsonObject systemLoad = builder.build();
             service.sendToAllSessions(systemLoad);
-            return Asynchronous.Result.complete(Boolean.TRUE);
+            return Asynchronous.Result.complete("Completed");
         }
     }
 
