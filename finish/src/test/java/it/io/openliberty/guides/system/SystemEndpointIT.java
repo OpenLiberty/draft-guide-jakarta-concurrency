@@ -16,7 +16,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
@@ -25,7 +24,6 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import jakarta.enterprise.concurrent.Asynchronous;
 import jakarta.json.JsonObject;
 import jakarta.json.bind.Jsonb;
 import jakarta.json.bind.JsonbBuilder;
@@ -72,7 +70,7 @@ public class SystemEndpointIT {
         client.register(new Consumer<InboundSseEvent>() {
 			@Override
 			public void accept(InboundSseEvent event) {
-			    String data = event.readData();
+                String data = event.readData();
 		        JsonObject systemLoad = JSONB.fromJson(data, JsonObject.class);
 				assertNotNull(systemLoad.getString("time"));
 		        assertTrue(
