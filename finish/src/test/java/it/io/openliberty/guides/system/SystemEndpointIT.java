@@ -68,20 +68,20 @@ public class SystemEndpointIT {
         WebTarget target = client.target(URL + "/sse");
         SseEventSource client = SseEventSource.target(target).build();
         client.register(new Consumer<InboundSseEvent>() {
-			@Override
-			public void accept(InboundSseEvent event) {
+            @Override
+            public void accept(InboundSseEvent event) {
                 String data = event.readData();
-		        JsonObject systemLoad = JSONB.fromJson(data, JsonObject.class);
-				assertNotNull(systemLoad.getString("time"));
-		        assertTrue(
-		            systemLoad.getJsonNumber("cpuLoad") != null
-		            || systemLoad.getJsonNumber("memoryUsage") != null
-		        );
-		        countDown.countDown();
-			}
+                JsonObject systemLoad = JSONB.fromJson(data, JsonObject.class);
+                assertNotNull(systemLoad.getString("time"));
+                assertTrue(
+                    systemLoad.getJsonNumber("cpuLoad") != null
+                    || systemLoad.getJsonNumber("memoryUsage") != null
+                );
+                countDown.countDown();
+            }
         });
         Executors.newCachedThreadPool().submit(() -> client.open());
-		return client;
+        return client;
     }
 
     @Test
