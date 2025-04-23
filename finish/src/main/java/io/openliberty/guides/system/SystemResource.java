@@ -20,7 +20,10 @@ import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.sse.Sse;
+import jakarta.ws.rs.sse.SseEventSink;
 
 @ApplicationScoped
 @Path("/system")
@@ -37,16 +40,16 @@ public class SystemResource {
          return bean.getProperties(prefix);
     }
 
-    @Path("/systemLoad/{after}")
     @GET
+    @Path("/systemLoad/{after}")
     @Produces(MediaType.TEXT_PLAIN)
     public String getSystemLoad(@PathParam("after") int after) {
         bean.getSystemLoad(after);
         return "Check after " + after + " seconds.";
     }
 
-    @Path("/schedule")
     @GET
+    @Path("/schedule")
     @Produces(MediaType.TEXT_PLAIN)
     public String schedule() {
         if (bean.isScheduleEnabled()) {
@@ -57,6 +60,13 @@ public class SystemResource {
             bean.schedule();
             return "Enabling the schedule...";
         }
+    }
+
+    @GET
+    @Path("/sse")
+    @Produces(MediaType.SERVER_SENT_EVENTS)
+    public void subscribe(@Context SseEventSink sink, @Context Sse sse) {
+        bean.subscribe(sink, sse);
     }
 
 }

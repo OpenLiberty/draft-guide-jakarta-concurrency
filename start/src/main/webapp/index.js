@@ -9,13 +9,12 @@
  * SPDX-License-Identifier: EPL-2.0
  *******************************************************************************/
 // end::copyright[]
-const webSocket = new WebSocket('ws://localhost:9080/systemLoad')
 
-webSocket.onopen = function (event) {
-  console.log(event)
-}
+const source = new EventSource('http://localhost:9080/api/system/sse',
+                               { withCredentials: true });
+source.addEventListener('SystemLoad', systemLoadHandler);
 
-webSocket.onmessage = function (event) {
+function systemLoadHandler(event) {
   const data = JSON.parse(event.data)
   const statusLabel = document.getElementById('status')
   if (data.schedule == null || data.schedule) {
@@ -32,10 +31,6 @@ webSocket.onmessage = function (event) {
   } else {
     statusLabel.textContent = '...'
   }
-}
-
-webSocket.onerror = function (event) {
-  console.log(event)
 }
 
 function cleanCall () {

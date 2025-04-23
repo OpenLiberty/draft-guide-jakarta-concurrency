@@ -37,6 +37,8 @@ import jakarta.inject.Inject;
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonObjectBuilder;
+import jakarta.ws.rs.sse.Sse;
+import jakarta.ws.rs.sse.SseEventSink;
 
 @ManagedScheduledExecutorDefinition(name = "java:module/concurrent/virtual-executor",
                            qualifiers = WithVirtualThreads.class,
@@ -57,7 +59,7 @@ public class SystemConcurrency {
     ManagedScheduledExecutorService virtualManagedExecutor;
 
     @Inject
-    WebSocketService service;
+    SseService sseSrvice;
 
     private void doSomething(int t) {
         try {
@@ -71,14 +73,6 @@ public class SystemConcurrency {
         logger.info("Getting the " + key + " property...");
         doSomething(1);
         return System.getProperty(key);
-    }
-
-    public boolean isScheduleEnabled() {
-        return scheduleEnabled;
-    }
-
-    public void enableSchedule(boolean enabled) {
-        scheduleEnabled = enabled;
     }
 
     public Map<String, String> getProperties(String prefix)
@@ -106,6 +100,10 @@ public class SystemConcurrency {
             }));
     }
 
+    public void subscribe(SseEventSink sink, Sse sse) {
+        sseSrvice.subscribe(sink, sse);
+    }
+
     private JsonObject getSystemLoad(boolean schedule) {
         JsonObjectBuilder builder = Json.createObjectBuilder();
         if (schedule) {
@@ -125,17 +123,25 @@ public class SystemConcurrency {
         logger.info("New system load will be boardcast after " + after + " seconds.");
         virtualManagedExecutor.schedule(() -> {
             JsonObject systemLoad = getSystemLoad(false);
-            service.sendToAllSessions(systemLoad);
+            sseSrvice.broadcast(systemLoad);
             logger.info("System load at \"" + systemLoad.getString("time")
                 + "\" was boardcast.");
        }, after, TimeUnit.SECONDS);
     }
 
+    public boolean isScheduleEnabled() {
+        return scheduleEnabled;
+    }
+
+    public void enableSchedule(boolean enabled) {
+        scheduleEnabled = enabled;
+    }
+
     @Asynchronous(runAt = { @Schedule(cron = "*/10 * * * * *")})
     public CompletableFuture<String> schedule() {
-        if (scheduleEnabled) {
+        if (isScheduleEnabled()) {
             JsonObject systemLoad = getSystemLoad(true);
-            service.sendToAllSessions(systemLoad);
+            sseSrvice.broadcast(systemLoad);
             logger.info("System load at \"" + systemLoad.getString("time")
                 + " was boardcast.");
             return null;
@@ -144,7 +150,7 @@ public class SystemConcurrency {
             JsonObjectBuilder builder = Json.createObjectBuilder();
             builder.add("schedule", false);
             JsonObject systemLoad = builder.build();
-            service.sendToAllSessions(systemLoad);
+            sseSrvice.broadcast(systemLoad);
             return Asynchronous.Result.complete("Completed");
         }
     }

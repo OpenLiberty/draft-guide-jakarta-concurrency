@@ -9,7 +9,6 @@
         <!-- end::concurrent[] -->
         <feature>jsonb</feature>
         <feature>restfulWS</feature>
-        <feature>websocket</feature>
     </featureManager>
 
     <variable name="http.port" defaultValue="9080"/>
@@ -19,6 +18,14 @@
                   httpPort="${http.port}"
                   httpsPort="${https.port}" />
 
+    <cors domain="/api/system/sse"
+        allowedOrigins="*"
+        allowedMethods="GET"
+        allowedHeaders="accept"
+        exposeHeaders=""
+        allowCredentials="true"
+        maxAge="3600" />
+      
     <webApplication contextRoot="/" location="guide-jakarta-concurrency.war"/>
 
     <logging consoleLogLevel="INFO"/>
