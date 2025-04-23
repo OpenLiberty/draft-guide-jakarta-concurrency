@@ -29,7 +29,7 @@ public class SystemEndpointIT {
     private static final String URL = "http://localhost:" + PORT + "/api/system";
 
     private static Client client;
-    
+
     @BeforeAll
     public static void setup() {
         client = ClientBuilder.newClient();

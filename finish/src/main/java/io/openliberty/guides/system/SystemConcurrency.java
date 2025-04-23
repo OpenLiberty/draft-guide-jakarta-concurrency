@@ -13,7 +13,6 @@ package io.openliberty.guides.system;
 
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryMXBean;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -48,7 +47,6 @@ public class SystemConcurrency {
     private static final OperatingSystemMXBean OS =
         (OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
     private static final MemoryMXBean MEM = ManagementFactory.getMemoryMXBean();
-    private static final SimpleDateFormat SDF = new SimpleDateFormat("HH:mm:ss");
     private static final Random RANDOM = new Random();
 
     private static Logger logger = Logger.getLogger(SystemConcurrency.class.getName());
@@ -108,40 +106,43 @@ public class SystemConcurrency {
             }));
     }
 
+    private JsonObject getSystemLoad(boolean schedule) {
+        JsonObjectBuilder builder = Json.createObjectBuilder();
+        if (schedule) {
+            builder.add("schedule", true);
+        }
+        Date current = Calendar.getInstance().getTime();
+        builder.add("time", current.toString());
+        builder.add("cpuLoad", Double.valueOf(OS.getCpuLoad() * 100.0));
+        long heapMax = MEM.getHeapMemoryUsage().getMax();
+        long heapUsed = MEM.getHeapMemoryUsage().getUsed();
+        builder.add("memoryUsage", Double.valueOf(heapUsed * 100.0 / heapMax));
+        return builder.build();
+    }
+
     @Asynchronous
     public void getSystemLoad(int after) {
         logger.info("New system load will be boardcast after " + after + " seconds.");
         virtualManagedExecutor.schedule(() -> {
-            JsonObjectBuilder builder = Json.createObjectBuilder();
-            Date current = Calendar.getInstance().getTime();
-            builder.add("time", current.toString());
-            builder.add("cpuLoad", Double.valueOf(OS.getCpuLoad() * 100.0));
-            long heapMax = MEM.getHeapMemoryUsage().getMax();
-            long heapUsed = MEM.getHeapMemoryUsage().getUsed();
-            builder.add("memoryUsage", Double.valueOf(heapUsed * 100.0 / heapMax));
-            JsonObject systemLoad = builder.build();
+            JsonObject systemLoad = getSystemLoad(false);
             service.sendToAllSessions(systemLoad);
-            logger.info("System load at " + SDF.format(current) + " was boardcast.");
+            logger.info("System load at \"" + systemLoad.getString("time")
+                + "\" was boardcast.");
        }, after, TimeUnit.SECONDS);
     }
 
-    @Asynchronous(runAt = { @Schedule(cron = "*/10 * * * * *")}) 
+    @Asynchronous(runAt = { @Schedule(cron = "*/10 * * * * *")})
     public CompletableFuture<String> schedule() {
-        JsonObjectBuilder builder = Json.createObjectBuilder();
-        builder.add("schedule", scheduleEnabled);
         if (scheduleEnabled) {
-            Date current = Calendar.getInstance().getTime();
-            builder.add("time", current.toString());
-            builder.add("cpuLoad", Double.valueOf(OS.getCpuLoad() * 100.0));
-            long heapMax = MEM.getHeapMemoryUsage().getMax();
-            long heapUsed = MEM.getHeapMemoryUsage().getUsed();
-            builder.add("memoryUsage", Double.valueOf(heapUsed * 100.0 / heapMax));
-            JsonObject systemLoad = builder.build();
+            JsonObject systemLoad = getSystemLoad(true);
             service.sendToAllSessions(systemLoad);
-            logger.info("System load at " + SDF.format(current) + " was boardcast.");
+            logger.info("System load at \"" + systemLoad.getString("time")
+                + " was boardcast.");
             return null;
         } else {
             logger.info("Schedule was disabled.");
+            JsonObjectBuilder builder = Json.createObjectBuilder();
+            builder.add("schedule", false);
             JsonObject systemLoad = builder.build();
             service.sendToAllSessions(systemLoad);
             return Asynchronous.Result.complete("Completed");

@@ -36,7 +36,7 @@ public class SystemEndpointIT {
 
     private static Client client;
     private static CountDownLatch countDown;
-    
+
     @BeforeAll
     public static void setup() {
         client = ClientBuilder.newClient();

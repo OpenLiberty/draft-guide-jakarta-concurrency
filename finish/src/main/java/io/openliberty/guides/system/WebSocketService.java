@@ -39,8 +39,8 @@ public class WebSocketService {
             try {
                 session.getBasicRemote().sendObject(systemLoad);
             } catch (Exception e) {
-                logger.warning("Failed to send system load to " + 
-                    session.getId() + ":" + e.getMessage());
+                logger.warning("Failed to send system load to "
+                    + session.getId() + ":" + e.getMessage());
             }
         });
     }
