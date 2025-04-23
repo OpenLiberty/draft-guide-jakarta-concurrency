@@ -38,21 +38,21 @@ webSocket.onerror = function (event) {
   console.log(event)
 }
 
-function cleanCall() {
+function cleanCall () {
   const table = document.getElementById('systemLoadsTable')
-  for (var i = table.rows.length - 1; i > 0; i--) {
+  for (let i = table.rows.length - 1; i > 0; i--) {
     table.deleteRow(i)
   }
 }
 
-async function refreshCall() {
+async function refreshCall () {
   const statusLabel = document.getElementById('status')
   statusLabel.textContent = 'New system load will be boardcast after 5 seconds.'
   const response = await fetch('/api/system/systemLoad/5')
   console.log(response.status)
 }
 
-async function scheduleCall() {
+async function scheduleCall () {
   const statusLabel = document.getElementById('status')
   statusLabel.textContent = 'Toggling the schedule...'
   const response = await fetch('/api/system/schedule')
