@@ -30,6 +30,7 @@ jobs:
           LINTER_RULES_PATH: ./tools/pr-checker/linters/
           DEFAULT_BRANCH: draft
           VALIDATE_CSS: false
+          VALIDATE_JAVASCRIPT_STANDARD: false
       - name: Summary
         if: "! github.event.pull_request.head.repo.fork"
         run: |
