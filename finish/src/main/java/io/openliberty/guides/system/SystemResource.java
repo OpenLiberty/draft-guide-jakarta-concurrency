@@ -52,6 +52,13 @@ public class SystemResource {
     @Path("/schedule")
     @Produces(MediaType.TEXT_PLAIN)
     public String schedule() {
+        return String.valueOf(bean.isScheduleEnabled());
+    }
+
+    @GET
+    @Path("/schedule/toggle")
+    @Produces(MediaType.TEXT_PLAIN)
+    public String schedulToggle() {
         if (bean.isScheduleEnabled()) {
             bean.enableSchedule(false);
             return "Disabling the schedule...";

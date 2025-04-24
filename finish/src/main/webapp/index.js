@@ -50,6 +50,6 @@ async function refreshCall () {
 async function scheduleCall () {
   const statusLabel = document.getElementById('status')
   statusLabel.textContent = 'Toggling the schedule...'
-  const response = await fetch('/api/system/schedule')
+  const response = await fetch('/api/system/schedule/toggle')
   console.log(response.status)
 }

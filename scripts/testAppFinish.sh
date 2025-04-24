@@ -8,6 +8,8 @@ mvn -ntp -Dhttp.keepAlive=false \
 
 mvn -ntp liberty:start
 
+sleep 5
+
 mvn -ntp -Dhttp.keepAlive=false \
     -Dmaven.wagon.http.pool=false \
     -Dmaven.wagon.httpconnectionManager.ttlSeconds=120 \
