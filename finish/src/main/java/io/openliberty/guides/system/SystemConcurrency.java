@@ -40,9 +40,10 @@ import jakarta.json.JsonObjectBuilder;
 import jakarta.ws.rs.sse.Sse;
 import jakarta.ws.rs.sse.SseEventSink;
 
-@ManagedScheduledExecutorDefinition(name = "java:module/concurrent/virtual-executor",
-                           qualifiers = WithVirtualThreads.class,
-                           virtual = true)
+@ManagedScheduledExecutorDefinition(
+    name = "java:module/concurrent/virtual-executor",
+    qualifiers = WithVirtualThreads.class,
+    virtual = true)
 @ApplicationScoped
 public class SystemConcurrency {
 
@@ -126,7 +127,7 @@ public class SystemConcurrency {
             sseSrvice.broadcast(systemLoad);
             logger.info("System load at \"" + systemLoad.getString("time")
                 + "\" was boardcast.");
-       }, after, TimeUnit.SECONDS);
+        }, after, TimeUnit.SECONDS);
     }
 
     public boolean isScheduleEnabled() {
