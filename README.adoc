@@ -84,13 +84,20 @@ include::finish/src/main/liberty/config/server.xml[]
 ----
 
 // file 1
+SystemResource.java
+[source,xml,linenums,role="code_column hide_tags=copyright"]
+----
+include::start/src/main/java/io/openliberty/guides/system/SystemResource.java[]
+----
+
+// file 2
 SystemConcurrency.java
 [source,xml,linenums,role="code_column hide_tags=copyright"]
 ----
 include::start/src/main/java/io/openliberty/guides/system/SystemConcurrency.java[]
 ----
 
-The application is implemented the `/api/system/properties/{prefix}` endpoint. Go to the http://localhost:9080/api/system/properties/java URL to see all the `java.*` properties. Notice that the URL takes several seconds to get the result. Each [hotspot=doSomethingSleep hotspot=getSystemPropertyTask hotspot=callGetSystemPropertyTask file=1]`getSystemPropertyTask()` call takes at most a second.
+The starting application is implemented the [hotspot=getProperties file=1]`/properties/{prefix}` endpoint. Go to the http://localhost:9080/api/system/properties/java URL to see all the `java.*` properties. Notice that the URL takes several seconds to get the result. Each [hotspot=doSomethingSleep hotspot=getSystemPropertyTask hotspot=callGetSystemPropertyTask file=2]`getSystemPropertyTask()` call takes at most a second.
 
 The https://openliberty.io/docs/latest/reference/feature/concurrent-3.1.html[Jakarta Concurrency^] feature is enabled for you in the Liberty [hotspot=concurrent file=0]`server.xml` configuration file.
 
