@@ -8,40 +8,31 @@
 :projectid: jakarta-concurrency
 :page-layout: guide-multipane
 :page-duration: 20 minutes
-:page-releasedate: 2025-04-29
-:page-description: Learn how to run tasks parallelly or asynchronously in Java microservices by using JakartaConcurrency APIs.
+:page-releasedate: 2025-06-30
+:page-description: Learn how to run tasks parallelly or asynchronously in Java microservices by using Jakarta Concurrency.
 :guide-author: Open Liberty
 :page-tags: ['jakarta-ee']
 :page-permalink: /guides/{projectid}
 :imagesdir: /img/guide/{projectid}
-:page-related-guides: ['reactive-rest-client', 'microprofile-rest-client-async']
+:page-related-guides: ['reactive-rest-client', 'microprofile-rest-client-async, 'reactive-messaging-sse']
 :common-includes: https://raw.githubusercontent.com/OpenLiberty/guides-common/prod
 :source-highlighter: prettify
-:page-seo-title: Running tasks parallelly or asynchronously in Java microservices by using Jakarta ConcurrencyAPIs
+:page-seo-title: Running tasks parallelly or asynchronously in Java microservices by using Jakarta Concurrency APIs
 :page-seo-description: A getting started tutorial with examples on how to run tasks parallelly or asynchronously in Java microservices by using Jakarta Concurrency APIs.
 = Running tasks parallelly or asynchronously in Java microservices
 
 [.hidden]
 NOTE: This repository contains the guide documentation source. To view the guide in published form, view it on the https://openliberty.io/guides/{projectid}.html[Open Liberty website].
 
-Learn how to run tasks parallelly or asynchronously in Java microservices by using Jakarta Concurrency APIs.
+Learn how to run tasks parallelly or asynchronously in Java microservices by using Jakarta Concurrency.
 
 == What you'll learn
 
-Jakarta Concurrency is a Java API specification of Jakarta EE that provides a framework for developing concurrent and asynchronous Java applications. The Jakarta Concurrency APIs provide concurrency utilities to make developers easier to write thread-safe and scalable applications. The applications can run tasks parallelly or asynchronously and coordinate the completion of multiple asynchronous tasks in a more efficient manner. To learn more about Jakarta Concurrency, see the https://jakarta.ee/specifications/concurrency[Jakarta Concurrency specification^].
+Jakarta Concurrency enables the creation of managed executors to run concurrent and asynchronous tasks in different threads. It also enables the creation of managed thread factories to create threads that run with the thread context of the component that looks up the managed thread factory. The threads are managed by the application server, coexist and safely interact in the Enterprise Java Beans and Web containers. To learn more about Jakarta Concurrency, see the https://jakarta.ee/specifications/concurrency[Jakarta Concurrency specification^].
 
+The application in this guide provides GET REST APIs to retrieve the Java system properties parallelly and calculate the system load asynchronously. Also, you can toggle the schedule to update the system load.
 
-The application in this guide consists of two microservices, `system` and `inventory`. The `system` microservice provides GET REST APIs to retrieve the Java system properties, heap size, memory usage, and system load. The `inventory` microservice provides different REST APIs to register systems, update their memory usage and system load, and query their information from the inventory.
-// Also, the `inventory` microservice is scheduled for every 60 seconds to call the `system` microservice to update the memory usage and system load of the systems in the inventory.
-
-{empty} +
-
-image::architecture.png[Application architecture where inventory microservice uses the Jakarta Concurrency APIs to call the system microservice.,align="center"]
-
-{empty} +
-
-You'll learn how to run tasks in parallel by implementing the POST `/api/inventory/system/{hostname}` endpoint that registers a system to the inventory, create asynchronous task by the PUT `/api/inventory/systems/memoryUsed` endpoint that updates the memory usage of the systems in the inventory, and synchronize asynchronous tasks by the PUT `/api/inventory/systems/systemLoad` endpoint that updates the system load of the systems.
-// Then, you'll learn how to schedule a task to update the memory usage and system load of the systems for every 60 seconds.
+You'll learn how to run tasks in parallel by enhancing the GET `/api/system/properties/{prefix}` endpoint, create asynchronous task by the GET `/api/system/systemLoad/{after}` endpoint that updates the system load after the provided `{after}` seconds, and schedule a task to update the system load for every 10 seconds.
 
 // =================================================================================================
 // Getting started
@@ -49,152 +40,31 @@ You'll learn how to run tasks in parallel by implementing the POST `/api/invento
 [role='command']
 include::{common-includes}/gitclone.adoc[]
 
-=== Try what you'll build
+[role='command']
+include::{common-includes}/twyb-intro.adoc[]
 
-The `finish` directory in the root of this guide contains the finished application. Give it a try before you proceed.
-
-To try out the application, navigate to the `finish` directory and run the following command to deploy the `system` microservice to Open Liberty:
-
-ifndef::cloud-hosted[]
-[role="command"]
-----
-mvn -pl system liberty:run
-----
-endif::[]
-
-ifdef::cloud-hosted[]
-```bash
-cd /home/project/guide-jakarta-concurrency/finish
-mvn -pl system liberty:run
-```
-endif::[]
-
-Open another command-line session. Navigate to the `finish` directory and run the following command to deploy the `inventory` service to Open Liberty:
-
-ifndef::cloud-hosted[]
-[role="command"]
-----
-mvn -pl inventory liberty:run
-----
-endif::[]
-
-ifdef::cloud-hosted[]
-```bash
-cd /home/project/guide-jakarta-concurrency/finish
-mvn -pl inventory liberty:run
-```
-endif::[]
-
-When you see the following message in both command-line sessions, both your services are ready.
+Go to the http://localhost:9080/api/system/properties/os URL to see all the `os.*` properties. You will see an output similar to the following:
 
 [role="no_copy"]
 ----
-The defaultServer server is ready to run a smarter planet.
-----
-
-ifndef::cloud-hosted[]
-Go to the http://localhost:9081/openapi/ui URL to try out the REST endpoints of the `inventory` microservice.
-
-First, make a POST request to the `/api/inventory/system/{hostname}` endpoint. To make this request, expand the POST endpoint on the UI, click the `Try it out` button, provide  `localhost` for the `hostname` parameter, then click the `Execute` button. The POST request registers the `localhost` system to the inventory.
-
-Go to the http://localhost:9081/api/inventory/systems URL to see the inventory. You will see an output similar to the following:
-
-[role="no_copy"]
-----
-[
-  {
+{
     "heapSize": 8589934592,
     "hostname": "localhost",
     "javaVersion": "17.0.12",
     "memoryUsage": 0,
     "osName": "Mac OS X",
     "systemLoad": 0
-  }
-]
+}
 ----
 
-Repeat the POST endpoint for the `hostname` parameter with the value of `127.0.0.1` and your local system hostname. Totally 3 systems are added to the inventory.
+Check out the web application at the http://localhost:9080 URL. Click the <img src="https://raw.githubusercontent.com/OpenLiberty/draft-guide-jakarta-concurrency/blob/gkwan-ibm-jee11/finish/src/main/webapp/img/refresh.svg" width="18" height="18" alt="refresh icon"> refresh button, located in the table title, to update and display the latest system load data in the table after 5 seconds.
 
-Then, make a PUT request to the `/api/inventory/systems/memoryUsed` endpoint with the `after` parameter set to `5` seconds. Make a PUT request to the `/api/inventory/systems/systemLoad` endpoint with the `after` parameter set to `5` seconds. After 5 seconds, go to the http://localhost:9081/api/inventory/systems URL again. Verify that the `memoryUsage` and `systemLoad` values are updated to nonzero. If you're interested, try out the other available endpoints.
-endif::[]
-
-
-ifdef::cloud-hosted[]
-Try out the REST endpoints of the `inventory` microservice.
-
-First, make a POST request to the `/api/inventory/system/{hostname}` endpoint to register the `localhost` system to the inventory by running the following command:
-
-```bash
-curl -X POST  http://localhost:9081/api/inventory/system/localhost
-```
-
-Make a GET request to the `/api/inventory/systems` endpoint to see the inventory.
-
-```bash
-curl http://localhost:9081/api/inventory/systems | jq
-```
-
-You will see an output similar to the following:
-
-```
-[
-  {
-    "heapSize": 8589934592,
-    "hostname": "localhost",
-    "javaVersion": "17.0.12",
-    "memoryUsage": 0,
-    "osName": "Mac OS X",
-    "systemLoad": 0
-  }
-]
-```
-
-Repeat the POST endpoint with the value of `127.0.0.1` and the local system hostname by the following commands:
-
-```bash
-curl -X POST http://localhost:9081/api/inventory/system/127.0.0.1
-```
-
-```bash
-curl -X POST http://localhost:9081/api/inventory/system/`hostname`
-```
-
-Totally 3 systems are added to the inventory.
-
-Then, make a PUT request to the `/api/inventory/systems/memoryUsed` endpoint and the `/api/inventory/systems/systemLoad` endpoints by the following commands:
-
-```bash
-curl -X PUT http://localhost:9081/api/inventory/systems/memoryUsed?after=5
-```
-
-```bash
-curl -X PUT http://localhost:9081/api/inventory/systems/systemLoad?after=5
-```
-
-After 5 seconds, go to the `/api/inventory/systems` endpoint again to see that the `memoryUsage` and `systemLoad` values are updated to nonzero by the following command:
-
-```bash
-curl http://localhost:9081/api/inventory/systems | jq
-```
-endif::[]
+Click the <img src="https://raw.githubusercontent.com/OpenLiberty/draft-guide-jakarta-concurrency/blob/gkwan-ibm-jee11/finish/src/main/webapp/img/schedule.svg" width="18" height="18" alt="schedule icon"> schedule button to toggle the schedule that posts the latest system load data in every 10 seconds.
 
 After you are finished checking out the application, stop the Liberty instance by pressing `CTRL+C` in the command-line session where you ran the `inventory` service. Alternatively, you can run the `liberty:stop` goal from the `finish` directory in another command-line session:
 
-ifndef::cloud-hosted[]
-[role="command"]
-----
-mvn -pl inventory liberty:stop
-----
-endif::[]
-
-ifdef::cloud-hosted[]
-```bash
-cd /home/project/guide-jakarta-concurrency/finish
-mvn -pl inventory liberty:stop
-```
-endif::[]
-
-**NOTE:** Leave the `system` microservice to run. In the following sections, you'll implement the `inventory` microservice to learn how to create parallel or asynchronous tasks.
+[role='command']
+include::{common-includes}/twyb-end.adoc[]
 
 == Running tasks in parallel
 
