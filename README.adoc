@@ -110,13 +110,13 @@ WithVirtualThreads.java
 include::finish/src/main/java/io/openliberty/guides/system/WithVirtualThreads.java[]
 ----
 
-[role="code_command hotspot file=4", subs="quotes"]
+[role="code_command hotspot file=3", subs="quotes"]
 ----
 #Create the `WithVirtualThreads.java` file.#
 `src/main/java/io/openliberty/guides/system/WithVirtualThreads.java`
 ----
 
-The `WithVirtualThreads` qualifier annotation class is used to enumerate the required qualifiers for the managed executor service.
+The [hotspot file=3]`WithVirtualThreads` qualifier annotation class is used to enumerate the required qualifiers for the managed executor service.
 
 // file 4
 SystemConcurrency.java
@@ -125,13 +125,13 @@ SystemConcurrency.java
 include::finish/src/main/java/io/openliberty/guides/system/SystemConcurrency.java[]
 ----
 
-[role="code_command hotspot file=1", subs="quotes"]
+[role="code_command hotspot file=4", subs="quotes"]
 ----
 #Replace the `SystemConcurrency.java` file.#
 `src/main/java/io/openliberty/guides/system/SystemConcurrency.java`
 ----
 
-Annotate the [hotspot file=4]`SystemConcurrency` class with the [hotspot=annotateManagedScheduledExecutor file=3]`@ManagedScheduledExecutorDefinition` annotation to provide a managed executor instance that enumerates the `WithVirtualThreads` required qualifiers through the [hotspot=managedScheduledExecutorService file=4]`ManagedScheduledExecutorService` injection point.
+Annotate the [hotspot file=4]`SystemConcurrency` class with the [hotspot=annotateManagedScheduledExecutor file=4]`@ManagedScheduledExecutorDefinition` annotation to provide a managed executor instance that enumerates the `WithVirtualThreads` required qualifiers through the [hotspot=managedScheduledExecutorService file=4]`ManagedScheduledExecutorService` injection point.
 
 
 
