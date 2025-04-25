@@ -85,7 +85,9 @@ public class SystemConcurrency {
     public Map<String, String> getProperties(String prefix)
            throws InterruptedException, ExecutionException {
 
+        // tag::properties[]
         Map<String, Future<String>> properties = new HashMap<String, Future<String>>();
+        // end::properties[]
         List<String> keys = System.getProperties().stringPropertyNames().stream()
                                   .filter(k -> k.startsWith(prefix + "."))
                                   .collect(Collectors.toList());
@@ -96,6 +98,7 @@ public class SystemConcurrency {
             }));
             // end::submit[]
         }
+        // tag::collect[]
         return properties.entrySet().stream().collect(
             Collectors.toMap(Map.Entry::getKey, e -> {
                 try {
@@ -109,6 +112,7 @@ public class SystemConcurrency {
                        return null;
                  }
             }));
+        // end::collect[]
     }
 
     // tag::subscribe[]
