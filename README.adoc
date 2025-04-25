@@ -66,45 +66,34 @@ include::{common-includes}/twyb-end.adoc[]
 
 == Running tasks in parallel
 
-// static guide instructions:
-ifndef::cloud-hosted[]
 Navigate to the `start` directory to begin.
-endif::[]
-
-// cloud-hosted guide instructions:
 ifdef::cloud-hosted[]
-To begin, run the following command to navigate to the ***start*** directory:
 ```bash
-cd /home/project/guide-concurrency-intrp/start
+cd /home/project/guide-jakarta-concurrency/start
 ```
 endif::[]
 
-When you run Open Liberty in https://openliberty.io/docs/latest/development-mode.html[dev mode^], dev mode listens for file changes and automatically recompiles and deploys your updates whenever you save a new change.
-
-Run the following goal to start the `inventory` microservice in dev mode:
-
 [role='command']
-----
-mvn -pl inventory liberty:dev
-----
+include::{common-includes}/devmode-lmp33-start.adoc[]
 
-When you see the following message, your Liberty instance is ready in dev mode:
-
-[role="no_copy"]
-----
-**************************************************************
-*    Liberty is running in dev mode.
-----
-
-Dev mode holds your command-line session to listen for file changes. Open another command-line session to continue, or open the project in your editor.
-
+// file 0
 server.xml
 [source,xml,linenums,role="code_column hide_tags=copyright"]
 ----
-include::finish/inventory/src/main/liberty/config/server.xml[]
+include::finish/src/main/liberty/config/server.xml[]
 ----
 
-The https://openliberty.io/docs/latest/reference/feature/concurrent-3.0.html[Jakarta Concurrency^] feature is enabled for you in the Liberty [hotspot=concurrent file=0]`server.xml` configuration file.
+// file 1
+SystemConcurrency.java
+[source,xml,linenums,role="code_column hide_tags=copyright"]
+----
+include::start/src/main/java/io/openliberty/guides/system/SystemConcurrency.java[]
+----
+
+The application is implemented the `/api/system/properties/{prefix}` endpoint. Go to the http://localhost:9080/api/system/properties/java URL to see all the `java.*` properties. Notice that the URL takes several seconds to get the result. Each [hotspot=doSomethingSleep hotspot=getSystemPropertyTask hotspot=callGetSystemPropertyTask file=1]`getSystemPropertyTask()` call takes at most a second.
+
+The https://openliberty.io/docs/latest/reference/feature/concurrent-3.1.html[Jakarta Concurrency^] feature is enabled for you in the Liberty [hotspot=concurrent file=0]`server.xml` configuration file.
+
 
 Implement a task that calls the `system` microservice in parallel to get different system data.
 

@@ -43,11 +43,13 @@ public class SystemConcurrency {
         }
     }
 
+    // tag::getSystemPropertyTask[]
     private String getSystemPropertyTask(String key) {
         logger.info("Getting the " + key + " property...");
         doSomething(1);
         return System.getProperty(key);
     }
+    // end::getSystemPropertyTask[]
 
     public Map<String, String> getProperties(String prefix)
            throws InterruptedException, ExecutionException {
@@ -57,7 +59,9 @@ public class SystemConcurrency {
                                   .filter(k -> k.startsWith(prefix + "."))
                                   .collect(Collectors.toList());
         for (String k : keys) {
+            // tag::callGetSystemPropertyTask[]
             properties.put(k, getSystemPropertyTask(k));
+            // end::callGetSystemPropertyTask[]
         }
         return properties;
     }
