@@ -40,10 +40,12 @@ import jakarta.json.JsonObjectBuilder;
 import jakarta.ws.rs.sse.Sse;
 import jakarta.ws.rs.sse.SseEventSink;
 
+// tag::annotateManagedScheduledExecutor[]
 @ManagedScheduledExecutorDefinition(
     name = "java:module/concurrent/virtual-executor",
     qualifiers = WithVirtualThreads.class,
     virtual = true)
+//end::annotateManagedScheduledExecutor[]
 @ApplicationScoped
 public class SystemConcurrency {
 
@@ -55,9 +57,11 @@ public class SystemConcurrency {
     private static Logger logger = Logger.getLogger(SystemConcurrency.class.getName());
     private static boolean scheduleEnabled = false;
 
+    // tag::managedScheduledExecutorService[]
     @Inject
     @WithVirtualThreads
     ManagedScheduledExecutorService virtualManagedExecutor;
+    // end::managedScheduledExecutorService[]
 
     @Inject
     SseService sseSrvice;
@@ -101,11 +105,14 @@ public class SystemConcurrency {
             }));
     }
 
+    // tag::subscribe[]
     public void subscribe(SseEventSink sink, Sse sse) {
         sseSrvice.subscribe(sink, sse);
     }
+    // end::subscribe[]
 
-    private JsonObject getSystemLoad(boolean schedule) {
+    // tag::calculateSystemLoad[]
+    private JsonObject calculateSystemLoad(boolean schedule) {
         JsonObjectBuilder builder = Json.createObjectBuilder();
         if (schedule) {
             builder.add("schedule", true);
@@ -118,18 +125,22 @@ public class SystemConcurrency {
         builder.add("memoryUsage", Double.valueOf(heapUsed * 100.0 / heapMax));
         return builder.build();
     }
+    // end::calculateSystemLoad[]
 
+    // tag::getSystemLoad[]
     @Asynchronous
     public void getSystemLoad(int after) {
         logger.info("New system load will be boardcast after " + after + " seconds.");
         virtualManagedExecutor.schedule(() -> {
-            JsonObject systemLoad = getSystemLoad(false);
+            JsonObject systemLoad = calculateSystemLoad(false);
             sseSrvice.broadcast(systemLoad);
             logger.info("System load at \"" + systemLoad.getString("time")
                 + "\" was boardcast.");
         }, after, TimeUnit.SECONDS);
     }
+    // end::getSystemLoad[]
 
+    // tag::enableSchedule[]
     public boolean isScheduleEnabled() {
         return scheduleEnabled;
     }
@@ -137,11 +148,13 @@ public class SystemConcurrency {
     public void enableSchedule(boolean enabled) {
         scheduleEnabled = enabled;
     }
+    // end::enableSchedule[]
 
+    // tag::schedule[]
     @Asynchronous(runAt = { @Schedule(cron = "*/10 * * * * *")})
     public CompletableFuture<String> schedule() {
         if (isScheduleEnabled()) {
-            JsonObject systemLoad = getSystemLoad(true);
+            JsonObject systemLoad = calculateSystemLoad(true);
             sseSrvice.broadcast(systemLoad);
             logger.info("System load at \"" + systemLoad.getString("time")
                 + " was boardcast.");
@@ -155,5 +168,6 @@ public class SystemConcurrency {
             return Asynchronous.Result.complete("Completed");
         }
     }
+    // end::schedule[]
 
 }

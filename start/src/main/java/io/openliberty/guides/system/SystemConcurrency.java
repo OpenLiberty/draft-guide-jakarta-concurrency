@@ -53,6 +53,7 @@ public class SystemConcurrency {
     }
     // end::getSystemPropertyTask[]
 
+    // tag::getProperties[]
     public Map<String, String> getProperties(String prefix)
            throws InterruptedException, ExecutionException {
 
@@ -67,5 +68,6 @@ public class SystemConcurrency {
         }
         return properties;
     }
+    // end::getProperties[]
 
 }

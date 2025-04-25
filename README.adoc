@@ -77,44 +77,66 @@ endif::[]
 include::{common-includes}/devmode-lmp33-start.adoc[]
 
 // file 0
-server.xml
-[source,xml,linenums,role="code_column hide_tags=copyright"]
-----
-include::finish/src/main/liberty/config/server.xml[]
-----
-
-// file 1
 SystemResource.java
 [source,xml,linenums,role="code_column hide_tags=copyright"]
 ----
 include::start/src/main/java/io/openliberty/guides/system/SystemResource.java[]
 ----
 
-// file 2
-SystemConcurrency.java
+// file 1
+start/SystemConcurrency.java
 [source,xml,linenums,role="code_column hide_tags=copyright"]
 ----
 include::start/src/main/java/io/openliberty/guides/system/SystemConcurrency.java[]
 ----
 
-The starting application is implemented the [hotspot=getProperties file=1]`/properties/{prefix}` endpoint. Go to the http://localhost:9080/api/system/properties/java URL to see all the `java.*` properties. Notice that the URL takes several seconds to get the result. Each [hotspot=doSomethingSleep hotspot=getSystemPropertyTask hotspot=callGetSystemPropertyTask file=2]`getSystemPropertyTask()` call takes at most a second.
-
-The https://openliberty.io/docs/latest/reference/feature/concurrent-3.1.html[Jakarta Concurrency^] feature is enabled for you in the Liberty [hotspot=concurrent file=0]`server.xml` configuration file.
-
-
-Implement a task that calls the `system` microservice in parallel to get different system data.
-
-InventoryAsyncTask.java
-[source, Java, linenums, role='code_column hide_tags=copyright,updateSystemsUsage,updateSystemsMemoryUsed,getSystemLoad']
+// file 2
+server.xml
+[source,xml,linenums,role="code_column hide_tags=copyright"]
 ----
-include::finish/inventory/src/main/java/io/openliberty/guides/inventory/InventoryAsyncTask.java[]
+include::finish/src/main/liberty/config/server.xml[]
+----
+
+The starting application is implemented the [hotspot=getProperties file=0]`/properties/{prefix}` endpoint. Go to the http://localhost:9080/api/system/properties/java URL to see all the `java.*` properties. Notice that the URL takes several seconds to get the result. Each [hotspot=doSomethingSleep hotspot=getSystemPropertyTask hotspot=callGetSystemPropertyTask file=1]`getSystemPropertyTask()` call takes at most a second.
+
+To improve the performance, enhance the [hotspot=getProperties file=1]`getProperties()` method to call the [hotspot=callGetSystemPropertyTask file=1]`getSystemPropertyTask()` method in parallel.
+
+The https://openliberty.io/docs/latest/reference/feature/concurrent-3.1.html[Jakarta Concurrency^] feature is enabled for you in the Liberty [hotspot=concurrent file=2]`server.xml` configuration file.
+
+First, create the `WithVirtualThreads` qualifier annotation class.
+
+// file 3
+WithVirtualThreads.java
+[source,xml,linenums,role="code_column hide_tags=copyright"]
+----
+include::finish/src/main/java/io/openliberty/guides/system/WithVirtualThreads.java[]
+----
+
+[role="code_command hotspot file=4", subs="quotes"]
+----
+#Create the `WithVirtualThreads.java` file.#
+`src/main/java/io/openliberty/guides/system/WithVirtualThreads.java`
+----
+
+// file 4
+SystemConcurrency.java
+[source,xml,linenums,role="code_column hide_tags=copyright,subscribe,calculateSystemLoad,getSystemLoad,enableSchedule,schedule"]
+----
+include::finish/src/main/java/io/openliberty/guides/system/SystemConcurrency.java[]
 ----
 
 [role="code_command hotspot file=1", subs="quotes"]
 ----
-#Create the `InventoryAsyncTask.java` file.#
-`inventory/src/main/java/io/openliberty/guides/inventory/InventoryAsyncTask.java`
+#Replace the `SystemConcurrency.java` file.#
+`src/main/java/io/openliberty/guides/system/SystemConcurrency.java`
 ----
+
+Annotate the [hotspot file=4]`SystemConcurrency` class with the [hotspot=annotateManagedScheduledExecutor file=3]`@ManagedScheduledExecutorDefinition` annotation to provide a managed executor instance that enumerates the `WithVirtualThreads` required qualifiers through the [hotspot=managedScheduledExecutorService file=4]`ManagedScheduledExecutorService` injection point.
+
+
+
+
+
 
 The `InventoryAsyncTask` bean provides different utilities for the `inventory` service. Annotating the [hotspot=managedExecutor file=1]`managedExecutor` field with the [hotspot=managedExecutor file=1]`@Resource` annotation, an instance of the `ManagedScheduledExecutorService` resource will be injected when the bean is initialized by Liberty runtime.
 
