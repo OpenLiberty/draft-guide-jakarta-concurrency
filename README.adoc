@@ -140,7 +140,7 @@ The `@ManagedScheduledExecutorDefinition` annotation and the `ManagedScheduledEx
 
 Use the [hotspot=virtualManagedExecutor hotspot=submit file=4]`virtualManagedExecutor` instance to submit callable tasks that call the `getSystemPropertyTask()` method to get different property values parallelly. Each task creates a virtual thread and returns a `Future<String>` object.
 
-Perform a [hotspot=collect file=4]`collect()` mutable reduction operation on the entries of the [hotspot=properties file=4]`properties` map. In the operation, use the [hotspot=collect file=4]`get()` method to wait for all threads to complete and to collect the results.
+Perform a [hotspot=collect file=4]`collect()` mutable reduction operation on the entries of the [hotspot=properties file=4]`properties` map. In the operation, use the [hotspot=get file=4]`get()` method to wait for all threads to complete and to collect the results.
 
 You started the Open Liberty in dev mode at the beginning of this section, so all the changes were automatically picked up.
 
