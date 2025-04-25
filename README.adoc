@@ -57,9 +57,9 @@ Go to the http://localhost:9080/api/system/properties/os URL to see all the `os.
 
 If you interest, you can check out the endpoint by the http://localhost:9080/api/system/properties/user and http://localhost:9080/api/system/properties/java URLs.
 
-Check out the web application at the http://localhost:9080 URL. Click the image:refresh.svg[refresh icon, 18, 18] refresh button, located in the table title, to update and display the latest system load data in the table after 5 seconds.
+Check out the web application at the http://localhost:9080 URL. Click the image:refresh.svg[refresh icon, 20, 20] refresh button, located in the table title, to update and display the latest system load data in the table after 5 seconds.
 
-Click the image:schedule.svg[schedule icon, 18, 18] schedule button to toggle the schedule that posts the latest system load data in every 10 seconds.
+Click the image:schedule.svg[schedule icon, 20, 20] schedule button to toggle the schedule that posts the latest system load data in every 10 seconds.
 
 [role='command']
 include::{common-includes}/twyb-end.adoc[]
