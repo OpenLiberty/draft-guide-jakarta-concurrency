@@ -37,9 +37,9 @@ public class SystemConcurrency {
 
     private void doSomething(int t) {
         try {
-        	// tag::doSomethingSleep[]
+            // tag::doSomethingSleep[]
             Thread.sleep(RANDOM.nextInt(t * 1000));
-        	// end::doSomethingSleep[]
+            // end::doSomethingSleep[]
         } catch (InterruptedException e) {
             logger.warning(e.getMessage());
         }
