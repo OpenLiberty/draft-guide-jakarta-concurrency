@@ -60,7 +60,9 @@ public class SystemConcurrency {
     // tag::managedScheduledExecutorService[]
     @Inject
     @WithVirtualThreads
+    // tag::virtualManagedExecutor[]
     ManagedScheduledExecutorService virtualManagedExecutor;
+    // end::virtualManagedExecutor[]
     // end::managedScheduledExecutorService[]
 
     @Inject
@@ -88,15 +90,19 @@ public class SystemConcurrency {
                                   .filter(k -> k.startsWith(prefix + "."))
                                   .collect(Collectors.toList());
         for (String k : keys) {
+            // tag::submit[]
             properties.put(k, virtualManagedExecutor.submit(() -> {
                 return getSystemPropertyTask(k);
             }));
+            // end::submit[]
         }
         return properties.entrySet().stream().collect(
             Collectors.toMap(Map.Entry::getKey, e -> {
                 try {
+                    // tag::get[]
                     Future<String> propertyValue = e.getValue();
                     String v = propertyValue.get();
+                    // end::get[]
                     logger.info("The value of the " + e.getKey() + " property: " + v);
                     return v;
                  } catch (Exception ex) {
