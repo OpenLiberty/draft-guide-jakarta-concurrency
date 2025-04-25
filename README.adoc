@@ -132,7 +132,7 @@ include::finish/src/main/java/io/openliberty/guides/system/SystemConcurrency.jav
 `src/main/java/io/openliberty/guides/system/SystemConcurrency.java`
 ----
 
-Annotate the [hotspot file=4]`SystemConcurrency` class with the [hotspot=annotateManagedScheduledExecutor file=4]`@ManagedScheduledExecutorDefinition` annotation to provide a managed executor instance that enumerates the `WithVirtualThreads` required qualifiers through the [hotspot=managedScheduledExecutorService file=4]`ManagedScheduledExecutorService` injection point.
+Annotate the [hotspot file=4]`SystemConcurrency` class with the [hotspot=annotateManagedScheduledExecutor file=4]`@ManagedScheduledExecutorDefinition` annotation to provide a managed executor instance that enumerates the `WithVirtualThreads` required qualifiers through the [hotspot=managedScheduledExecutorService file=4]`ManagedScheduledExecutorService` injection point. Set the [hotspot=virtual file=4]`virtual` attribute to true to use virtual thread.
 
 // TODO: replace the javadoc link to jakartaee11
 The `@ManagedScheduledExecutorDefinition` annotation and the `ManagedScheduledExecutorService` interface are used in this guide instead of `@ManagedScheduledDefinition` annotation and `ManagedExecutorService` interface, because you will implement a scheduled task in the following section. For more information about these annotations and classes, see the Javadocs for https://openliberty.io/docs/latest/reference/javadoc/liberty-jakartaee10-javadoc.html?path=liberty-jakartaee10-javadoc/jakarta/enterprise/concurrent/package-summary.html[jakarta.enterprise.concurrent^].

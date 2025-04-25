@@ -44,8 +44,10 @@ import jakarta.ws.rs.sse.SseEventSink;
 @ManagedScheduledExecutorDefinition(
     name = "java:module/concurrent/virtual-executor",
     qualifiers = WithVirtualThreads.class,
+// tag::virtual[]
     virtual = true)
-//end::annotateManagedScheduledExecutor[]
+// end::virtual[]
+// end::annotateManagedScheduledExecutor[]
 @ApplicationScoped
 public class SystemConcurrency {
 
