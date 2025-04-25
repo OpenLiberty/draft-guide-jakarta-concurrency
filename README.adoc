@@ -103,8 +103,6 @@ To improve the performance, enhance the [hotspot=getProperties file=1]`getProper
 
 The https://openliberty.io/docs/latest/reference/feature/concurrent-3.1.html[Jakarta Concurrency^] feature is enabled for you in the Liberty [hotspot=concurrent file=2]`server.xml` configuration file.
 
-First, create the `WithVirtualThreads` qualifier annotation class.
-
 // file 3
 WithVirtualThreads.java
 [source,xml,linenums,role="code_column hide_tags=copyright"]
@@ -117,6 +115,8 @@ include::finish/src/main/java/io/openliberty/guides/system/WithVirtualThreads.ja
 #Create the `WithVirtualThreads.java` file.#
 `src/main/java/io/openliberty/guides/system/WithVirtualThreads.java`
 ----
+
+The `WithVirtualThreads` qualifier annotation class is used to enumerate the required qualifiers for the managed executor service.
 
 // file 4
 SystemConcurrency.java
