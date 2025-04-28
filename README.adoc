@@ -290,13 +290,14 @@ include::finish/src/test/java/it/io/openliberty/guides/system/SystemEndpointIT.j
 
 The [hotspot=testGetProperties file=0]`testGetProperties()` tests the GET `/api/system/properties/os` endpoint and confirms that there are 4 `os.*` properties.
 
-The [hotspot=testGetSystemLoad file=0]`testGetSystemLoad()` tests the GET `/api/system/systemLoad/5` endpoint and confirms that the CPU and memory usages are not null.
+The [hotspot=testGetSystemLoad file=0]`testGetSystemLoad()` tests the GET `/api/system/systemLoad/5` endpoint and confirms that the CPU and memory usages are not null after 10 seconds.
 
 The [hotspot=testEnableSchedule file=0]`testEnableSchedule()` tests the GET `/api/systems/schedule/toggle` endpoint and confirms that there are 3 system loads after 35 seconds.
 
 === Running the tests
 
-Because you started Open Liberty in dev mode, you can run the tests by pressing the `enter/return` key from the command-line session where you started the microservice.
+[role='command']
+include::{common-includes}/devmode-test.adoc[]
 
 If the tests pass, you see a similar output to the following example:
 
