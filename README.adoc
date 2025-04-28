@@ -172,7 +172,7 @@ SseService.java
 include::start/src/main/java/io/openliberty/guides/system/SseService.java[]
 ----
 
-The [hotspot=getSystemLoad file=0]`getSystemLoad()` method uses the [hotspot=scheduleCall file=0]`virtualManagedExecutor` service to schedule a task that will be delayed with the given [hotspot=parameters hotspot=after file=0]`after` seconds. The task calls the [hotspot=calculateSystemLoad hotspot=callCalculateSystemLoad file=0]`calculateSystemLoad()` method to calculate the CPU and memory usage and then the [hotspot=parameters hotspot=after file=0]`broadcasts()` method to broadcast the system load to the client through the [hotspot file=1]`SseService` bean that is provided for you. 
+The [hotspot=getSystemLoad file=0]`getSystemLoad()` method uses the [hotspot=scheduleCall file=0]`virtualManagedExecutor` service to schedule a task that will be delayed with the given [hotspot=parameters hotspot=after file=0]`after` seconds. The task calls the [hotspot=calculateSystemLoad hotspot=callCalculateSystemLoad file=0]`calculateSystemLoad()` method to calculate the CPU and memory usage and then the [hotspot=broadcast file=0]`broadcasts()` method to broadcast the system load to the client through the [hotspot file=1]`SseService` bean that is provided for you. 
 
 Annotate the [hotspot=asynchronous1 file=0]`getSystemLoad()` method with the `@Asynchronous` annotation to make it running asynchronously.
 

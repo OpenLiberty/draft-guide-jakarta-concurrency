@@ -141,7 +141,9 @@ public class SystemConcurrency {
     // end::calculateSystemLoad[]
 
     // tag::getSystemLoad[]
+    // tag::asynchronous1[]
     @Asynchronous
+    // end::asynchronous1[]   
     // tag::parameters[]
     public void getSystemLoad(int after) {
     // end::parameters[]
