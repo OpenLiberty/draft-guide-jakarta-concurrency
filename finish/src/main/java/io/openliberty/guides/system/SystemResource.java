@@ -50,13 +50,16 @@ public class SystemResource {
     }
     // end::getSystemLoad[]
 
+    // tag::schedule[]
     @GET
     @Path("/schedule")
     @Produces(MediaType.TEXT_PLAIN)
     public String schedule() {
         return String.valueOf(bean.isScheduleEnabled());
     }
+    // end::schedule[]
 
+    // tag::schedulToggle[]
     @GET
     @Path("/schedule/toggle")
     @Produces(MediaType.TEXT_PLAIN)
@@ -70,12 +73,14 @@ public class SystemResource {
             return "Enabling the schedule...";
         }
     }
+    // end::schedulToggle[]
 
+    // tag::sse[]
     @GET
     @Path("/sse")
     @Produces(MediaType.SERVER_SENT_EVENTS)
     public void subscribe(@Context SseEventSink sink, @Context Sse sse) {
         bean.subscribe(sink, sse);
     }
-
+    // end::sse[]
 }

@@ -40,12 +40,14 @@ function cleanCall () {
   }
 }
 
+// tag::refreshCall[]
 async function refreshCall () {
   const statusLabel = document.getElementById('status')
   statusLabel.textContent = 'New system load will be boardcast after 5 seconds.'
   const response = await fetch('/api/system/systemLoad/5')
   console.log(response.status)
 }
+// end::refreshCall[]
 
 async function scheduleCall () {
   const statusLabel = document.getElementById('status')

@@ -178,14 +178,38 @@ Annotate the [hotspot=asynchronous1 file=0]`getSystemLoad()` method with the `@A
 
 // file 2
 SystemResource.java
+[source,xml,linenums,role="code_column hide_tags=copyright,schedule,schedulToggle,sse"]
+----
+include::finish/src/main/java/io/openliberty/guides/system/SystemResource.java[]
+----
+
+[role="code_command hotspot file=2", subs="quotes"]
+----
+#Replace the `SystemConcurrency.java` file.#
+`src/main/java/io/openliberty/guides/system/SystemConcurrency.java`
+----
+
+Create the GET [hotspot=getSystemLoad file=2]`/systemLoad/{after}` endpoint that calls the above  `getSystemLoad()` asynchronous method and returns a message.
+
+Try out the http://localhost:9080/api/system/systemLoad/5 URL. The request returns to you immediatedly with the message.
+
+// file 3
+index.html
 [source,xml,linenums,role="code_column hide_tags=copyright"]
 ----
-include::start/src/main/java/io/openliberty/guides/system/SystemResource.java[]
+include::finish/src/main/webapp/index.html[]
 ----
 
-Because the GET [hotspot=getSystemLoad file=2]`/api/system/systemLoad/{after}` endpoint is provided for you, try out the http://localhost:9080/api/system/systemLoad/5 URL. The request returns to you immediatedly with a message.
+// file 4
+index.js
+[source,xml,linenums,role="code_column hide_tags=copyright"]
+----
+include::finish/src/main/webapp/index.js[]
+----
 
-To see the system load, check out the web application at the http://localhost:9080 URL. Click the image:refresh.svg[refresh icon, 20, 20] refresh button. The latest system load data will be displayed in the table after 5 seconds.
+To see the system load, check out the web application at the http://localhost:9080 URL. Click the image:refresh.svg[refresh icon, 20, 20] refresh button that calls the [hotspot=refreshButton file=3]`refreshCall()` method. The [hotspot=refreshCall file=4]`refreshCall()` method calls the `/api/system/systemLoad/5` endpoint.
+
+The latest system load data will be displayed at the first row of the table after 5 seconds.
 
 
 == Synchronizing asynchronous tasks
