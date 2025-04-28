@@ -151,12 +151,12 @@ public class SystemConcurrency {
         // tag::scheduleCall[]
         virtualManagedExecutor.schedule(() -> {
         // end::scheduleCall[]
-            // tag::callCalculateSystemLoad[]
+            // tag::callCalculateSystemLoad1[]
             JsonObject systemLoad = calculateSystemLoad(false);
-            // end::callCalculateSystemLoad[]
-            // tag::broadcast[]
+            // end::callCalculateSystemLoad1[]
+            // tag::broadcast1[]
             sseSrvice.broadcast(systemLoad);
-            // end::broadcast[]
+            // end::broadcast1[]
             logger.info("System load at \"" + systemLoad.getString("time")
                 + "\" was boardcast.");
         // tag::after[]
@@ -175,22 +175,34 @@ public class SystemConcurrency {
     }
     // end::enableSchedule[]
 
-    // tag::schedule[]
+    // tag::asynchronous2[]
     @Asynchronous(runAt = { @Schedule(cron = "*/10 * * * * *")})
+    // end::asynchronous2[]
+    // tag::schedule[]
+    // tag::completableFuture[]
     public CompletableFuture<String> schedule() {
+    // end::completableFuture[]
         if (isScheduleEnabled()) {
+            // tag::callCalculateSystemLoad2[]
             JsonObject systemLoad = calculateSystemLoad(true);
+            // end::callCalculateSystemLoad2[]
+            // tag::broadcast2[]
             sseSrvice.broadcast(systemLoad);
+            // end::broadcast2[]
             logger.info("System load at \"" + systemLoad.getString("time")
                 + " was boardcast.");
+            // tag::returnNull[]
             return null;
+            // end::returnNull[]
         } else {
             logger.info("Schedule was disabled.");
             JsonObjectBuilder builder = Json.createObjectBuilder();
             builder.add("schedule", false);
             JsonObject systemLoad = builder.build();
             sseSrvice.broadcast(systemLoad);
+            // tag::returnCompletableFuture[]
             return Asynchronous.Result.complete("Completed");
+            // end::returnCompletableFuture[]
         }
     }
     // end::schedule[]

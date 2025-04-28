@@ -172,21 +172,21 @@ SseService.java
 include::start/src/main/java/io/openliberty/guides/system/SseService.java[]
 ----
 
-The [hotspot=getSystemLoad file=0]`getSystemLoad()` method uses the [hotspot=scheduleCall file=0]`virtualManagedExecutor` service to schedule a task that will be delayed with the given [hotspot=parameters hotspot=after file=0]`after` seconds. The task calls the [hotspot=calculateSystemLoad hotspot=callCalculateSystemLoad file=0]`calculateSystemLoad()` method to calculate the CPU and memory usage and then the [hotspot=broadcast file=0]`broadcasts()` method to broadcast the system load to the client through the [hotspot file=1]`SseService` bean that is provided for you. 
+The [hotspot=getSystemLoad file=0]`getSystemLoad()` method uses the [hotspot=scheduleCall file=0]`virtualManagedExecutor` service to schedule a task that will be delayed with the given [hotspot=parameters hotspot=after file=0]`after` seconds. The task calls the [hotspot=calculateSystemLoad hotspot=callCalculateSystemLoad1 file=0]`calculateSystemLoad()` method to calculate the CPU and memory usage and then the [hotspot=broadcast1 file=0]`broadcasts()` method to broadcast the system load to the client through the [hotspot file=1]`SseService` bean that is provided for you. 
 
 Annotate the [hotspot=asynchronous1 hotspot=parameters file=0]`getSystemLoad()` method with the `@Asynchronous` annotation to make it running asynchronously.
 
 // file 2
 SystemResource.java
-[source,xml,linenums,role="code_column hide_tags=copyright,schedule,schedulToggle,sse"]
+[source,xml,linenums,role="code_column hide_tags=copyright,schedule,schedulToggle"]
 ----
 include::finish/src/main/java/io/openliberty/guides/system/SystemResource.java[]
 ----
 
 [role="code_command hotspot file=2", subs="quotes"]
 ----
-#Replace the `SystemConcurrency.java` file.#
-`src/main/java/io/openliberty/guides/system/SystemConcurrency.java`
+#Replace the `SystemResource.java` file.#
+`src/main/java/io/openliberty/guides/system/SystemResource.java`
 ----
 
 Create the GET [hotspot=getSystemLoad file=2]`/systemLoad/{after}` endpoint that calls the above  `getSystemLoad()` asynchronous method and returns a message.
@@ -209,70 +209,67 @@ include::finish/src/main/webapp/index.js[]
 
 To see the system load, check out the web application at the http://localhost:9080 URL. Click the image:refresh.svg[refresh icon, 20, 20] refresh button that calls the [hotspot=refreshButton file=3]`refreshCall()` method. The [hotspot=refreshCall file=4]`refreshCall()` method calls the `/api/system/systemLoad/5` endpoint.
 
-After 5 seconds, you'll see the latest system load data at the first row of the table.
+After 5 seconds, you'll see that the latest system load data is added at the first row of the table.
 
 
-== Synchronizing asynchronous tasks
+== Scheduling asynchronous task
 
-Synchronize asynchronous tasks to update the system load of the systems in the inventory.
+Implement a schedule task to get the system load for every 10 seconds.
 
-InventoryAsyncTask.java
-[source, Java, linenums, role='code_column hide_tags=copyright,updateSystemsUsage']
+// file 0
+SystemConcurrency.java
+[source,xml,linenums,role="code_column hide_tags=copyright"]
 ----
-include::finish/inventory/src/main/java/io/openliberty/guides/inventory/InventoryAsyncTask.java[]
+include::finish/src/main/java/io/openliberty/guides/system/SystemConcurrency.java[]
 ----
 
 [role="code_command hotspot file=0", subs="quotes"]
 ----
-#Replace the `InventoryAsyncTask.java` file.#
-`inventory/src/main/java/io/openliberty/guides/inventory/InventoryAsyncTask.java`
+#Replace the `SystemConcurrency.java` file.#
+`src/main/java/io/openliberty/guides/system/SystemConcurrency.java`
 ----
-The [hotspot=getSystemLoadMethod file=0]`getSystemLoad()` method calls the client's [hotspot=clientGetSystemLoad file=0]`getSystemLoad()` method to retrieve the system load, and returns the system load in [hotspot=getSystemLoadSignature file=0]`CompletableFuture<Double>` type by using the [hotspot=return file=0]`Asynchronous.Result.complete()` method.
 
-Annotate the [hotspot=asynchronous2 file=0]`getSystemLoad()` method with the `@Asynchronous` annotation to make it running asynchronously.
+Similarly, the [hotspot=schedule file=0]`schedule()` method calls the [hotspot=calculateSystemLoad hotspot=callCalculateSystemLoad2 file=0]`calculateSystemLoad()` method to calculate the CPU and memory usage and then the [hotspot=broadcast2 file=0]`broadcasts()` method to broadcast the system load to the client.
 
-InventoryResource.java
-[source, Java, linenums, role='code_column hide_tags=copyright']
+Annotate the [hotspot=asynchronous2 hotspot=completableFuture file=0]`schedule()` method with the `@Asynchronous` annotation. Configue the schedule with the [hotspot=completableFuture file=0]`"*/10 * * * * *"` cron expression to make it running asynchronously in every 10 seconds. Return a [hotspot=returnNull file=0]`null` value to let the schedule to keep running.
+
+To stop the scheulde, return a [hotspot=completableFuture hotspot=returnCompletableFuture file=0]`CompletableFuture<>` object or raises an exception.
+
+// file 1
+SystemResource.java
+[source,xml,linenums,role="code_column hide_tags=copyright"]
 ----
-include::finish/inventory/src/main/java/io/openliberty/guides/inventory/InventoryResource.java[]
+include::finish/src/main/java/io/openliberty/guides/system/SystemResource.java[]
 ----
 
 [role="code_command hotspot file=1", subs="quotes"]
 ----
-#Replace the `InventoryResource.java` file.#
-`inventory/src/main/java/io/openliberty/guides/inventory/InventoryResource.java`
+#Replace the `SystemConcurrSystemResourceency.java` file.#
+`src/main/java/io/openliberty/guides/system/SystemResource.java`
 ----
 
-Create the PUT [hotspot=updateSystemLoad file=1]`/systems/systemLoad` endpoint that multiply calls the [hotspot=inventoryAsyncTask file=1]`task` bean's [hotspot=getSystemLoad file=1]`getSystemLoad()` method to retrieve the system load of all systems in the inventory. When the calls return, the [hotspot=thenAcceptAsync file=1]`thenAcceptAsync()` method processes the returned data with the `CompletableFuture<Double>` type and calls the system's [hotspot=setSystemLoad file=1]`setSystemLoad()` method to store the system load. Exceptions are handled in a callback that is provided to the [hotspot=exceptionally file=1]`exceptionally()` method, which behaves like a catch block. 
+Create the GET [hotspot=schedulToggle file=1]`/schedule/toggle` endpoint that calls the above `schedule()` scheduled asynchronous method.
 
-A [hotspot=countDownLatch file=1]`CountDownLatch` object is used to track asynchronous requests. The [hotspot=countDown1 hotspot=countDown2 file=1]`countDown()` method is called whenever a request is complete. When the [hotspot=countDownLatch hotspot=countDown1 hotspot=countDown2 file=1]`CountDownLatch` is at zero, it indicates that all asynchronous requests are complete. By using the [hotspot=await file=1]`await()` method of the `CountDownLatch`, the program waits for all the asynchronous requests to be complete. When all asynchronous requests are complete, the program resumes execution with all required data processed.
+// file 2
+index.html
+[source,xml,linenums,role="code_column hide_tags=copyright"]
+----
+include::finish/src/main/webapp/index.html[]
+----
 
-ifndef::cloud-hosted[]
-Go to the http://localhost:9081/openapi/ui URL and make a PUT request to the `/api/inventory/systems/systemLoad` endpoint with the `after` parameter set to `5` seconds. The request takes 5 seconds to complete. Go to the http://localhost:9081/api/inventory/systems URL to see that the `systemLoad` values are updated to nonzero.
-endif::[]
+// file 3
+index.js
+[source,xml,linenums,role="code_column hide_tags=copyright"]
+----
+include::finish/src/main/webapp/index.js[]
+----
 
-ifdef::cloud-hosted[]
-Make a PUT request to the `/api/inventory/systems/systemLoad` endpoint by the following command:
+Check out the web application at the http://localhost:9080 URL. Click the image:schedule.svg[schedule icon, 20, 20] schedule button to toggle the schedule that posts the latest system load data in every 10 seconds. The button calls the [hotspot=scheduleButton file=2]`scheduleCall()` method. The [hotspot=scheduleCall file=3]`scheduleCall()` method calls the `/api/system/schedule/toggle` endpoint.
 
-```bash
-curl -X PUT http://localhost:9081/api/inventory/systems/systemLoad?after=5
-```
+You'll see that the latest system load data is added at the first row of the table in every 10 seconds.
 
-The request takes 5 seconds to complete.
+Click the image:schedule.svg[schedule icon, 20, 20] schedule button again to stop the schedule.
 
-Go to the `/api/inventory/systems` endpoint to see that the `systemLoad` values are updated to nonzero by the following command:
-
-```bash
-curl http://localhost:9081/api/inventory/systems | jq
-```
-endif::[]
-
-
-//== Scheduling asynchronous task
-//This section will be available when Liberty supports concurrency-3.1 (now is in beta)
-//
-//* Replace the InventoryAsyncTask
-//  * Create a scheduling method that updates the memory usage and system load of all systems in every 20 seconds
 
 == Testing the inventory application
 
