@@ -159,7 +159,7 @@ SystemConcurrency.java
 include::finish/src/main/java/io/openliberty/guides/system/SystemConcurrency.java[]
 ----
 
-[role="code_command hotspot file=4", subs="quotes"]
+[role="code_command hotspot file=0", subs="quotes"]
 ----
 #Replace the `SystemConcurrency.java` file.#
 `src/main/java/io/openliberty/guides/system/SystemConcurrency.java`
