@@ -40,6 +40,7 @@ public class SystemResource {
          return bean.getProperties(prefix);
     }
 
+    // tag::getSystemLoad[]
     @GET
     @Path("/systemLoad/{after}")
     @Produces(MediaType.TEXT_PLAIN)
@@ -47,6 +48,7 @@ public class SystemResource {
         bean.getSystemLoad(after);
         return "Check after " + after + " seconds.";
     }
+    // end::getSystemLoad[]
 
     @GET
     @Path("/schedule")

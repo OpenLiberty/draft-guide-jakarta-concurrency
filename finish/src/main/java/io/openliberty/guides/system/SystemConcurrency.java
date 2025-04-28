@@ -142,14 +142,24 @@ public class SystemConcurrency {
 
     // tag::getSystemLoad[]
     @Asynchronous
+    // tag::parameters[]
     public void getSystemLoad(int after) {
+    // end::parameters[]
         logger.info("New system load will be boardcast after " + after + " seconds.");
+        // tag::scheduleCall[]
         virtualManagedExecutor.schedule(() -> {
+        // end::scheduleCall[]
+            // tag::callCalculateSystemLoad[]
             JsonObject systemLoad = calculateSystemLoad(false);
+            // end::callCalculateSystemLoad[]
+            // tag::broadcast[]
             sseSrvice.broadcast(systemLoad);
+            // end::broadcast[]
             logger.info("System load at \"" + systemLoad.getString("time")
                 + "\" was boardcast.");
+        // tag::after[]
         }, after, TimeUnit.SECONDS);
+        // end::after[]
     }
     // end::getSystemLoad[]
 

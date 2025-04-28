@@ -150,55 +150,43 @@ Go to the http://localhost:9080/api/system/properties/java URL to see all the `j
 
 == Creating asynchronous task
 
-Implement an asynchronous task to update the memory usage of the systems in the inventory.
+Implement an asynchronous task to get the system load that includes the CPU and memory usages.
 
-InventoryAsyncTask.java
-[source, Java, linenums, role='code_column hide_tags=copyright,updateSystemsUsage,getSystemLoad']
+// file 0
+SystemConcurrency.java
+[source,xml,linenums,role="code_column hide_tags=copyright,enableSchedule,schedule"]
 ----
-include::finish/inventory/src/main/java/io/openliberty/guides/inventory/InventoryAsyncTask.java[]
-----
-
-[role="code_command hotspot file=0", subs="quotes"]
-----
-#Replace the `InventoryAsyncTask.java` file.#
-`inventory/src/main/java/io/openliberty/guides/inventory/InventoryAsyncTask.java`
+include::finish/src/main/java/io/openliberty/guides/system/SystemConcurrency.java[]
 ----
 
-The [hotspot=updateSystemsMemoryUsedMethod file=0]`updateSystemsMemoryUsed()` method uses the [hotspot=systems hotspot=schedule file=0]`managedExecutor` service to schedule multiple tasks that will be delayed with the given [hotspot=parameters hotspot=after file=0]`after` seconds and ran in parallel. Each task calls the client's [hotspot=getMemoryUsed file=0]`getMemoryUsed()` method to retrieve the memory usage, and calls the system's [hotspot=setMemoryUsage file=0]`setMemoryUsed()` method to calculate the memory usage.
-
-Annotate the [hotspot=asynchronous1 file=0]`updateSystemsMemoryUsed()` method with the `@Asynchronous` annotation to make it running asynchronously.
-
-InventoryResource.java
-[source, Java, linenums, role='code_column hide_tags=copyright,updateSystemLoad']
+[role="code_command hotspot file=4", subs="quotes"]
 ----
-include::finish/inventory/src/main/java/io/openliberty/guides/inventory/InventoryResource.java[]
+#Replace the `SystemConcurrency.java` file.#
+`src/main/java/io/openliberty/guides/system/SystemConcurrency.java`
 ----
 
-[role="code_command hotspot file=1", subs="quotes"]
+// file 1
+SseService.java
+[source,xml,linenums,role="code_column hide_tags=copyright"]
 ----
-#Replace the `InventoryResource.java` file.#
-`inventory/src/main/java/io/openliberty/guides/inventory/InventoryResource.java`
+include::start/src/main/java/io/openliberty/guides/system/SseService.java[]
 ----
 
-Create the PUT [hotspot=updateMemoryUsed file=1]`/systems/memoryUsed` endpoint that uses the [hotspot=inventoryAsyncTask file=1]`task` bean's [hotspot=updateSystemsMemoryUsed file=1]`updateSystemsMemoryUsed()` method to update the memory usage of all systems in the inventory and returns immediately.
+The [hotspot=getSystemLoad file=0]`getSystemLoad()` method uses the [hotspot=scheduleCall file=0]`virtualManagedExecutor` service to schedule a task that will be delayed with the given [hotspot=parameters hotspot=after file=0]`after` seconds. The task calls the [hotspot=calculateSystemLoad hotspot=callCalculateSystemLoad file=0]`calculateSystemLoad()` method to calculate the CPU and memory usage and then the [hotspot=parameters hotspot=after file=0]`broadcasts()` method to broadcast the system load to the client through the [hotspot file=1]`SseService` bean that is provided for you. 
 
-ifndef::cloud-hosted[]
-Go to the http://localhost:9081/openapi/ui URL and make a PUT request to the `/api/inventory/systems/memoryUsed` endpoint with the `after` parameter set to `5` seconds. After 5 seconds, go to the http://localhost:9081/api/inventory/systems URL to see that the `memoryUsage` values are updated to nonzero.
-endif::[]
+Annotate the [hotspot=asynchronous1 file=0]`getSystemLoad()` method with the `@Asynchronous` annotation to make it running asynchronously.
 
-ifdef::cloud-hosted[]
-Make a PUT request to the `/api/inventory/systems/memoryUsed` endpoint by the following command:
+// file 2
+SystemResource.java
+[source,xml,linenums,role="code_column hide_tags=copyright"]
+----
+include::start/src/main/java/io/openliberty/guides/system/SystemResource.java[]
+----
 
-```bash
-curl -X PUT http://localhost:9081/api/inventory/systems/memoryUsed?after=5
-```
+Because the GET [hotspot=getSystemLoad file=2]`/api/system/systemLoad/{after}` endpoint is provided for you, try out the http://localhost:9080/api/system/systemLoad/5 URL. The request returns to you immediatedly with a message.
 
-After 5 seconds, go to the `/api/inventory/systems` endpoint again to see that the `memoryUsage` values are updated to nonzero by the following command:
+To see the system load, check out the web application at the http://localhost:9080 URL. Click the image:refresh.svg[refresh icon, 20, 20] refresh button. The latest system load data will be displayed in the table after 5 seconds.
 
-```bash
-curl http://localhost:9081/api/inventory/systems | jq
-```
-endif::[]
 
 == Synchronizing asynchronous tasks
 
