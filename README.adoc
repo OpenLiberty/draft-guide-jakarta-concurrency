@@ -119,6 +119,8 @@ include::finish/src/main/java/io/openliberty/guides/system/WithVirtualThreads.ja
 
 The [hotspot file=3]`WithVirtualThreads` qualifier annotation class is used to enumerate the required qualifiers for the managed executor service.
 
+The managed executor service provides a way to start asynchronous tasks within an application server environment. It propagates various thread contexts that are relevant to Jakarta EE applications.
+
 // file 4
 SystemConcurrency.java
 [source,xml,linenums,role="code_column hide_tags=copyright,subscribe,calculateSystemLoad,getSystemLoad,enableSchedule,schedule"]
@@ -138,7 +140,7 @@ Annotate the [hotspot file=4]`SystemConcurrency` class with the [hotspot=annotat
 The `@ManagedScheduledExecutorDefinition` annotation and the `ManagedScheduledExecutorService` interface are used in this guide instead of `@ManagedScheduledDefinition` annotation and `ManagedExecutorService` interface, because you will implement a scheduled task in the following section. For more information about these annotations and classes, see the Javadocs for https://openliberty.io/docs/latest/reference/javadoc/liberty-jakartaee10-javadoc.html?path=liberty-jakartaee10-javadoc/jakarta/enterprise/concurrent/package-summary.html[jakarta.enterprise.concurrent^].
 
 
-Use the [hotspot=virtualManagedExecutor hotspot=submit file=4]`virtualManagedExecutor` instance to submit callable tasks that call the `getSystemPropertyTask()` method to get different property values parallelly. Each task creates a virtual thread and returns a `Future<String>` object.
+Use the [hotspot=virtualManagedExecutor hotspot=submit file=4]`virtualManagedExecutor` instance to submit callable tasks that call the `getSystemPropertyTask()` method to collect different property values parallelly. Each task creates a virtual thread and returns a `Future<String>` object.
 
 Perform a [hotspot=collect file=4]`collect()` mutable reduction operation on the entries of the [hotspot=properties file=4]`properties` map. In the operation, use the [hotspot=get file=4]`get()` method to wait for all threads to complete and to collect the results.
 

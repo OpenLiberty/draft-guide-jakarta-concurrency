@@ -95,9 +95,10 @@ public class SystemConcurrency {
                                   .collect(Collectors.toList());
         for (String k : keys) {
             // tag::submit[]
-            properties.put(k, virtualManagedExecutor.submit(() -> {
+            Future<String> v = virtualManagedExecutor.submit(() -> {
                 return getSystemPropertyTask(k);
-            }));
+            });
+            properties.put(k, v);
             // end::submit[]
         }
         // tag::collect[]
