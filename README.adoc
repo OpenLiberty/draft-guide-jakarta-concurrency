@@ -294,7 +294,9 @@ The [hotspot=testGetSystemLoad file=0]`testGetSystemLoad()` tests the GET `/api/
 
 The [hotspot=testEnableSchedule file=0]`testEnableSchedule()` tests the GET `/api/systems/schedule/toggle` endpoint and confirms that there are 3 system loads after 35 seconds.
 
-=== Running the tests
+// =================================================================================================
+// Running the tests
+// =================================================================================================
 
 [role='command']
 include::{common-includes}/devmode-test.adoc[]
