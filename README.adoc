@@ -279,13 +279,13 @@ Although you can test your application manually, automated tests make sure consi
 SystemEndpointIT.java
 [source, Java, linenums, role='code_column hide_tags=copyright']
 ----
-include::finish/inventory/src/test/java/it/io/openliberty/guides/system/SystemEndpointIT.java[]
+include::finish/src/test/java/it/io/openliberty/guides/system/SystemEndpointIT.java[]
 ----
 
 [role="code_command hotspot file=0", subs="quotes"]
 ----
 #Create the `SystemEndpointIT.java` file.#
-`inventory/src/test/java/it/io/openliberty/guides/system/SystemEndpointIT.java`
+`src/test/java/it/io/openliberty/guides/system/SystemEndpointIT.java`
 ----
 
 The [hotspot=testGetProperties file=0]`testGetProperties()` tests the GET `/api/system/properties/os` endpoint and confirms that there are 4 `os.*` properties.
