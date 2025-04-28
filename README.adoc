@@ -174,7 +174,7 @@ include::start/src/main/java/io/openliberty/guides/system/SseService.java[]
 
 The [hotspot=getSystemLoad file=0]`getSystemLoad()` method uses the [hotspot=scheduleCall file=0]`virtualManagedExecutor` service to schedule a task that will be delayed with the given [hotspot=parameters hotspot=after file=0]`after` seconds. The task calls the [hotspot=calculateSystemLoad hotspot=callCalculateSystemLoad file=0]`calculateSystemLoad()` method to calculate the CPU and memory usage and then the [hotspot=broadcast file=0]`broadcasts()` method to broadcast the system load to the client through the [hotspot file=1]`SseService` bean that is provided for you. 
 
-Annotate the [hotspot=asynchronous1 file=0]`getSystemLoad()` method with the `@Asynchronous` annotation to make it running asynchronously.
+Annotate the [hotspot=asynchronous1 hotspot=parameters file=0]`getSystemLoad()` method with the `@Asynchronous` annotation to make it running asynchronously.
 
 // file 2
 SystemResource.java
@@ -209,7 +209,7 @@ include::finish/src/main/webapp/index.js[]
 
 To see the system load, check out the web application at the http://localhost:9080 URL. Click the image:refresh.svg[refresh icon, 20, 20] refresh button that calls the [hotspot=refreshButton file=3]`refreshCall()` method. The [hotspot=refreshCall file=4]`refreshCall()` method calls the `/api/system/systemLoad/5` endpoint.
 
-The latest system load data will be displayed at the first row of the table after 5 seconds.
+After 5 seconds, you'll see the latest system load data at the first row of the table.
 
 
 == Synchronizing asynchronous tasks
