@@ -122,6 +122,7 @@ public class SystemEndpointIT {
         Thread.sleep(11000);
     }
 
+    // tag::testGetProperties[]
     @Test
     @Order(1)
     public void testGetProperties() {
@@ -130,10 +131,13 @@ public class SystemEndpointIT {
         assertEquals(200, response.getStatus(),
             "Incorrect response code from " + target.getUri().getPath());
         JsonObject properties = response.readEntity(JsonObject.class);
+        assertEquals(4, properties.size());
         assertEquals(System.getProperty("os.name"), properties.getString("os.name"));
         response.close();
     }
+    // end::testGetProperties[]
 
+    // tag::testGetSystemLoad[]
     @Test
     @Order(2)
     public void testGetSystemLoad() throws Exception {
@@ -149,7 +153,9 @@ public class SystemEndpointIT {
         assertEquals(0, countDown.getCount(),
                 "The countDown was not 0.");
     }
+    // end::testGetSystemLoad[]
 
+    // tag::testEnableSchedule[]
     @Test
     @Order(3)
     public void testEnableSchedule() throws Exception {
@@ -162,5 +168,6 @@ public class SystemEndpointIT {
             toggleSchedule();
         }
     }
+    // end::testEnableSchedule[]
 
 }
