@@ -30,9 +30,8 @@ Learn how to run tasks parallelly or asynchronously in Java microservices by usi
 
 Jakarta Concurrency enables the creation of managed executors to run concurrent and asynchronous tasks in different threads. It also enables the creation of managed thread factories to create threads that run with the thread context of the component that looks up the managed thread factory. The threads are managed by the application server, coexist, and safely interact in the Enterprise Java Beans and Web containers. To learn more about Jakarta Concurrency, see the https://jakarta.ee/specifications/concurrency[Jakarta Concurrency specification^].
 
-You'll enhance a microservice that provides GET REST APIs to retrieve the Java system properties parallelly and calculate the system load asynchronously. Also, you can toggle the schedule to retrieve the current system load.
+The application that you'll build is a dynamic web application by using Jakarta Concurrency, Jakarta RESTful Web Services, and Server-Sent Events. The front-end files are provided for you. You'll enhance it to learn how to run tasks in parallel by enhancing the GET `/api/system/properties/{prefix}` endpoint. You'll create an asynchronous task by implementing the GET `/api/system/systemLoad/{after}` endpoint that calculates the system load and broadcast it to clients after the provided `{after}` seconds. Also, you'll learn how to create a scheduled asynchronous task that retrieves and broadcasts the current system load for every 10 seconds.
 
-You'll learn how to run tasks in parallel by enhancing the GET `/api/system/properties/{prefix}` endpoint, create asynchronous task by the GET `/api/system/systemLoad/{after}` endpoint that updates the system load after the provided `{after}` seconds, and schedule a task to retreive the current system load for every 10 seconds.
 
 // =================================================================================================
 // Getting started
