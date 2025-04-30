@@ -300,7 +300,7 @@ The [hotspot=testEnableSchedule file=0]`testEnableSchedule()` tests the GET `/ap
 [role='command']
 include::{common-includes}/devmode-test.adoc[]
 
-If the tests pass, you see a similar output to the following example:
+If the tests pass, you see an output similar to the following example:
 
 [source, role='no_copy']
 ----
