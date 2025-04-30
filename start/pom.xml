@@ -34,12 +34,6 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.eclipse.jetty.websocket</groupId>
-            <artifactId>websocket-jakarta-client</artifactId>
-            <version>11.0.25</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-client</artifactId>
             <version>6.2.12.Final</version>
@@ -81,7 +75,7 @@
                 <groupId>io.openliberty.tools</groupId>
                 <artifactId>liberty-maven-plugin</artifactId>
                 <version>3.11.3</version>
-<configuration><install><runtimeUrl>https://public.dhe.ibm.com/ibmdl/export/pub/software/openliberty/runtime/nightly/2025-04-20_1101/openliberty-all-25.0.0.5-cl250520250420-1101.zip</runtimeUrl></install></configuration>
+<configuration><install><runtimeUrl>https://public.dhe.ibm.com/ibmdl/export/pub/software/openliberty/runtime/nightly/2025-04-29_0302/openliberty-all-25.0.0.5-cl250520250429-0302.zip</runtimeUrl></install></configuration>
             </plugin>
 
             <!-- Plugin to run unit tests -->
