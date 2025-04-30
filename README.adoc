@@ -28,11 +28,11 @@ Learn how to run tasks parallelly or asynchronously in Java microservices by usi
 
 == What you'll learn
 
-Jakarta Concurrency enables the creation of managed executors to run concurrent and asynchronous tasks in different threads. It also enables the creation of managed thread factories to create threads that run with the thread context of the component that looks up the managed thread factory. The threads are managed by the application server, coexist and safely interact in the Enterprise Java Beans and Web containers. To learn more about Jakarta Concurrency, see the https://jakarta.ee/specifications/concurrency[Jakarta Concurrency specification^].
+Jakarta Concurrency enables the creation of managed executors to run concurrent and asynchronous tasks in different threads. It also enables the creation of managed thread factories to create threads that run with the thread context of the component that looks up the managed thread factory. The threads are managed by the application server, coexist, and safely interact in the Enterprise Java Beans and Web containers. To learn more about Jakarta Concurrency, see the https://jakarta.ee/specifications/concurrency[Jakarta Concurrency specification^].
 
-The microservice in this guide provides GET REST APIs to retrieve the Java system properties parallelly and calculate the system load asynchronously. Also, you can toggle the schedule to retreive the latest system load.
+You'll enhance a microservice that provides GET REST APIs to retrieve the Java system properties parallelly and calculate the system load asynchronously. Also, you can toggle the schedule to retrieve the current system load.
 
-You'll learn how to run tasks in parallel by enhancing the GET `/api/system/properties/{prefix}` endpoint, create asynchronous task by the GET `/api/system/systemLoad/{after}` endpoint that updates the system load after the provided `{after}` seconds, and schedule a task to retreive the latest the system load for every 10 seconds.
+You'll learn how to run tasks in parallel by enhancing the GET `/api/system/properties/{prefix}` endpoint, create asynchronous task by the GET `/api/system/systemLoad/{after}` endpoint that updates the system load after the provided `{after}` seconds, and schedule a task to retreive the current system load for every 10 seconds.
 
 // =================================================================================================
 // Getting started
@@ -57,9 +57,9 @@ Go to the http://localhost:9080/api/system/properties/os URL to see all the `os.
 
 If you interest, you can check out the endpoint by the http://localhost:9080/api/system/properties/user and http://localhost:9080/api/system/properties/java URLs.
 
-Check out the web application at the http://localhost:9080 URL. Click the image:refresh.svg[refresh icon, 20, 20] refresh button, located in the table title, to update and display the latest system load in the table after 5 seconds.
+Check out the web application at the http://localhost:9080 URL. Click the image:refresh.svg[refresh icon, 20, 20] refresh button, located in the table title, to update and display the current system load in the table after 5 seconds.
 
-Click the image:schedule.svg[schedule icon, 20, 20] schedule button to toggle the schedule that posts the latest system load in every 10 seconds.
+Click the image:schedule.svg[schedule icon, 20, 20] schedule button to toggle the schedule that posts the current system load in every 10 seconds.
 
 [role='command']
 include::{common-includes}/twyb-end.adoc[]
@@ -150,7 +150,7 @@ Go to the http://localhost:9080/api/system/properties/java URL to see all the `j
 
 == Creating asynchronous task
 
-Implement an asynchronous task to get the latest system load that includes the CPU and memory usages.
+Implement an asynchronous task to get the current system load that includes the CPU and memory usages.
 
 // file 0
 SystemConcurrency.java
@@ -209,12 +209,12 @@ include::finish/src/main/webapp/index.js[]
 
 To see the system load, check out the web application at the http://localhost:9080 URL. Click the image:refresh.svg[refresh icon, 20, 20] refresh button that calls the [hotspot=refreshButton file=3]`refreshCall()` method. The [hotspot=refreshCall file=4]`refreshCall()` method calls the `/api/system/systemLoad/5` endpoint.
 
-After 5 seconds, you'll see that the latest system load is added at the first row of the table.
+After 5 seconds, you'll see that the current system load is added at the first row of the table.
 
 
 == Scheduling asynchronous task
 
-Implement a schedule task to get the latest system load for every 10 seconds.
+Implement a schedule task to get the current system load for every 10 seconds.
 
 // file 0
 SystemConcurrency.java
@@ -264,9 +264,9 @@ index.js
 include::finish/src/main/webapp/index.js[]
 ----
 
-Check out the web application at the http://localhost:9080 URL. Click the image:schedule.svg[schedule icon, 20, 20] schedule button to toggle the schedule that posts the latest system load in every 10 seconds. The button calls the [hotspot=scheduleButton file=2]`scheduleCall()` method. The [hotspot=scheduleCall file=3]`scheduleCall()` method calls the `/api/system/schedule/toggle` endpoint.
+Check out the web application at the http://localhost:9080 URL. Click the image:schedule.svg[schedule icon, 20, 20] schedule button to toggle the schedule that posts the current system load in every 10 seconds. The button calls the [hotspot=scheduleButton file=2]`scheduleCall()` method. The [hotspot=scheduleCall file=3]`scheduleCall()` method calls the `/api/system/schedule/toggle` endpoint.
 
-You'll see that the latest system load is added at the first row of the table in every 10 seconds.
+You'll see that the current system load is added at the first row of the table in every 10 seconds.
 
 After you are finished checking out the schedule, click the image:schedule.svg[schedule icon, 20, 20] schedule button again to stop the schedule.
 
