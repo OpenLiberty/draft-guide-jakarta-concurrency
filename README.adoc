@@ -9,22 +9,22 @@
 :page-layout: guide-multipane
 :page-duration: 20 minutes
 :page-releasedate: 2025-06-30
-:page-description: Learn how to run tasks parallelly or asynchronously in Java microservices by using Jakarta Concurrency.
+:page-description: Learn how to run tasks concurrently or asynchronously in Java microservices by using Jakarta Concurrency.
 :guide-author: Open Liberty
 :page-tags: ['jakarta-ee']
 :page-permalink: /guides/{projectid}
 :imagesdir: /img/guide/{projectid}
-:page-related-guides: ['reactive-rest-client', 'microprofile-rest-client-async, 'reactive-messaging-sse']
+:page-related-guides: ['microprofile-rest-client-async, 'reactive-messaging-sse', 'reactive-rest-client']
 :common-includes: https://raw.githubusercontent.com/OpenLiberty/guides-common/prod
 :source-highlighter: prettify
-:page-seo-title: Running tasks parallelly or asynchronously in Java microservices by using Jakarta Concurrency APIs
-:page-seo-description: A getting started tutorial with examples on how to run tasks parallelly or asynchronously in Java microservices by using Jakarta Concurrency APIs.
-= Running tasks parallelly or asynchronously in Java microservices
+:page-seo-title: Running tasks concurrently or asynchronously in Java microservices by using Jakarta Concurrency
+:page-seo-description: A getting started tutorial with examples on how to run tasks concurrently or asynchronously in Java microservices by using Jakarta Concurrency.
+= Running tasks concurrently or asynchronously in Java microservices
 
 [.hidden]
 NOTE: This repository contains the guide documentation source. To view the guide in published form, view it on the https://openliberty.io/guides/{projectid}.html[Open Liberty website].
 
-Learn how to run tasks parallelly or asynchronously in Java microservices by using Jakarta Concurrency.
+Learn how to run tasks concurrently or asynchronously in Java microservices by using Jakarta Concurrency.
 
 == What you'll learn
 
@@ -42,7 +42,7 @@ include::{common-includes}/gitclone.adoc[]
 [role='command']
 include::{common-includes}/twyb-intro.adoc[]
 
-Go to the http://localhost:9080/api/system/properties/os URL to see all the `os.*` properties. You will see an output similar to the following:
+Go to the http://localhost:9080/api/system/properties/os URL to see all the `os.*` properties. You will see an output similar to the following example:
 
 [role="no_copy"]
 ----
@@ -54,9 +54,9 @@ Go to the http://localhost:9080/api/system/properties/os URL to see all the `os.
 }
 ----
 
-If you interest, you can check out the endpoint by the http://localhost:9080/api/system/properties/user and http://localhost:9080/api/system/properties/java URLs.
+If you are interested, you can check out the endpoint by the http://localhost:9080/api/system/properties/user and http://localhost:9080/api/system/properties/java URLs.
 
-Check out the web application at the http://localhost:9080 URL. Click the image:refresh.svg[refresh icon, 20, 20] refresh button, located in the table title, to update and display the current system load in the table after 5 seconds.
+Check out the web application at the http://localhost:9080 URL. Click the image:refresh.svg[refresh icon, 20, 20] refresh button, which is located in the table title, to update and display the current system load in the table after 5 seconds.
 
 Click the image:schedule.svg[schedule icon, 20, 20] schedule button to toggle the schedule that posts the current system load in every 10 seconds.
 
@@ -136,14 +136,14 @@ include::finish/src/main/java/io/openliberty/guides/system/SystemConcurrency.jav
 Annotate the [hotspot file=4]`SystemConcurrency` class with the [hotspot=annotateManagedScheduledExecutor file=4]`@ManagedScheduledExecutorDefinition` annotation to provide a managed executor instance that enumerates the `WithVirtualThreads` required qualifiers through the [hotspot=managedScheduledExecutorService file=4]`ManagedScheduledExecutorService` injection point. Set the [hotspot=virtual file=4]`virtual` attribute to true to use virtual thread.
 
 // TODO: replace the javadoc link to jakartaee11
-The `@ManagedScheduledExecutorDefinition` annotation and the `ManagedScheduledExecutorService` interface are used in this guide instead of `@ManagedScheduledDefinition` annotation and `ManagedExecutorService` interface, because you will implement a scheduled task in the following sections. For more information about these annotations and classes, see the Javadocs for https://openliberty.io/docs/latest/reference/javadoc/liberty-jakartaee10-javadoc.html?path=liberty-jakartaee10-javadoc/jakarta/enterprise/concurrent/package-summary.html[jakarta.enterprise.concurrent^].
+The `@ManagedScheduledExecutorDefinition` annotation and the `ManagedScheduledExecutorService` interface are used in this bean instead of `@ManagedScheduledDefinition` annotation and `ManagedExecutorService` interface because you will implement a scheduled task in the following sections. For more information about these annotations and classes, see the Javadoc for https://openliberty.io/docs/latest/reference/javadoc/liberty-jakartaee10-javadoc.html?path=liberty-jakartaee10-javadoc/jakarta/enterprise/concurrent/package-summary.html[jakarta.enterprise.concurrent^].
 
 
-Use the [hotspot=virtualManagedExecutor hotspot=submit file=4]`virtualManagedExecutor` instance to submit callable tasks that call the `getSystemPropertyTask()` method to collect different property values parallelly. Each task creates a virtual thread and returns a `Future<String>` object.
+Use the [hotspot=virtualManagedExecutor hotspot=submit file=4]`virtualManagedExecutor` instance to submit callable tasks that call the `getSystemPropertyTask()` method to collect different property values in parallel. Each task creates a virtual thread and returns a `Future<String>` object.
 
 Perform a [hotspot=collect file=4]`collect()` mutable reduction operation on the entries of the [hotspot=properties file=4]`properties` map. In the operation, use the [hotspot=get file=4]`get()` method to wait for all threads to complete and to collect the results.
 
-You started the Open Liberty in dev mode at the beginning of this section, so all the changes were automatically picked up.
+You started the Open Liberty in dev mode at the beginning of this section, so all the changes are automatically picked up.
 
 Go to the http://localhost:9080/api/system/properties/java URL to see all the `java.*` properties. Notice that the URL takes a second to get the result.
 
@@ -171,7 +171,7 @@ SseService.java
 include::start/src/main/java/io/openliberty/guides/system/SseService.java[]
 ----
 
-The [hotspot=getSystemLoad file=0]`getSystemLoad()` method uses the [hotspot=scheduleCall file=0]`virtualManagedExecutor` service to schedule a task that will be delayed with the given [hotspot=parameters hotspot=after file=0]`after` seconds. The task calls the [hotspot=calculateSystemLoad hotspot=callCalculateSystemLoad1 file=0]`calculateSystemLoad()` method to calculate the CPU and memory usage and then the [hotspot=broadcast1 file=0]`broadcasts()` method to broadcast the system load to clients through the [hotspot file=1]`SseService` bean that is provided for you. 
+The [hotspot=getSystemLoad file=0]`getSystemLoad()` method uses the [hotspot=scheduleCall file=0]`virtualManagedExecutor` service to schedule a task that will be delayed with the given [hotspot=parameters hotspot=after file=0]`after` seconds. The task calls the [hotspot=calculateSystemLoad hotspot=callCalculateSystemLoad1 file=0]`calculateSystemLoad()` method to calculate the CPU and memory usage. Then, it calls the [hotspot=broadcast1 file=0]`broadcasts()` method to broadcast the system load to clients through the [hotspot file=1]`SseService` bean that is provided for you.
 
 Annotate the [hotspot=asynchronous1 hotspot=parameters file=0]`getSystemLoad()` method with the `@Asynchronous` annotation to make it running asynchronously.
 
@@ -190,7 +190,7 @@ include::finish/src/main/java/io/openliberty/guides/system/SystemResource.java[]
 
 Create the GET [hotspot=getSystemLoad file=2]`/systemLoad/{after}` endpoint that calls the above  `getSystemLoad()` asynchronous method and returns a message.
 
-Try out the http://localhost:9080/api/system/systemLoad/5 URL. The request returns to you immediatedly with the message.
+Try out the http://localhost:9080/api/system/systemLoad/5 URL. The request returns to you immediately with the message.
 
 // file 3
 index.html
@@ -230,9 +230,9 @@ include::finish/src/main/java/io/openliberty/guides/system/SystemConcurrency.jav
 
 Similarly, the [hotspot=schedule file=0]`schedule()` method calls the [hotspot=calculateSystemLoad hotspot=callCalculateSystemLoad2 file=0]`calculateSystemLoad()` method to calculate the CPU and memory usage and then the [hotspot=broadcast2 file=0]`broadcasts()` method to broadcast the system load to clients.
 
-Annotate the [hotspot=asynchronous2 hotspot=completableFuture file=0]`schedule()` method with the `@Asynchronous` annotation. Configue the schedule with the [hotspot=asynchronous2 file=0]`"*/10 * * * * *"` cron expression to make it running asynchronously in every 10 seconds. Return a [hotspot=returnNull file=0]`null` value to let the schedule to keep running.
+Annotate the [hotspot=asynchronous2 hotspot=completableFuture file=0]`schedule()` method with the `@Asynchronous` annotation. Configure the schedule with the [hotspot=asynchronous2 file=0]`"*/10 * * * * *"` cron expression to make it running asynchronously in every 10 seconds. Return a [hotspot=returnNull file=0]`null` value to make the schedule to keep running.
 
-To stop the scheulde, return a [hotspot=completableFuture hotspot=returnCompletableFuture file=0]`CompletableFuture<>` object or raises an exception.
+To stop the schedule, return a [hotspot=completableFuture hotspot=returnCompletableFuture file=0]`CompletableFuture<>` object or raises an exception.
 
 // file 1
 SystemResource.java
@@ -287,11 +287,11 @@ include::finish/src/test/java/it/io/openliberty/guides/system/SystemEndpointIT.j
 `src/test/java/it/io/openliberty/guides/system/SystemEndpointIT.java`
 ----
 
-The [hotspot=testGetProperties file=0]`testGetProperties()` tests the GET `/api/system/properties/os` endpoint and confirms that there are 4 `os.*` properties.
+The [hotspot=testGetProperties file=0]`testGetProperties()` tests the GET `/api/system/properties/os` endpoint and confirms that 4 `os.*` properties are returned.
 
 The [hotspot=testGetSystemLoad file=0]`testGetSystemLoad()` tests the GET `/api/system/systemLoad/5` endpoint and confirms that the CPU and memory usages are not null after 10 seconds.
 
-The [hotspot=testEnableSchedule file=0]`testEnableSchedule()` tests the GET `/api/systems/schedule/toggle` endpoint and confirms that there are 3 system loads after 35 seconds.
+The [hotspot=testEnableSchedule file=0]`testEnableSchedule()` tests the GET `/api/systems/schedule/toggle` endpoint and confirms that 3 system loads are broadcast after 35 seconds.
 
 // =================================================================================================
 // Running the tests
@@ -322,6 +322,6 @@ include::{common-includes}/devmode-quit.adoc[]
 
 == Great work! You're done!
 
-You just developed tasks that run parallelly or asynchronously in a Java microservice by using Jakarta Concurrency in Open Liberty.
+You just developed tasks that run concurrently or asynchronously in a Java microservice by using Jakarta Concurrency in Open Liberty.
 
 include::{common-includes}/attribution.adoc[subs="attributes"]
