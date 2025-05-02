@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<server description="system">
+
+    <featureManager>
+        <platform>jakartaee-11.0</platform>
+        <feature>cdi</feature>
+        <!-- tag::concurrent[] -->
+        <feature>concurrent</feature>
+        <!-- end::concurrent[] -->
+        <feature>jsonb</feature>
+        <feature>restfulWS</feature>
+    </featureManager>
+
+    <variable name="http.port" defaultValue="9080"/>
+    <variable name="https.port" defaultValue="9443"/>
+
+    <httpEndpoint id="defaultHttpEndpoint" host="*"
+                  httpPort="${http.port}"
+                  httpsPort="${https.port}" />
+
+    <cors domain="/api/system/sse"
+        allowedOrigins="*"
+        allowedMethods="GET"
+        allowedHeaders="accept"
+        exposeHeaders=""
+        allowCredentials="true"
+        maxAge="3600" />
+      
+    <webApplication contextRoot="/" location="guide-jakarta-concurrency.war"/>
+
+    <logging consoleLogLevel="INFO"/>
+
+</server>

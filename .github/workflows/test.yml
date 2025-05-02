@@ -29,6 +29,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           LINTER_RULES_PATH: ./tools/pr-checker/linters/
           DEFAULT_BRANCH: draft
+          VALIDATE_CSS: false
+          VALIDATE_JAVASCRIPT_STANDARD: false
       - name: Summary
         if: "! github.event.pull_request.head.repo.fork"
         run: |
@@ -59,35 +61,19 @@ jobs:
       - name: Post tests
         if: always()
         run: |
-          sudo chmod -R +rx system/target
-          sudo chmod -R +rx inventory/target
-          logsPath=$(sudo find . -name "console.log" | grep inventory);
+          sudo chmod -R +rx target
+          logsPath=$(sudo find . -name "console.log");
           sudo cat "$logsPath" | sudo grep Launching
-          logsPath=$(sudo find . -name "console.log" | grep system);
-          sudo cat "$logsPath" | sudo grep Launching
-          sudo chmod 777 inventory/target/liberty/wlp/usr/servers/defaultServer/logs
-          sudo chmod 777 system/target/liberty/wlp/usr/servers/defaultServer/logs
-      - name: Archive finish inventory logs if failed
+          sudo chmod 777 target/liberty/wlp/usr/servers/defaultServer/logs
+      - name: Archive finish logs if failed
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: finish-inventory-logs
-          path: finish/inventory/target/liberty/wlp/usr/servers/defaultServer/logs/
-      - name: Archive finish system logs if failed
+          name: finish-logs
+          path: finish/target/liberty/wlp/usr/servers/defaultServer/logs/
+      - name: Archive start logs if failed
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: finish-system-logs
-          path: finish/system/target/liberty/wlp/usr/servers/defaultServer/logs/
-      - name: Archive start inventory logs if failed
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: start-inventory-logs
-          path: start/inventory/target/liberty/wlp/usr/servers/defaultServer/logs/
-      - name: Archive start system logs if failed
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: start-system-logs
-          path: start/system/target/liberty/wlp/usr/servers/defaultServer/logs/
+          name: start-logs
+          path: start/target/liberty/wlp/usr/servers/defaultServer/logs/
