@@ -18,7 +18,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -54,8 +53,8 @@ public class SystemConcurrency {
     private static final OperatingSystemMXBean OS =
         (OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
     private static final MemoryMXBean MEM = ManagementFactory.getMemoryMXBean();
-    private static final Random RANDOM = new Random();
 
+    private static enum Option { CPU_LOAD, MEMORY_USAGE };
     private static Logger logger = Logger.getLogger(SystemConcurrency.class.getName());
     private static boolean scheduleEnabled = false;
 
@@ -72,7 +71,7 @@ public class SystemConcurrency {
 
     private void doSomething(int t) {
         try {
-            Thread.sleep(RANDOM.nextInt(t * 1000));
+            Thread.sleep(t * 1000);
         } catch (InterruptedException e) {
             logger.warning(e.getMessage());
         }
@@ -125,45 +124,62 @@ public class SystemConcurrency {
     // end::subscribe[]
 
     // tag::calculateSystemLoad[]
-    private JsonObject calculateSystemLoad(boolean schedule) {
+    private JsonObject calculateSystemLoad(boolean schedule, Option option) {
         JsonObjectBuilder builder = Json.createObjectBuilder();
         if (schedule) {
             builder.add("schedule", true);
         }
         Date current = Calendar.getInstance().getTime();
         builder.add("time", current.toString());
-        builder.add("cpuLoad", Double.valueOf(OS.getCpuLoad() * 100.0));
-        long heapMax = MEM.getHeapMemoryUsage().getMax();
-        long heapUsed = MEM.getHeapMemoryUsage().getUsed();
-        builder.add("memoryUsage", Double.valueOf(heapUsed * 100.0 / heapMax));
+        if (option == Option.CPU_LOAD || option == null) {
+            builder.add("cpuLoad", Double.valueOf(OS.getCpuLoad() * 100.0));
+        }
+        if (option == Option.MEMORY_USAGE || option == null) {
+            long heapMax = MEM.getHeapMemoryUsage().getMax();
+            long heapUsed = MEM.getHeapMemoryUsage().getUsed();
+            builder.add("memoryUsage", Double.valueOf(heapUsed * 100.0 / heapMax));
+        }
         return builder.build();
     }
     // end::calculateSystemLoad[]
 
-    // tag::asynchronous1[]
-    @Asynchronous
-    // end::asynchronous1[]
-    // tag::getSystemLoad[]
-    // tag::parameters[]
-    public void getSystemLoad(int after) {
-    // end::parameters[]
-        logger.info("New system load will be boardcast after " + after + " seconds.");
+    // tag::getCpuLoad[]
+    public void getCpuLoad() {
+        logger.info("New CPU load will be boardcast after 5 seconds.");
         // tag::scheduleCall[]
         virtualManagedExecutor.schedule(() -> {
         // end::scheduleCall[]
             // tag::callCalculateSystemLoad1[]
-            JsonObject systemLoad = calculateSystemLoad(false);
+            JsonObject systemLoad = calculateSystemLoad(false, Option.CPU_LOAD);
             // end::callCalculateSystemLoad1[]
             // tag::broadcast1[]
             sseSrvice.broadcast(systemLoad);
             // end::broadcast1[]
-            logger.info("System load at \"" + systemLoad.getString("time")
+            logger.info("CPU load at \"" + systemLoad.getString("time")
                 + "\" was boardcast.");
         // tag::after[]
-        }, after, TimeUnit.SECONDS);
+        }, 5, TimeUnit.SECONDS);
         // end::after[]
     }
-    // end::getSystemLoad[]
+    // end::getCpuLoad[]
+
+    // tag::asynchronous1[]
+    @Asynchronous
+    // end::asynchronous1[]
+    // tag::getMemoryUsage[]
+    public void getMemoryUsage() {
+        logger.info("New memory usage will be boardcast after 5 seconds.");
+        doSomething(5);
+        // tag::callCalculateSystemLoad2[]
+        JsonObject systemLoad = calculateSystemLoad(false, Option.MEMORY_USAGE);
+        // end::callCalculateSystemLoad2[]
+        // tag::broadcast2[]
+        sseSrvice.broadcast(systemLoad);
+        // end::broadcast2[]
+        logger.info("Memory usage at \"" + systemLoad.getString("time")
+            + "\" was boardcast.");
+    }
+    // end::getMemoryUsage[]
 
     // tag::enableSchedule[]
     public boolean isScheduleEnabled() {
@@ -183,12 +199,12 @@ public class SystemConcurrency {
     public CompletableFuture<String> schedule() {
     // end::completableFuture[]
         if (isScheduleEnabled()) {
-            // tag::callCalculateSystemLoad2[]
-            JsonObject systemLoad = calculateSystemLoad(true);
-            // end::callCalculateSystemLoad2[]
-            // tag::broadcast2[]
+            // tag::callCalculateSystemLoad3[]
+            JsonObject systemLoad = calculateSystemLoad(true, null);
+            // end::callCalculateSystemLoad3[]
+            // tag::broadcast3[]
             sseSrvice.broadcast(systemLoad);
-            // end::broadcast2[]
+            // end::broadcast3[]
             logger.info("System load at \"" + systemLoad.getString("time")
                 + " was boardcast.");
             // tag::returnNull[]

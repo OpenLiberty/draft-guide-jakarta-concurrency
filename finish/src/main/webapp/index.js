@@ -40,14 +40,23 @@ function cleanCall () {
   }
 }
 
-// tag::refreshCall[]
-async function refreshCall () {
+// tag::refreshCpuLoadCall[]
+async function refreshCpuLoadCall () {
   const statusLabel = document.getElementById('status')
-  statusLabel.textContent = 'New system load will be boardcast after 5 seconds.'
-  const response = await fetch('/api/system/systemLoad/5')
+  statusLabel.textContent = 'New CPU load will be boardcast after 5 seconds.'
+  const response = await fetch('/api/system/systemLoad/cpuLoad')
   console.log(response.status)
 }
-// end::refreshCall[]
+// end::refreshCpuLoadCall[]
+
+// tag::refreshMemoryUsageCall[]
+async function refreshMemoryUsageCall () {
+  const statusLabel = document.getElementById('status')
+  statusLabel.textContent = 'New memory usage will be boardcast after 10 seconds.'
+  const response = await fetch('/api/system/systemLoad/memoryUsage')
+  console.log(response.status)
+}
+// end::refreshMemoryUsageCall[]
 
 // tag::scheduleCall[]
 async function scheduleCall () {

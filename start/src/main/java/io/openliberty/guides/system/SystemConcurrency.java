@@ -16,7 +16,6 @@ import java.lang.management.MemoryMXBean;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -31,24 +30,28 @@ public class SystemConcurrency {
     private static final OperatingSystemMXBean OS =
         (OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
     private static final MemoryMXBean MEM = ManagementFactory.getMemoryMXBean();
-    private static final Random RANDOM = new Random();
 
     private static Logger logger = Logger.getLogger(SystemConcurrency.class.getName());
 
     private void doSomething(int t) {
         try {
-            Thread.sleep(RANDOM.nextInt(t * 1000));
+            // tag::doSomethingSleep[]
+            Thread.sleep(t * 1000);
+            // end::doSomethingSleep[]
         } catch (InterruptedException e) {
             logger.warning(e.getMessage());
         }
     }
 
+    // tag::getSystemPropertyTask[]
     private String getSystemPropertyTask(String key) {
         logger.info("Getting the " + key + " property...");
         doSomething(1);
         return System.getProperty(key);
     }
+    // end::getSystemPropertyTask[]
 
+    // tag::getProperties[]
     public Map<String, String> getProperties(String prefix)
            throws InterruptedException, ExecutionException {
 
@@ -57,9 +60,12 @@ public class SystemConcurrency {
                                   .filter(k -> k.startsWith(prefix + "."))
                                   .collect(Collectors.toList());
         for (String k : keys) {
+            // tag::callGetSystemPropertyTask[]
             properties.put(k, getSystemPropertyTask(k));
+            // end::callGetSystemPropertyTask[]
         }
         return properties;
     }
+    // end::getProperties[]
 
 }

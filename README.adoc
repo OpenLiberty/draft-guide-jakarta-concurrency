@@ -17,8 +17,8 @@
 :page-related-guides: ['microprofile-rest-client-async, 'reactive-messaging-sse', 'reactive-rest-client']
 :common-includes: https://raw.githubusercontent.com/OpenLiberty/guides-common/prod
 :source-highlighter: prettify
-:page-seo-title: Running tasks concurrently or asynchronously in Java microservices by using Jakarta Concurrency
-:page-seo-description: A getting started tutorial with examples on how to run tasks concurrently or asynchronously in Java microservices by using Jakarta Concurrency.
+:page-seo-title: Running tasks in parallel or asynchronously in Java microservices by using Jakarta Concurrency
+:page-seo-description: A getting started tutorial with examples on how to run tasks in parallel or asynchronously in Java microservices by using Jakarta Concurrency.
 = Running tasks concurrently or asynchronously in Java microservices
 
 [.hidden]
@@ -30,7 +30,9 @@ Learn how to run tasks concurrently or asynchronously in Java microservices by u
 
 Jakarta Concurrency enables the creation of managed executors to run concurrent and asynchronous tasks in different threads. It also enables the creation of managed thread factories to create threads that run with the thread context of the component that looks up the managed thread factory. The threads are managed by the application server, coexist, and safely interact in the Enterprise Java Beans and Web containers. To learn more about Jakarta Concurrency, see the https://jakarta.ee/specifications/concurrency[Jakarta Concurrency specification^].
 
-The application that you'll build is a dynamic web application by using Jakarta Concurrency, Jakarta RESTful Web Services, and Server-Sent Events. The front-end files are provided for you. You'll update the application to learn how to run tasks in parallel by enhancing the GET `/api/system/properties/{prefix}` endpoint that retrieves system properties with the provided prefix. You'll create an asynchronous task by implementing the GET `/api/system/systemLoad/{after}` endpoint that calculates the system load and broadcast the data to clients after the provided `{after}` seconds. Also, you'll learn how to create a scheduled asynchronous task that calculates and broadcasts the current system load for every 10 seconds.
+The application that you'll build is a dynamic web application by using Jakarta Concurrency, Jakarta RESTful Web Services, and Server-Sent Events. The front-end files are provided for you.
+
+You'll update the application to learn how to run tasks in parallel by enhancing the GET `/api/system/properties/{prefix}` endpoint that retrieves system properties with the provided prefix. You'll learn two different ways to create asynchronous task by implementing the GET `/api/system/systemLoad/cpuLoad` and `/api/system/systemLoad/memoryUsage` endpoints that calculate the CPU load and memory usage and broadcast the data to clients. Also, you'll learn how to create a scheduled asynchronous task that calculates and broadcasts the current system load for every 10 seconds.
 
 
 // =================================================================================================
@@ -54,14 +56,15 @@ Go to the http://localhost:9080/api/system/properties/os URL to see all the `os.
 }
 ----
 
-If you are interested, you can check out the endpoint by the http://localhost:9080/api/system/properties/user and http://localhost:9080/api/system/properties/java URLs.
+If you are interested, you can check out the GET `/api/system/properties/{prefix}` endpoint by the http://localhost:9080/api/system/properties/user and http://localhost:9080/api/system/properties/java URLs.
 
-Check out the web application at the http://localhost:9080 URL. Click the image:refresh.svg[refresh icon, 20, 20] refresh button, which is located in the table title, to update and display the current system load in the table after 5 seconds.
+Check out the web application at the http://localhost:9080 URL. Click the image:meter-cpu.png[refresh CPU load icon, 20, 20] refresh button, which is located in the table title, to update and display the current CPU load in the table after 5 seconds. Click the image:meter-memory.png[refresh memory usage icon, 20, 20] refresh button to update and display the current memory usage in the table after 5 seconds.
 
 Click the image:schedule.svg[schedule icon, 20, 20] schedule button to toggle the schedule that posts the current system load in every 10 seconds.
 
 [role='command']
 include::{common-includes}/twyb-end.adoc[]
+
 
 == Running tasks in parallel
 
@@ -96,7 +99,7 @@ server.xml
 include::finish/src/main/liberty/config/server.xml[]
 ----
 
-The starting application is implemented the [hotspot=getProperties file=0]`/properties/{prefix}` endpoint. Go to the http://localhost:9080/api/system/properties/java URL to see all the `java.*` properties. Notice that the URL takes several seconds to get the result. Each [hotspot=doSomethingSleep hotspot=getSystemPropertyTask hotspot=callGetSystemPropertyTask file=1]`getSystemPropertyTask()` call takes at most a second.
+The starting application is implemented the [hotspot=getProperties file=0]`/properties/{prefix}` endpoint. Go to the http://localhost:9080/api/system/properties/java URL to see all the `java.*` properties. Notice that the URL takes several seconds to get the result. Each [hotspot=doSomethingSleep hotspot=getSystemPropertyTask hotspot=callGetSystemPropertyTask file=1]`getSystemPropertyTask()` call takes at least a second.
 
 To improve the performance, enhance the [hotspot=getProperties file=1]`getProperties()` method to call the [hotspot=callGetSystemPropertyTask file=1]`getSystemPropertyTask()` method in parallel.
 
@@ -147,9 +150,10 @@ You started the Open Liberty in dev mode at the beginning of this section, so al
 
 Go to the http://localhost:9080/api/system/properties/java URL to see all the `java.*` properties. Notice that the URL takes a second to get the result.
 
-== Creating asynchronous task
 
-Implement an asynchronous task to get the current system load that includes the CPU and memory usages.
+== Creating asynchronous tasks
+
+Implement asynchronous tasks to get the current CPU load and memory usage.
 
 // file 0
 SystemConcurrency.java
@@ -171,9 +175,12 @@ SseService.java
 include::start/src/main/java/io/openliberty/guides/system/SseService.java[]
 ----
 
-The [hotspot=getSystemLoad file=0]`getSystemLoad()` method uses the [hotspot=scheduleCall file=0]`virtualManagedExecutor` service to schedule a task that will be delayed with the given [hotspot=parameters hotspot=after file=0]`after` seconds. The task calls the [hotspot=calculateSystemLoad hotspot=callCalculateSystemLoad1 file=0]`calculateSystemLoad()` method to calculate the CPU and memory usage. Then, it calls the [hotspot=broadcast1 file=0]`broadcasts()` method to broadcast the system load to clients through the [hotspot file=1]`SseService` bean that is provided for you.
+The [hotspot=getCpuLoad file=0]`getCpuLoad()` method uses the [hotspot=scheduleCall file=0]`virtualManagedExecutor` service to create and schedule an asynchronous task that will be delayed with [hotspot=after file=0]`5` seconds.
 
-Annotate the [hotspot=asynchronous1 hotspot=parameters file=0]`getSystemLoad()` method with the `@Asynchronous` annotation to make it running asynchronously.
+An alternative to create an asynchronous task is using `@Asynchronous` annotation. The [hotspot=getMemoryUsage file=0]`getMemoryUsage()` method is annotated with the [hotspot=asynchronous1 file=0]`@Asynchronous` annotation to make it running asynchronously.
+
+Both tasks call the [hotspot=calculateSystemLoad hotspot=callCalculateSystemLoad1 hotspot=callCalculateSystemLoad2 file=0]`calculateSystemLoad()` method to calculate the CPU load and memory usage. Then, they call the [hotspot=broadcast1 hotspot=broadcast2 file=0]`broadcast()` method to broadcast the system load to clients through the [hotspot file=1]`SseService` bean that is provided for you.
+
 
 // file 2
 SystemResource.java
@@ -188,9 +195,10 @@ include::finish/src/main/java/io/openliberty/guides/system/SystemResource.java[]
 `src/main/java/io/openliberty/guides/system/SystemResource.java`
 ----
 
-Create the GET [hotspot=getSystemLoad file=2]`/systemLoad/{after}` endpoint that calls the above  `getSystemLoad()` asynchronous method and returns a message.
+The GET [hotspot=getCpuLoad file=2]`/systemLoad/cpuLoad` endpoint calls the `getCpuLoad()` asynchronous method and returns a message. The GET [hotspot=getMemoryUsage file=2]`/systemLoad/memoryUsage` endpoint calls the `getMemoryUsage()` asynchronous method and returns a message.
 
-Try out the http://localhost:9080/api/system/systemLoad/5 URL. The request returns to you immediately with the message.
+
+Try out the http://localhost:9080/api/system/systemLoad/cpuLoad and http://localhost:9080/api/system/systemLoad/memoryUsage URLs. Both requests return to you immediately with a message.
 
 // file 3
 index.html
@@ -206,9 +214,11 @@ index.js
 include::finish/src/main/webapp/index.js[]
 ----
 
-To see the system load, check out the web application at the http://localhost:9080 URL. Click the image:refresh.svg[refresh icon, 20, 20] refresh button that calls the [hotspot=refreshButton file=3]`refreshCall()` method. The [hotspot=refreshCall file=4]`refreshCall()` method calls the `/api/system/systemLoad/5` endpoint.
+To see the system load, check out the web application at the http://localhost:9080 URL.
 
-After 5 seconds, you'll see that the current system load is added at the first row of the table.
+Click the image:meter-cpu.png[refresh CPU load icon, 20, 20] refresh button that calls the [hotspot=refreshCpuLoadButton file=3]`refreshCpuLoadCall()` method. The [hotspot=refreshCpuLoadCall file=4]`refreshCpuLoadCall()` method calls the `/api/system/systemLoad/cpuLoad` endpoint. After 5 seconds, you'll see that the current CPU load is added at the first row of the table.
+
+Click the image:meter-memory.png[refresh memory usage icon, 20, 20] refresh button that calls the [hotspot=refreshMemoryUsageButton file=3]`refreshMemoryUsageCall()` method. The [hotspot=refreshMemoryUsageCall file=4]`refreshMemoryUsageCall()` method calls the `/api/system/systemLoad/memoryUsage` endpoint. After 5 seconds, you'll see that the current memory usage is added at the first row of the table.
 
 
 == Scheduling asynchronous task
@@ -228,7 +238,7 @@ include::finish/src/main/java/io/openliberty/guides/system/SystemConcurrency.jav
 `src/main/java/io/openliberty/guides/system/SystemConcurrency.java`
 ----
 
-Similarly, the [hotspot=schedule file=0]`schedule()` method calls the [hotspot=calculateSystemLoad hotspot=callCalculateSystemLoad2 file=0]`calculateSystemLoad()` method to calculate the CPU and memory usage and then the [hotspot=broadcast2 file=0]`broadcasts()` method to broadcast the system load to clients.
+Similarly, the [hotspot=schedule file=0]`schedule()` method calls the [hotspot=calculateSystemLoad hotspot=callCalculateSystemLoad3 file=0]`calculateSystemLoad()` method to calculate the CPU and memory usage and then the [hotspot=broadcast3 file=0]`broadcast()` method to broadcast the system load to clients.
 
 Annotate the [hotspot=asynchronous2 hotspot=completableFuture file=0]`schedule()` method with the `@Asynchronous` annotation. Configure the schedule with the [hotspot=asynchronous2 file=0]`"*/10 * * * * *"` cron expression to make it running asynchronously in every 10 seconds. Return a [hotspot=returnNull file=0]`null` value to make the schedule to keep running.
 
@@ -289,7 +299,9 @@ include::finish/src/test/java/it/io/openliberty/guides/system/SystemEndpointIT.j
 
 The [hotspot=testGetProperties file=0]`testGetProperties()` tests the GET `/api/system/properties/os` endpoint and confirms that 4 `os.*` properties are returned.
 
-The [hotspot=testGetSystemLoad file=0]`testGetSystemLoad()` tests the GET `/api/system/systemLoad/5` endpoint and confirms that the CPU and memory usages are not null after 10 seconds.
+The [hotspot=testGetCpuLoad file=0]`testGetCpuLoad()` tests the GET `/api/system/systemLoad/cpuLoad` endpoint and confirms that the CPU load is not null after 10 seconds.
+
+The [hotspot=testGetMemoryUsage file=0]`testGetMemoryUsage()` tests the GET `/api/system/systemLoad/memoryUsage` endpoint and confirms that the memory usage is not null after 10 seconds.
 
 The [hotspot=testEnableSchedule file=0]`testEnableSchedule()` tests the GET `/api/systems/schedule/toggle` endpoint and confirms that 3 system loads are broadcast after 35 seconds.
 
@@ -310,15 +322,18 @@ Running it.io.openliberty.guides.system.SystemEndpointIT
 [INFO    ] Getting the os.encoding property...
 [INFO    ] Getting the os.name property...
 ...
-Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 55.42 s -- in it.io.openliberty.guides.system.SystemEndpointIT
+Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 57.06 s -- in it.io.openliberty.guides.system.SystemEndpointIT
 
 Results:
 
-Tests run: 3, Failures: 0, Errors: 0, Skipped: 0
+Tests run: 4, Failures: 0, Errors: 0, Skipped: 0
 ----
 
 [role='command']
 include::{common-includes}/devmode-quit.adoc[]
+
+To learn more about asynchronous and reactive programming, check out the https://openliberty.io/guides/?search=reactive[related reactive guides^].
+
 
 == Great work! You're done!
 

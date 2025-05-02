@@ -44,14 +44,24 @@
                              src="img/clean.svg"
                              title="Clean all system loads."
                              onclick="cleanCall()"/>
-                        <img class="refreshButton"
-                             src="img/refresh.svg"
-                             title="Get system load after 5 seconds."
-                             onclick="refreshCall()"/>
+                        <!-- tag::refreshCpuLoadButton[] -->
+                        <img class="refreshCpuLoadButton"
+                             src="img/meter-cpu.png"
+                             title="Get CPU load after 5 seconds."
+                             onclick="refreshCpuLoadCall()"/>
+                        <!-- end::refreshCpuLoadButton[] -->
+                        <!-- tag::refreshMemoryUsageButton[] -->
+                        <img class="refreshMemoryUsageButton"
+                             src="img/meter-memory.png"
+                             title="Get memory usage after 5 seconds."
+                             onclick="refreshMemoryUsageCall()"/>
+                        <!-- end::refreshMemoryUsageButton[] -->
+                        <!-- tag::scheduleButton[] -->
                         <img class="scheduleButton"
                              src="img/schedule.svg"
                              title="Toggle to get system load in every 10 seconds."
                              onclick="scheduleCall()"/>
+                        <!-- end::scheduleButton[] -->
                         <label id="status" class="status">...</label>
                       </h2>
                     </div>

@@ -137,15 +137,15 @@ public class SystemEndpointIT {
     }
     // end::testGetProperties[]
 
-    // tag::testGetSystemLoad[]
+    // tag::testGetCpuLoad[]
     @Test
     @Order(2)
-    public void testGetSystemLoad() throws Exception {
+    public void testGetCpuLoad() throws Exception {
         if (isScheduleEnabled) {
             toggleSchedule();
         }
         startCountDown(1);
-        WebTarget target = client.target(URL + "/systemLoad/5");
+        WebTarget target = client.target(URL + "/systemLoad/cpuLoad");
         Response response = target.request().get();
         assertEquals(200, response.getStatus(),
             "Incorrect response code from " + target.getUri().getPath());
@@ -153,11 +153,29 @@ public class SystemEndpointIT {
         assertEquals(0, countDown.getCount(),
                 "The countDown was not 0.");
     }
-    // end::testGetSystemLoad[]
+    // end::testGetCpuLoad[]
+
+    // tag::testGetMemoryUsage[]
+    @Test
+    @Order(3)
+    public void testGetMemoryUsage() throws Exception {
+        if (isScheduleEnabled) {
+            toggleSchedule();
+        }
+        startCountDown(1);
+        WebTarget target = client.target(URL + "/systemLoad/memoryUsage");
+        Response response = target.request().get();
+        assertEquals(200, response.getStatus(),
+            "Incorrect response code from " + target.getUri().getPath());
+        countDown.await(10, TimeUnit.SECONDS);
+        assertEquals(0, countDown.getCount(),
+                "The countDown was not 0.");
+    }
+    // end::testGetMemoryUsage[]
 
     // tag::testEnableSchedule[]
     @Test
-    @Order(3)
+    @Order(4)
     public void testEnableSchedule() throws Exception {
         toggleSchedule();
         startCountDown(3);

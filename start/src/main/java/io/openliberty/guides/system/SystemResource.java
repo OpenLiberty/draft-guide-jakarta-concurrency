@@ -29,6 +29,7 @@ public class SystemResource {
     @Inject
     SystemConcurrency bean;
 
+    // tag::getProperties[]
     @GET
     @Path("/properties/{prefix}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -36,5 +37,6 @@ public class SystemResource {
         throws InterruptedException, ExecutionException {
         return bean.getProperties(prefix);
     }
+    // end::getProperties[]
 
 }

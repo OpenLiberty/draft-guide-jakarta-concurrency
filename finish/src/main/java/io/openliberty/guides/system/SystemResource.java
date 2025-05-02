@@ -37,7 +37,7 @@ public class SystemResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Map<String, String> getProperties(@PathParam("prefix") String prefix)
         throws InterruptedException, ExecutionException {
-         return bean.getProperties(prefix);
+        return bean.getProperties(prefix);
     }
 
     // tag::sse[]
@@ -49,15 +49,25 @@ public class SystemResource {
     }
     // end::sse[]
 
-    // tag::getSystemLoad[]
+    // tag::getCpuLoad[]
     @GET
-    @Path("/systemLoad/{after}")
+    @Path("/systemLoad/cpuLoad")
     @Produces(MediaType.TEXT_PLAIN)
-    public String getSystemLoad(@PathParam("after") int after) {
-        bean.getSystemLoad(after);
-        return "Check after " + after + " seconds.";
+    public String getCpuLoad() {
+        bean.getCpuLoad();
+        return "Check CPU load after 5 seconds.";
     }
-    // end::getSystemLoad[]
+    // end::getCpuLoad[]
+
+    // tag::getMemoryUsage[]
+    @GET
+    @Path("/systemLoad/memoryUsage")
+    @Produces(MediaType.TEXT_PLAIN)
+    public String getMemoryUsage() {
+        bean.getMemoryUsage();
+        return "Check memory usage after 5 seconds.";
+    }
+    // end::getMemoryUsage[]
 
     // tag::schedule[]
     @GET
