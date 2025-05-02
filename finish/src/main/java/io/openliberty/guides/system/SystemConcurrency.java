@@ -50,11 +50,12 @@ import jakarta.ws.rs.sse.SseEventSink;
 @ApplicationScoped
 public class SystemConcurrency {
 
+    private enum Option { CPU_LOAD, MEMORY_USAGE };
+
     private static final OperatingSystemMXBean OS =
         (OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
     private static final MemoryMXBean MEM = ManagementFactory.getMemoryMXBean();
 
-    private static enum Option { CPU_LOAD, MEMORY_USAGE };
     private static Logger logger = Logger.getLogger(SystemConcurrency.class.getName());
     private static boolean scheduleEnabled = false;
 

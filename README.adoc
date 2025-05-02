@@ -299,9 +299,9 @@ include::finish/src/test/java/it/io/openliberty/guides/system/SystemEndpointIT.j
 
 The [hotspot=testGetProperties file=0]`testGetProperties()` tests the GET `/api/system/properties/os` endpoint and confirms that 4 `os.*` properties are returned.
 
-The [hotspot=testGetCpuLoad file=0]`testGetCpuLoad()` tests the GET `/api/system/systemLoad/cpuLoad` endpoint and confirms that the CPU load is not null after 10 seconds.
+The [hotspot=testGetCpuLoad hotspot=testEndpoint file=0]`testGetCpuLoad()` tests the GET `/api/system/systemLoad/cpuLoad` endpoint and confirms that the CPU load is not null after 10 seconds.
 
-The [hotspot=testGetMemoryUsage file=0]`testGetMemoryUsage()` tests the GET `/api/system/systemLoad/memoryUsage` endpoint and confirms that the memory usage is not null after 10 seconds.
+The [hotspot=testGetMemoryUsage hotspot=testEndpoint file=0]`testGetMemoryUsage()` tests the GET `/api/system/systemLoad/memoryUsage` endpoint and confirms that the memory usage is not null after 10 seconds.
 
 The [hotspot=testEnableSchedule file=0]`testEnableSchedule()` tests the GET `/api/systems/schedule/toggle` endpoint and confirms that 3 system loads are broadcast after 35 seconds.
 
