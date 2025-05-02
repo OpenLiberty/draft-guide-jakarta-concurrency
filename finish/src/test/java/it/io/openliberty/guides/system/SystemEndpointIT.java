@@ -139,9 +139,6 @@ public class SystemEndpointIT {
 
     // tag::testEndpoint[]
     private void testEndpoint(String endpoint) throws Exception {
-        if (isScheduleEnabled) {
-            toggleSchedule();
-        }
         startCountDown(1);
         WebTarget target = client.target(URL + endpoint);
         Response response = target.request().get();
@@ -157,6 +154,9 @@ public class SystemEndpointIT {
     @Test
     @Order(2)
     public void testGetCpuLoad() throws Exception {
+        if (isScheduleEnabled) {
+            toggleSchedule();
+        }
         testEndpoint("/systemLoad/cpuLoad");
     }
     // end::testGetCpuLoad[]
