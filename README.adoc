@@ -125,7 +125,7 @@ The managed executor service provides a way to start asynchronous tasks within a
 
 // file 4
 SystemConcurrency.java
-[source,xml,linenums,role="code_column hide_tags=copyright,subscribe,calculateSystemLoad,asynchronous1,getSystemLoad,enableSchedule,asynchronous2,schedule"]
+[source,xml,linenums,role="code_column hide_tags=copyright,subscribe,calculateSystemLoad,getCpuLoad,asynchronous1,getMemoryUsage,enableSchedule,asynchronous2,schedule"]
 ----
 include::finish/src/main/java/io/openliberty/guides/system/SystemConcurrency.java[]
 ----
