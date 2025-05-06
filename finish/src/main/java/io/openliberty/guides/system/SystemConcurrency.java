@@ -145,9 +145,9 @@ public class SystemConcurrency {
 	            ut.commit();
                 // end::utCommit[]
 	            logger.info("CPU load at \"" + current + "\" was recorded.");
-			} catch (Exception e) {
-	            logger.warning(e.getMessage());
-			}
+            } catch (Exception e) {
+                logger.warning(e.getMessage());
+            }
         // tag::after[]
         }, 5, TimeUnit.SECONDS);
         // end::after[]
