@@ -64,8 +64,10 @@ public class SystemConcurrency {
     // end::virtualManagedExecutor[]
     // end::managedScheduledExecutorService[]
 
+    // tag::entityManager[]
     @PersistenceContext(name = "jpa-unit")
     private EntityManager em;
+    // end::entityManager[]
 
     private void doSomething(int t) {
         try {
@@ -121,23 +123,31 @@ public class SystemConcurrency {
         // tag::scheduleCall[]
         virtualManagedExecutor.schedule(() -> {
         // end::scheduleCall[]
-            // tag::callCalculateSystemLoad1[]
-            //calculateSystemLoad(false, Option.CPU_LOAD);
-			try {
-	            UserTransaction ut = (UserTransaction) new InitialContext().lookup("java:comp/UserTransaction");
+            try {
+                // tag::userTransaction[]
+	            UserTransaction ut = (UserTransaction)
+	                new InitialContext().lookup("java:comp/UserTransaction");
+                // end::userTransaction[]
+                // tag::utBegin[]
 	            ut.begin();
-	            SystemLoadData slData  = new SystemLoadData();
+                // end::utBegin[]
+	            // tag::calculateCPULoad[]
+	            SystemLoadData cpuLoadData  = new SystemLoadData();
 	            LocalDateTime current = LocalDateTime.now();
-	            slData.setTime(current);
+	            cpuLoadData.setTime(current);
 	            Double cpuLoad = Double.valueOf(OS.getCpuLoad() * 100.0);
-	            slData.setCpuLoad(cpuLoad);
-	            em.persist(slData);
+	            cpuLoadData.setCpuLoad(cpuLoad);
+	            // end::calculateCPULoad[]
+                // tag::persistCPULoad[]
+	            em.persist(cpuLoadData);
+                // end::persistCPULoad[]
+                // tag::utCommit[]
 	            ut.commit();
+                // end::utCommit[]
 	            logger.info("CPU load at \"" + current + "\" was recorded.");
 			} catch (Exception e) {
 	            logger.warning(e.getMessage());
 			}
-            // end::callCalculateSystemLoad1[]
         // tag::after[]
         }, 5, TimeUnit.SECONDS);
         // end::after[]
@@ -148,20 +158,24 @@ public class SystemConcurrency {
     @Asynchronous
     // end::asynchronous1[]
     // tag::getMemoryUsage[]
+    // tag::transactional[]
     @Transactional(value = TxType.REQUIRES_NEW)
+    // end::transactional[]
     public void getMemoryUsage() {
         logger.info("New memory usage will be recorded after 5 seconds.");
         doSomething(5);
-        // tag::callCalculateSystemLoad2[]
-        SystemLoadData slData  = new SystemLoadData();
+        // tag::calculateMemoryUsage[]
+        SystemLoadData memoryUsageData  = new SystemLoadData();
         LocalDateTime current = LocalDateTime.now();
-        slData.setTime(current);
+        memoryUsageData.setTime(current);
         long heapMax = MEM.getHeapMemoryUsage().getMax();
         long heapUsed = MEM.getHeapMemoryUsage().getUsed();
         Double memoryUsage = Double.valueOf(heapUsed * 100.0 / heapMax);
-        slData.setMemoryUsage(memoryUsage);
-        em.persist(slData);
-        // end::callCalculateSystemLoad2[]
+        memoryUsageData.setMemoryUsage(memoryUsage);
+        // end::calculateMemoryUsage[]
+        // tag::persistMemoryUsage[]
+        em.persist(memoryUsageData);
+        // end::persistMemoryUsage[]
         logger.info("Memory usage at \"" + current + "\" was recorded.");
     }
     // end::getMemoryUsage[]

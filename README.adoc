@@ -166,7 +166,7 @@ include::finish/src/main/java/io/openliberty/guides/system/SystemConcurrency.jav
 `src/main/java/io/openliberty/guides/system/SystemConcurrency.java`
 ----
 
-Annotate the [hotspot file=4]`SystemConcurrency` class with the [hotspot=annotateManagedScheduledExecutor file=4]`@ManagedScheduledExecutorDefinition` annotation to provide a managed executor instance that enumerates the `WithVirtualThreads` required qualifiers through the [hotspot=managedScheduledExecutorService file=4]`ManagedScheduledExecutorService` injection point. Set the [hotspot=virtual file=4]`virtual` attribute to true to use virtual thread.
+Annotate the [hotspot file=4]`SystemConcurrency` class with the [hotspot=annotateManagedScheduledExecutor file=4]`@ManagedScheduledExecutorDefinition` annotation to provide a managed executor instance that enumerates the `WithVirtualThreads` required qualifiers through the [hotspot=managedScheduledExecutorService file=4]`ManagedScheduledExecutorService` injection point.
 
 // TODO: replace the javadoc link to jakartaee11
 The `@ManagedScheduledExecutorDefinition` annotation and the `ManagedScheduledExecutorService` interface are used in this bean instead of `@ManagedScheduledDefinition` annotation and `ManagedExecutorService` interface because you will implement a scheduled task in the following sections. For more information about these annotations and classes, see the Javadoc for https://openliberty.io/docs/latest/reference/javadoc/liberty-jakartaee10-javadoc.html?path=liberty-jakartaee10-javadoc/jakarta/enterprise/concurrent/package-summary.html[jakarta.enterprise.concurrent^].
@@ -198,57 +198,29 @@ include::finish/src/main/java/io/openliberty/guides/system/SystemConcurrency.jav
 `src/main/java/io/openliberty/guides/system/SystemConcurrency.java`
 ----
 
+The [hotspot=getCpuLoad file=0]`getCpuLoad()` method uses the [hotspot=scheduleCall file=0]`virtualManagedExecutor` service to create and schedule an asynchronous task that will be delayed with [hotspot=after file=0]`5` seconds. The task calculates the [hotspot=calculateCPULoad file=0]`cpuLoadData` CPU load and calls the [hotspot=persistCPULoad file=0]`persist()` method to presist the data into the database through the [hotspot=entityManager file=0]`EntityManager` interface that interacts the persistence context in the Liberty runtime. An transaction is requried on a cascading persist operation. In the asynchronous thread, reterive the named [hotspot=persistCPULoad file=0]`UserTransaction` object from the Liberty runtime. Then, call the [hotspot=utBegin file=0]`begin()` method to create a transaction object and call the [hotspot=utCommit file=0]`commit()` method to complete the transaction.
+
+An alternative to create a similar asynchronous task is using `@Asynchronous` annotation. The [hotspot=getMemoryUsage file=0]`getMemoryUsage()` method is annotated with the [hotspot=asynchronous1 file=0]`@Asynchronous` annotation to make it running asynchronously. The task calculates the [hotspot=calculateMemoryUsage file=0]`memoryUsageData` memory usage and calls the [hotspot=persistCPULoad file=0]`persist()` method to presist the data into the database. To create a new transaction, simply annotate the [hotspot=transactional file=0]`getMemoryUsage()` method by the `@Transactional` annotation.
+
 // file 1
-SseService.java
-[source,xml,linenums,role="code_column hide_tags=copyright"]
-----
-include::start/src/main/java/io/openliberty/guides/system/SseService.java[]
-----
-
-The [hotspot=getCpuLoad file=0]`getCpuLoad()` method uses the [hotspot=scheduleCall file=0]`virtualManagedExecutor` service to create and schedule an asynchronous task that will be delayed with [hotspot=after file=0]`5` seconds.
-
-An alternative to create an asynchronous task is using `@Asynchronous` annotation. The [hotspot=getMemoryUsage file=0]`getMemoryUsage()` method is annotated with the [hotspot=asynchronous1 file=0]`@Asynchronous` annotation to make it running asynchronously.
-
-Both tasks call the [hotspot=calculateSystemLoad hotspot=callCalculateSystemLoad1 hotspot=callCalculateSystemLoad2 file=0]`calculateSystemLoad()` method to calculate the CPU load and memory usage. Then, they call the [hotspot=broadcast1 hotspot=broadcast2 file=0]`broadcast()` method to broadcast the system load to clients through the [hotspot file=1]`SseService` bean that is provided for you.
-
-
-// file 2
 SystemResource.java
 [source,xml,linenums,role="code_column hide_tags=copyright,schedule,schedulToggle"]
 ----
 include::finish/src/main/java/io/openliberty/guides/system/SystemResource.java[]
 ----
 
-[role="code_command hotspot file=2", subs="quotes"]
+[role="code_command hotspot file=1", subs="quotes"]
 ----
 #Replace the `SystemResource.java` file.#
 `src/main/java/io/openliberty/guides/system/SystemResource.java`
 ----
 
-The GET [hotspot=getCpuLoad file=2]`/systemLoad/cpuLoad` endpoint calls the `getCpuLoad()` asynchronous method and returns a message. The GET [hotspot=getMemoryUsage file=2]`/systemLoad/memoryUsage` endpoint calls the `getMemoryUsage()` asynchronous method and returns a message.
+The GET [hotspot=getCpuLoad file=1]`/systemLoad/cpuLoad` endpoint calls the `getCpuLoad()` asynchronous method and returns a message. The GET [hotspot=getMemoryUsage file=1]`/systemLoad/memoryUsage` endpoint calls the `getMemoryUsage()` asynchronous method and returns a message.
 
 
 Try out the http://localhost:9080/api/system/systemLoad/cpuLoad and http://localhost:9080/api/system/systemLoad/memoryUsage URLs. Both requests return to you immediately with a message.
 
-// file 3
-index.html
-[source,xml,linenums,role="code_column hide_tags=copyright"]
-----
-include::finish/src/main/webapp/index.html[]
-----
-
-// file 4
-index.js
-[source,xml,linenums,role="code_column hide_tags=copyright"]
-----
-include::finish/src/main/webapp/index.js[]
-----
-
-To see the system load, check out the web application at the http://localhost:9080 URL.
-
-Click the image:meter-cpu.png[refresh CPU load icon, 20, 20] refresh button that calls the [hotspot=refreshCpuLoadButton file=3]`refreshCpuLoadCall()` method. The [hotspot=refreshCpuLoadCall file=4]`refreshCpuLoadCall()` method calls the `/api/system/systemLoad/cpuLoad` endpoint. After 5 seconds, you'll see that the current CPU load is added at the first row of the table.
-
-Click the image:meter-memory.png[refresh memory usage icon, 20, 20] refresh button that calls the [hotspot=refreshMemoryUsageButton file=3]`refreshMemoryUsageCall()` method. The [hotspot=refreshMemoryUsageCall file=4]`refreshMemoryUsageCall()` method calls the `/api/system/systemLoad/memoryUsage` endpoint. After 5 seconds, you'll see that the current memory usage is added at the first row of the table.
+To check the system loads after 5 seconds, visit the http://localhost:9080/api/system/systemLoad URL.
 
 
 == Scheduling asynchronous task
