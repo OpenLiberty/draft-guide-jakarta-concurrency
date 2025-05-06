@@ -45,7 +45,7 @@ public class SystemResource {
     public List<SystemLoadData> getSystemLoads() {
         return bean.getSystemLoads();
     }
-    
+
     // tag::getCpuLoad[]
     @GET
     @Path("/systemLoad/cpuLoad")

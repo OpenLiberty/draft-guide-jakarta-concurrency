@@ -125,26 +125,26 @@ public class SystemConcurrency {
         // end::scheduleCall[]
             try {
                 // tag::userTransaction[]
-	            UserTransaction ut = (UserTransaction)
-	                new InitialContext().lookup("java:comp/UserTransaction");
+                UserTransaction ut = (UserTransaction)
+                    new InitialContext().lookup("java:comp/UserTransaction");
                 // end::userTransaction[]
                 // tag::utBegin[]
-	            ut.begin();
+                ut.begin();
                 // end::utBegin[]
-	            // tag::calculateCPULoad[]
-	            SystemLoadData cpuLoadData  = new SystemLoadData();
-	            LocalDateTime current = LocalDateTime.now();
-	            cpuLoadData.setTime(current);
-	            Double cpuLoad = Double.valueOf(OS.getCpuLoad() * 100.0);
-	            cpuLoadData.setCpuLoad(cpuLoad);
-	            // end::calculateCPULoad[]
+                // tag::calculateCPULoad[]
+                SystemLoadData cpuLoadData  = new SystemLoadData();
+                LocalDateTime current = LocalDateTime.now();
+                cpuLoadData.setTime(current);
+                Double cpuLoad = Double.valueOf(OS.getCpuLoad() * 100.0);
+                cpuLoadData.setCpuLoad(cpuLoad);
+                // end::calculateCPULoad[]
                 // tag::persistCPULoad[]
-	            em.persist(cpuLoadData);
+                em.persist(cpuLoadData);
                 // end::persistCPULoad[]
                 // tag::utCommit[]
-	            ut.commit();
+                ut.commit();
                 // end::utCommit[]
-	            logger.info("CPU load at \"" + current + "\" was recorded.");
+                logger.info("CPU load at \"" + current + "\" was recorded.");
             } catch (Exception e) {
                 logger.warning(e.getMessage());
             }
@@ -228,9 +228,9 @@ public class SystemConcurrency {
     }
     // end::schedule[]
 
-	public List<SystemLoadData> getSystemLoads() {
-	    return em.createNamedQuery(
-	           "SystemLoadData.findAll", SystemLoadData.class).getResultList();
-	}
+    public List<SystemLoadData> getSystemLoads() {
+        return em.createNamedQuery(
+               "SystemLoadData.findAll", SystemLoadData.class).getResultList();
+    }
 
 }
