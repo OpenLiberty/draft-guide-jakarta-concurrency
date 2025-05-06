@@ -30,7 +30,7 @@ Learn how to run tasks concurrently or asynchronously in Java microservices by u
 
 Jakarta Concurrency enables the creation of managed executors to run concurrent and asynchronous tasks in different threads. It also enables the creation of managed thread factories to create threads that run with the thread context of the component that looks up the managed thread factory. The threads are managed by the application server, coexist, access server contexts, and safely interact in the Enterprise Java Beans and Web containers. To learn more about Jakarta Concurrency, see the https://jakarta.ee/specifications/concurrency[Jakarta Concurrency specification^].
 
-The application that you'll build provides REST APIs to retrieve system properites and record system loads including CPU load and memory usage to database.
+The application that you'll build provides REST APIs to retrieve system properties and record system loads including CPU load and memory usage to the database.
 
 You'll update the application to learn how to run tasks in parallel by enhancing the GET `/api/system/properties/{prefix}` endpoint that retrieves system properties with the provided prefix. You'll learn two different ways to create asynchronous task by implementing the GET `/api/system/systemLoad/cpuLoad` and `/api/system/systemLoad/memoryUsage` endpoints that calculate the CPU load and memory usage and persist the data to the database. Also, you'll learn how to create a scheduled asynchronous task that calculates and records the current system load to the database for every 10 seconds.
 
@@ -58,7 +58,7 @@ Go to the http://localhost:9080/api/system/properties/os URL to see all the `os.
 
 If you are interested, you can check out the GET `/api/system/properties/{prefix}` endpoint by the http://localhost:9080/api/system/properties/user and http://localhost:9080/api/system/properties/java URLs.
 
-Check out the application with the http://localhost:9080/api/system/systemLoad/cpuLoad and http://localhost:9080/api/system/systemLoad/memoryUsage URLs. Both requests return to you immediately with a message. After 5 seconds, visit to the http://localhost:9080/api/system/systemLoads URL to see all the system loads. You will see an output similar to the following example:
+Check out the application with the http://localhost:9080/api/system/systemLoad/cpuLoad and http://localhost:9080/api/system/systemLoad/memoryUsage URLs. Both requests return to you immediately with a message. After 5 seconds, go to the http://localhost:9080/api/system/systemLoads URL to see all the system loads. You will see an output similar to the following example:
 
 [role="no_copy"]
 ----
@@ -76,7 +76,7 @@ Check out the application with the http://localhost:9080/api/system/systemLoad/c
 ]
 ----
 
-Visit the http://localhost:9080/api/system/schedule/toggle URL to toggle the schedule that records the current system load in every 10 seconds. After 10 seconds, visit to the http://localhost:9080/api/system/systemLoads URL to see all the system loads.
+Go to the http://localhost:9080/api/system/schedule/toggle URL to toggle the schedule that records the current system load in every 10 seconds. After 10 seconds, go to the http://localhost:9080/api/system/systemLoads URL to see all the system loads.
 
 [role="no_copy"]
 ----
@@ -219,7 +219,7 @@ The GET [hotspot=getCpuLoad file=1]`/systemLoad/cpuLoad` endpoint calls the `get
 
 Try out the http://localhost:9080/api/system/systemLoad/cpuLoad and http://localhost:9080/api/system/systemLoad/memoryUsage URLs. Both requests return to you immediately with a message.
 
-To check the system loads after 5 seconds, visit the http://localhost:9080/api/system/systemLoad URL.
+To check the system loads after 5 seconds, go to the http://localhost:9080/api/system/systemLoad URL.
 
 [role="no_copy"]
 ----
@@ -292,7 +292,7 @@ index.js
 include::finish/src/main/webapp/index.js[]
 ----
 
-Visit the http://localhost:9080/api/system/schedule/toggle URL to enable the schedule. After 10 seconds, visit the http://localhost:9080/api/system/systemLoad URL to check out the system loads.
+Go to the http://localhost:9080/api/system/schedule/toggle URL to enable the schedule. After 10 seconds, go to the http://localhost:9080/api/system/systemLoad URL to check out the system loads.
 
 [role="no_copy"]
 ----
@@ -308,7 +308,7 @@ Visit the http://localhost:9080/api/system/schedule/toggle URL to enable the sch
 ]
 ----
 
-After you are finished checking out the schedule, visit the http://localhost:9080/api/system/schedule/toggle URL again to disable the schedule.
+After you are finished checking out the schedule, go to the http://localhost:9080/api/system/schedule/toggle URL again to disable the schedule.
 
 
 
