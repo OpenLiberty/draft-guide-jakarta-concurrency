@@ -11,19 +11,18 @@
 // end::copyright[]
 package io.openliberty.guides.system;
 
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
+import io.openliberty.guides.system.model.SystemLoadData;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.sse.Sse;
-import jakarta.ws.rs.sse.SseEventSink;
 
 @ApplicationScoped
 @Path("/system")
@@ -40,15 +39,13 @@ public class SystemResource {
         return bean.getProperties(prefix);
     }
 
-    // tag::sse[]
     @GET
-    @Path("/sse")
-    @Produces(MediaType.SERVER_SENT_EVENTS)
-    public void subscribe(@Context SseEventSink sink, @Context Sse sse) {
-        bean.subscribe(sink, sse);
+    @Path("/systemLoad")
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<SystemLoadData> getSystemLoads() {
+        return bean.getSystemLoads();
     }
-    // end::sse[]
-
+    
     // tag::getCpuLoad[]
     @GET
     @Path("/systemLoad/cpuLoad")

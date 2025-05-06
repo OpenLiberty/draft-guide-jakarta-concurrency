@@ -13,8 +13,7 @@ package io.openliberty.guides.system;
 
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryMXBean;
-import java.util.Calendar;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,32 +24,30 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+import javax.naming.InitialContext;
+
 import com.sun.management.OperatingSystemMXBean;
 
+import io.openliberty.guides.system.model.SystemLoadData;
 import jakarta.enterprise.concurrent.Asynchronous;
 import jakarta.enterprise.concurrent.ManagedScheduledExecutorDefinition;
 import jakarta.enterprise.concurrent.ManagedScheduledExecutorService;
 import jakarta.enterprise.concurrent.Schedule;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import jakarta.json.Json;
-import jakarta.json.JsonObject;
-import jakarta.json.JsonObjectBuilder;
-import jakarta.ws.rs.sse.Sse;
-import jakarta.ws.rs.sse.SseEventSink;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.transaction.Transactional;
+import jakarta.transaction.Transactional.TxType;
+import jakarta.transaction.UserTransaction;
 
 // tag::annotateManagedScheduledExecutor[]
 @ManagedScheduledExecutorDefinition(
     name = "java:module/concurrent/virtual-executor",
-    qualifiers = WithVirtualThreads.class,
-// tag::virtual[]
-    virtual = true)
-// end::virtual[]
+    qualifiers = WithVirtualThreads.class)
 // end::annotateManagedScheduledExecutor[]
 @ApplicationScoped
 public class SystemConcurrency {
-
-    private enum Option { CPU_LOAD, MEMORY_USAGE };
 
     private static final OperatingSystemMXBean OS =
         (OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
@@ -67,8 +64,8 @@ public class SystemConcurrency {
     // end::virtualManagedExecutor[]
     // end::managedScheduledExecutorService[]
 
-    @Inject
-    SseService sseSrvice;
+    @PersistenceContext(name = "jpa-unit")
+    private EntityManager em;
 
     private void doSomething(int t) {
         try {
@@ -118,46 +115,29 @@ public class SystemConcurrency {
         // end::collect[]
     }
 
-    // tag::subscribe[]
-    public void subscribe(SseEventSink sink, Sse sse) {
-        sseSrvice.subscribe(sink, sse);
-    }
-    // end::subscribe[]
-
-    // tag::calculateSystemLoad[]
-    private JsonObject calculateSystemLoad(boolean schedule, Option option) {
-        JsonObjectBuilder builder = Json.createObjectBuilder();
-        if (schedule) {
-            builder.add("schedule", true);
-        }
-        Date current = Calendar.getInstance().getTime();
-        builder.add("time", current.toString());
-        if (option == Option.CPU_LOAD || option == null) {
-            builder.add("cpuLoad", Double.valueOf(OS.getCpuLoad() * 100.0));
-        }
-        if (option == Option.MEMORY_USAGE || option == null) {
-            long heapMax = MEM.getHeapMemoryUsage().getMax();
-            long heapUsed = MEM.getHeapMemoryUsage().getUsed();
-            builder.add("memoryUsage", Double.valueOf(heapUsed * 100.0 / heapMax));
-        }
-        return builder.build();
-    }
-    // end::calculateSystemLoad[]
-
     // tag::getCpuLoad[]
     public void getCpuLoad() {
-        logger.info("New CPU load will be boardcast after 5 seconds.");
+        logger.info("New CPU load will be recorded after 5 seconds.");
         // tag::scheduleCall[]
         virtualManagedExecutor.schedule(() -> {
         // end::scheduleCall[]
             // tag::callCalculateSystemLoad1[]
-            JsonObject systemLoad = calculateSystemLoad(false, Option.CPU_LOAD);
+            //calculateSystemLoad(false, Option.CPU_LOAD);
+			try {
+	            UserTransaction ut = (UserTransaction) new InitialContext().lookup("java:comp/UserTransaction");
+	            ut.begin();
+	            SystemLoadData slData  = new SystemLoadData();
+	            LocalDateTime current = LocalDateTime.now();
+	            slData.setTime(current);
+	            Double cpuLoad = Double.valueOf(OS.getCpuLoad() * 100.0);
+	            slData.setCpuLoad(cpuLoad);
+	            em.persist(slData);
+	            ut.commit();
+	            logger.info("CPU load at \"" + current + "\" was recorded.");
+			} catch (Exception e) {
+	            logger.warning(e.getMessage());
+			}
             // end::callCalculateSystemLoad1[]
-            // tag::broadcast1[]
-            sseSrvice.broadcast(systemLoad);
-            // end::broadcast1[]
-            logger.info("CPU load at \"" + systemLoad.getString("time")
-                + "\" was boardcast.");
         // tag::after[]
         }, 5, TimeUnit.SECONDS);
         // end::after[]
@@ -168,17 +148,21 @@ public class SystemConcurrency {
     @Asynchronous
     // end::asynchronous1[]
     // tag::getMemoryUsage[]
+    @Transactional(value = TxType.REQUIRES_NEW)
     public void getMemoryUsage() {
-        logger.info("New memory usage will be boardcast after 5 seconds.");
+        logger.info("New memory usage will be recorded after 5 seconds.");
         doSomething(5);
         // tag::callCalculateSystemLoad2[]
-        JsonObject systemLoad = calculateSystemLoad(false, Option.MEMORY_USAGE);
+        SystemLoadData slData  = new SystemLoadData();
+        LocalDateTime current = LocalDateTime.now();
+        slData.setTime(current);
+        long heapMax = MEM.getHeapMemoryUsage().getMax();
+        long heapUsed = MEM.getHeapMemoryUsage().getUsed();
+        Double memoryUsage = Double.valueOf(heapUsed * 100.0 / heapMax);
+        slData.setMemoryUsage(memoryUsage);
+        em.persist(slData);
         // end::callCalculateSystemLoad2[]
-        // tag::broadcast2[]
-        sseSrvice.broadcast(systemLoad);
-        // end::broadcast2[]
-        logger.info("Memory usage at \"" + systemLoad.getString("time")
-            + "\" was boardcast.");
+        logger.info("Memory usage at \"" + current + "\" was recorded.");
     }
     // end::getMemoryUsage[]
 
@@ -197,31 +181,38 @@ public class SystemConcurrency {
     // end::asynchronous2[]
     // tag::schedule[]
     // tag::completableFuture[]
+    @Transactional(value = TxType.REQUIRES_NEW)
     public CompletableFuture<String> schedule() {
     // end::completableFuture[]
         if (isScheduleEnabled()) {
             // tag::callCalculateSystemLoad3[]
-            JsonObject systemLoad = calculateSystemLoad(true, null);
+            SystemLoadData slData  = new SystemLoadData();
+            LocalDateTime current = LocalDateTime.now();
+            slData.setTime(current);
+            Double cpuLoad = Double.valueOf(OS.getCpuLoad() * 100.0);
+            slData.setCpuLoad(cpuLoad);
+            long heapMax = MEM.getHeapMemoryUsage().getMax();
+            long heapUsed = MEM.getHeapMemoryUsage().getUsed();
+            Double memoryUsage = Double.valueOf(heapUsed * 100.0 / heapMax);
+            slData.setMemoryUsage(memoryUsage);
+            em.persist(slData);
             // end::callCalculateSystemLoad3[]
-            // tag::broadcast3[]
-            sseSrvice.broadcast(systemLoad);
-            // end::broadcast3[]
-            logger.info("System load at \"" + systemLoad.getString("time")
-                + " was boardcast.");
+            logger.info("System load at \"" + current + " was recorded.");
             // tag::returnNull[]
             return null;
             // end::returnNull[]
         } else {
             logger.info("Schedule was disabled.");
-            JsonObjectBuilder builder = Json.createObjectBuilder();
-            builder.add("schedule", false);
-            JsonObject systemLoad = builder.build();
-            sseSrvice.broadcast(systemLoad);
             // tag::returnCompletableFuture[]
             return Asynchronous.Result.complete("Completed");
             // end::returnCompletableFuture[]
         }
     }
     // end::schedule[]
+
+	public List<SystemLoadData> getSystemLoads() {
+	    return em.createNamedQuery(
+	           "SystemLoadData.findAll", SystemLoadData.class).getResultList();
+	}
 
 }

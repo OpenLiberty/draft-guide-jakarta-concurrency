@@ -8,6 +8,7 @@
         <feature>concurrent</feature>
         <!-- end::concurrent[] -->
         <feature>jsonb</feature>
+        <feature>persistence</feature>
         <feature>restfulWS</feature>
     </featureManager>
 
@@ -29,5 +30,14 @@
     <webApplication contextRoot="/" location="guide-jakarta-concurrency.war"/>
 
     <logging consoleLogLevel="INFO"/>
+
+    <library id="derbyJDBCLib">
+        <fileset dir="${shared.resource.dir}/" includes="derby*.jar" />
+    </library>
+
+    <dataSource id="SystemLoadDataSource" jndiName="jdbc/SystemLoadDataSource">
+        <jdbcDriver libraryRef="derbyJDBCLib" />
+        <properties.derby.embedded databaseName="SystemLoadDB" createDatabase="create" />
+    </dataSource>
 
 </server>

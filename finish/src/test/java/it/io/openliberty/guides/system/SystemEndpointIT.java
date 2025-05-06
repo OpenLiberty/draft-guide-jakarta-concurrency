@@ -12,13 +12,14 @@
 package it.io.openliberty.guides.system;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-import java.util.function.Consumer;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,25 +28,21 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 
+import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
-import jakarta.json.bind.Jsonb;
-import jakarta.json.bind.JsonbBuilder;
+import jakarta.json.JsonValue;
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.WebTarget;
 import jakarta.ws.rs.core.Response;
-import jakarta.ws.rs.sse.InboundSseEvent;
-import jakarta.ws.rs.sse.SseEventSource;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class SystemEndpointIT {
 
     private static final String PORT = System.getProperty("http.port");
     private static final String URL = "http://localhost:" + PORT + "/api/system";
-    private static final Jsonb JSONB = JsonbBuilder.create();
 
     private static boolean isScheduleEnabled = false;
-    private static CountDownLatch countDown;
 
     private Client client;
 
@@ -60,46 +57,12 @@ public class SystemEndpointIT {
         client.close();
     }
 
-    private static void createSseClient() {
-        CompletableFuture.runAsync(() -> {
-            Client client = ClientBuilder.newClient();
-            WebTarget target = client.target(URL + "/sse");
-            SseEventSource sse = SseEventSource.target(target).build();
-            sse.register(new Consumer<InboundSseEvent>() {
-                @Override
-                public void accept(InboundSseEvent event) {
-                    String data = event.readData();
-                    JsonObject systemLoad = JSONB.fromJson(data, JsonObject.class);
-                    if (data.contains("time")) {
-                        assertTrue(
-                            systemLoad.getJsonNumber("cpuLoad") != null
-                            || systemLoad.getJsonNumber("memoryUsage") != null
-                        );
-                        countDown.countDown();
-                    }
-                }
-            });
-            sse.open();
-            try {
-                Thread.sleep(120000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            sse.close();
-            client.close();
-        }).thenAccept(result -> {
-            System.out.println("SSE client was closed.");
-        });
-    }
-
-    private static void startCountDown(int count) {
-        countDown = new CountDownLatch(count);
-    }
-
     @BeforeAll
-    public static void beforeAll() {
+    public static void beforeAll() throws InterruptedException {
         checkSchedule();
-        createSseClient();
+        if (isScheduleEnabled) {
+            toggleSchedule();
+        }
     }
 
     @BeforeEach
@@ -112,7 +75,14 @@ public class SystemEndpointIT {
       client.close();
     }
 
-    private void toggleSchedule() throws InterruptedException {
+    @AfterAll
+    public static void afterAll() throws InterruptedException {
+        if (!isScheduleEnabled) {
+            toggleSchedule();
+        }
+    }
+
+    private static void toggleSchedule() throws InterruptedException {
         Client client = ClientBuilder.newClient();
         WebTarget target = client.target(URL + "/schedule/toggle");
         Response response = target.request().get();
@@ -137,16 +107,37 @@ public class SystemEndpointIT {
     }
     // end::testGetProperties[]
 
+    private JsonArray getSystemLoads() {
+        WebTarget target = client.target(URL + "/systemLoad");
+        Response response = target.request().get();
+        assertEquals(200, response.getStatus(),
+            "Incorrect response code from " + target.getUri().getPath());
+        return response.readEntity(JsonArray.class);
+    }
+
+    private List<JsonObject> removeAll(JsonArray before, JsonArray after) {
+        List<JsonObject> diff = new ArrayList<JsonObject>();
+        after.forEach(o -> {
+            if (!before.contains(o)) {
+                diff.add((JsonObject) o);
+            }
+        });
+        return diff;
+    }
+
     // tag::testEndpoint[]
-    private void testEndpoint(String endpoint) throws Exception {
-        startCountDown(1);
+    private Map<String, JsonValue> testEndpoint(String endpoint) throws Exception {
+        JsonArray before = getSystemLoads();
         WebTarget target = client.target(URL + endpoint);
         Response response = target.request().get();
         assertEquals(200, response.getStatus(),
             "Incorrect response code from " + target.getUri().getPath());
-        countDown.await(10, TimeUnit.SECONDS);
-        assertEquals(0, countDown.getCount(),
-                "The countDown was not 0.");
+        Thread.sleep(6000);
+        JsonArray after = getSystemLoads();
+        assertEquals(before.size() + 1, after.size());
+        List<JsonObject>  diff = removeAll(before, after);
+        assertEquals(1, diff.size());
+        return diff.get(0);
     }
     // end::testEndpoint[]
 
@@ -154,10 +145,9 @@ public class SystemEndpointIT {
     @Test
     @Order(2)
     public void testGetCpuLoad() throws Exception {
-        if (isScheduleEnabled) {
-            toggleSchedule();
-        }
-        testEndpoint("/systemLoad/cpuLoad");
+        Map<String, JsonValue> systemLoad = testEndpoint("/systemLoad/cpuLoad");
+        assertNotNull(systemLoad.get("cpuLoad"));
+        assertNull(systemLoad.get("memoryUsage"));
     }
     // end::testGetCpuLoad[]
 
@@ -165,7 +155,9 @@ public class SystemEndpointIT {
     @Test
     @Order(3)
     public void testGetMemoryUsage() throws Exception {
-        testEndpoint("/systemLoad/memoryUsage");
+        Map<String, JsonValue> systemLoad = testEndpoint("/systemLoad/memoryUsage");
+        assertNotNull(systemLoad.get("memoryUsage"));
+        assertNull(systemLoad.get("cpuLoad"));
     }
     // end::testGetMemoryUsage[]
 
@@ -174,13 +166,15 @@ public class SystemEndpointIT {
     @Order(4)
     public void testEnableSchedule() throws Exception {
         toggleSchedule();
-        startCountDown(3);
-        countDown.await(35, TimeUnit.SECONDS);
-        assertEquals(0, countDown.getCount(),
-                    "The countDown was not 0.");
-        if (!isScheduleEnabled) {
-            toggleSchedule();
-        }
+        JsonArray before = getSystemLoads();
+        Thread.sleep(21000);
+        JsonArray after = getSystemLoads();
+        assertEquals(before.size() + 2, after.size());
+        List<JsonObject>  diff = removeAll(before, after);
+        assertEquals(2, diff.size());
+        Map<String, JsonValue> systemLoad = diff.get(0);
+        assertNotNull(systemLoad.get("cpuLoad"));
+        assertNotNull(systemLoad.get("memoryUsage"));
     }
     // end::testEnableSchedule[]
 
