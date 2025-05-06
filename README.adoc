@@ -217,10 +217,26 @@ include::finish/src/main/java/io/openliberty/guides/system/SystemResource.java[]
 
 The GET [hotspot=getCpuLoad file=1]`/systemLoad/cpuLoad` endpoint calls the `getCpuLoad()` asynchronous method and returns a message. The GET [hotspot=getMemoryUsage file=1]`/systemLoad/memoryUsage` endpoint calls the `getMemoryUsage()` asynchronous method and returns a message.
 
-
 Try out the http://localhost:9080/api/system/systemLoad/cpuLoad and http://localhost:9080/api/system/systemLoad/memoryUsage URLs. Both requests return to you immediately with a message.
 
 To check the system loads after 5 seconds, visit the http://localhost:9080/api/system/systemLoad URL.
+
+[role="no_copy"]
+----
+[
+  {
+    "id": 1,
+    "time": "2025-05-06T15:30:06.308192",
+    "cpuLoad": 5.074851387343854e-06
+  },
+  {
+    "id": 2,
+    "time": "2025-05-06T15:30:08.732892",
+    "memoryUsage": 0.7126722484827042
+  }
+]
+----
+
 
 
 == Scheduling asynchronous task
@@ -240,7 +256,7 @@ include::finish/src/main/java/io/openliberty/guides/system/SystemConcurrency.jav
 `src/main/java/io/openliberty/guides/system/SystemConcurrency.java`
 ----
 
-Similarly, the [hotspot=schedule file=0]`schedule()` method calculates the [hotspot=calculateSystemLoad file=0]`systemLoadData` system load data and calls the [hotspot=persistSystemLoad file=0]`persist()` method to presist the data into the database. To create a new transaction, annotate the `schedule()` method by the [hotspot=2 file=0]`@Transactional` annotation.
+Similarly, the [hotspot=schedule file=0]`schedule()` method calculates the [hotspot=calculateSystemLoad file=0]`systemLoadData` system load data and calls the [hotspot=persistSystemLoad file=0]`persist()` method to presist the data into the database. To create a new transaction, annotate the `schedule()` method by the [hotspot=transactional2 hotspot=completableFuture file=0]`@Transactional` annotation.
 
 
 Annotate the [hotspot=asynchronous2 hotspot=completableFuture file=0]`schedule()` method with the `@Asynchronous` annotation. Configure the schedule with the [hotspot=asynchronous2 file=0]`"*/10 * * * * *"` cron expression to make it running asynchronously in every 10 seconds. Return a [hotspot=returnNull file=0]`null` value to make the schedule to keep running.
@@ -278,6 +294,20 @@ include::finish/src/main/webapp/index.js[]
 
 Visit the http://localhost:9080/api/system/schedule/toggle URL to enable the schedule. After 10 seconds, visit the http://localhost:9080/api/system/systemLoad URL to check out the system loads.
 
+[role="no_copy"]
+----
+[
+  ...
+  {
+    "id": 3,
+    "time": "2025-05-06T15:34:30.001636",
+    "cpuLoad": 1.8270538029075587e-06,
+    "memoryUsage": 0.6712260656058788
+  },
+  ...
+]
+----
+
 After you are finished checking out the schedule, visit the http://localhost:9080/api/system/schedule/toggle URL again to disable the schedule.
 
 
@@ -301,9 +331,9 @@ include::finish/src/test/java/it/io/openliberty/guides/system/SystemEndpointIT.j
 
 The [hotspot=testGetProperties file=0]`testGetProperties()` tests the GET `/api/system/properties/os` endpoint and confirms that 4 `os.*` properties are returned.
 
-The [hotspot=testEndpoint hotspot=testGetCpuLoad file=0]`testGetCpuLoad()` tests the GET `/api/system/systemLoad/cpuLoad` endpoint and confirms that the CPU load is not null after several seconds.
+The [hotspot=testGetCpuLoad file=0]`testGetCpuLoad()` tests the GET `/api/system/systemLoad/cpuLoad` endpoint and confirms that the CPU load is not null after several seconds.
 
-The [hotspot=testEndpoint hotspot=testGetMemoryUsage file=0]`testGetMemoryUsage()` tests the GET `/api/system/systemLoad/memoryUsage` endpoint and confirms that the memory usage is not null after several seconds.
+The [hotspot=testGetMemoryUsage file=0]`testGetMemoryUsage()` tests the GET `/api/system/systemLoad/memoryUsage` endpoint and confirms that the memory usage is not null after several seconds.
 
 The [hotspot=testEnableSchedule file=0]`testEnableSchedule()` tests the GET `/api/systems/schedule/toggle` endpoint and confirms that 2 system loads are recorded after 25 seconds.
 

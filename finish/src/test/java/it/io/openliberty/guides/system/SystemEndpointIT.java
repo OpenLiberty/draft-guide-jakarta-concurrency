@@ -125,7 +125,6 @@ public class SystemEndpointIT {
         return diff;
     }
 
-    // tag::testEndpoint[]
     private Map<String, JsonValue> testEndpoint(String endpoint) throws Exception {
         JsonArray before = getSystemLoads();
         WebTarget target = client.target(URL + endpoint);
@@ -139,7 +138,6 @@ public class SystemEndpointIT {
         assertEquals(1, diff.size());
         return diff.get(0);
     }
-    // end::testEndpoint[]
 
     // tag::testGetCpuLoad[]
     @Test
