@@ -157,9 +157,9 @@ public class SystemConcurrency {
     // tag::asynchronous1[]
     @Asynchronous
     // end::asynchronous1[]
-    // tag::transactional[]
+    // tag::transactional1[]
     @Transactional(value = TxType.REQUIRES_NEW)
-    // end::transactional[]
+    // end::transactional1[]
     // tag::getMemoryUsage[]
     public void getMemoryUsage() {
         logger.info("New memory usage will be recorded after 5 seconds.");
@@ -193,24 +193,28 @@ public class SystemConcurrency {
     // tag::asynchronous2[]
     @Asynchronous(runAt = { @Schedule(cron = "*/10 * * * * *")})
     // end::asynchronous2[]
+    // tag::transactional2[]
+    @Transactional(value = TxType.REQUIRES_NEW)
+    // end::transactional2[]
     // tag::schedule[]
     // tag::completableFuture[]
-    @Transactional(value = TxType.REQUIRES_NEW)
     public CompletableFuture<String> schedule() {
     // end::completableFuture[]
         if (isScheduleEnabled()) {
-            // tag::callCalculateSystemLoad3[]
-            SystemLoadData slData  = new SystemLoadData();
+            // tag::calculateSystemLoad[]
+            SystemLoadData systemLoadData  = new SystemLoadData();
             LocalDateTime current = LocalDateTime.now();
-            slData.setTime(current);
+            systemLoadData.setTime(current);
             Double cpuLoad = Double.valueOf(OS.getCpuLoad() * 100.0);
-            slData.setCpuLoad(cpuLoad);
+            systemLoadData.setCpuLoad(cpuLoad);
             long heapMax = MEM.getHeapMemoryUsage().getMax();
             long heapUsed = MEM.getHeapMemoryUsage().getUsed();
             Double memoryUsage = Double.valueOf(heapUsed * 100.0 / heapMax);
-            slData.setMemoryUsage(memoryUsage);
-            em.persist(slData);
-            // end::callCalculateSystemLoad3[]
+            systemLoadData.setMemoryUsage(memoryUsage);
+            // end::calculateSystemLoad[]
+            // tag::persistSystemLoad[]
+            em.persist(systemLoadData);
+            // end::persistSystemLoad[]
             logger.info("System load at \"" + current + " was recorded.");
             // tag::returnNull[]
             return null;
