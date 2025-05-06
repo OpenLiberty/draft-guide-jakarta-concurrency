@@ -157,10 +157,10 @@ public class SystemConcurrency {
     // tag::asynchronous1[]
     @Asynchronous
     // end::asynchronous1[]
-    // tag::getMemoryUsage[]
     // tag::transactional[]
     @Transactional(value = TxType.REQUIRES_NEW)
     // end::transactional[]
+    // tag::getMemoryUsage[]
     public void getMemoryUsage() {
         logger.info("New memory usage will be recorded after 5 seconds.");
         doSomething(5);
