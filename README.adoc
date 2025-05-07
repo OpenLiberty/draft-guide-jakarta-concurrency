@@ -28,11 +28,11 @@ Learn how to run tasks concurrently or asynchronously in Java microservices by u
 
 == What you'll learn
 
-Jakarta Concurrency enables the creation of managed executors to run concurrent and asynchronous tasks in different threads. It also enables the creation of managed thread factories to create threads that run with the thread context of the component that looks up the managed thread factory. The threads are managed by the application server, coexist, and safely interact in the Enterprise Java Beans and Web containers. To learn more about Jakarta Concurrency, see the https://jakarta.ee/specifications/concurrency[Jakarta Concurrency specification^].
+Jakarta Concurrency enables the creation of managed executors to run concurrent and asynchronous tasks in different threads. It also enables the creation of managed thread factories to create threads that run with the thread context of the component that looks up the managed thread factory. The threads are managed by the application server, coexist, access server contexts, and safely interact in the Enterprise Java Beans and Web containers. To learn more about Jakarta Concurrency, see the https://jakarta.ee/specifications/concurrency[Jakarta Concurrency specification^].
 
-The application that you'll build is a dynamic web application by using Jakarta Concurrency, Jakarta RESTful Web Services, and Server-Sent Events. The front-end files are provided for you.
+The application that you'll build provides REST APIs to retrieve system properties and record system loads including CPU load and memory usage to the database.
 
-You'll update the application to learn how to run tasks in parallel by enhancing the GET `/api/system/properties/{prefix}` endpoint that retrieves system properties with the provided prefix. You'll learn two different ways to create asynchronous task by implementing the GET `/api/system/systemLoad/cpuLoad` and `/api/system/systemLoad/memoryUsage` endpoints that calculate the CPU load and memory usage and broadcast the data to clients. Also, you'll learn how to create a scheduled asynchronous task that calculates and broadcasts the current system load for every 10 seconds.
+You'll update the application to learn how to run tasks in parallel by enhancing the GET `/api/system/properties/{prefix}` endpoint that retrieves system properties with the provided prefix. You'll learn two different ways to create asynchronous task by implementing the GET `/api/system/systemLoad/cpuLoad` and `/api/system/systemLoad/memoryUsage` endpoints that calculate the CPU load and memory usage and persist the data to the database. Also, you'll learn how to create a scheduled asynchronous task that calculates and records the current system load to the database for every 10 seconds.
 
 
 // =================================================================================================
@@ -58,9 +58,39 @@ Go to the http://localhost:9080/api/system/properties/os URL to see all the `os.
 
 If you are interested, you can check out the GET `/api/system/properties/{prefix}` endpoint by the http://localhost:9080/api/system/properties/user and http://localhost:9080/api/system/properties/java URLs.
 
-Check out the web application at the http://localhost:9080 URL. Click the image:meter-cpu.png[refresh CPU load icon, 20, 20] refresh button, which is located in the table title, to update and display the current CPU load in the table after 5 seconds. Click the image:meter-memory.png[refresh memory usage icon, 20, 20] refresh button to update and display the current memory usage in the table after 5 seconds.
+Check out the application with the http://localhost:9080/api/system/systemLoad/cpuLoad and http://localhost:9080/api/system/systemLoad/memoryUsage URLs. Both requests return to you immediately with a message. After 5 seconds, go to the http://localhost:9080/api/system/systemLoads URL to see all the system loads. You will see an output similar to the following example:
 
-Click the image:schedule.svg[schedule icon, 20, 20] schedule button to toggle the schedule that posts the current system load in every 10 seconds.
+[role="no_copy"]
+----
+[
+  {
+    "id": 1,
+    "time": "2025-05-06T15:30:06.308192",
+    "cpuLoad": 5.074851387343854e-06
+  },
+  {
+    "id": 2,
+    "time": "2025-05-06T15:30:08.732892",
+    "memoryUsage": 0.7126722484827042
+  }
+]
+----
+
+Go to the http://localhost:9080/api/system/schedule/toggle URL to toggle the schedule that records the current system load in every 10 seconds. After 10 seconds, go to the http://localhost:9080/api/system/systemLoads URL to see all the system loads.
+
+[role="no_copy"]
+----
+[
+  ...
+  {
+    "id": 3,
+    "time": "2025-05-06T15:34:30.001636",
+    "cpuLoad": 1.8270538029075587e-06,
+    "memoryUsage": 0.6712260656058788
+  },
+  ...
+]
+----
 
 [role='command']
 include::{common-includes}/twyb-end.adoc[]
@@ -80,14 +110,14 @@ include::{common-includes}/devmode-lmp33-start.adoc[]
 
 // file 0
 SystemResource.java
-[source,xml,linenums,role="code_column hide_tags=copyright"]
+[source,Java,linenums,role="code_column hide_tags=copyright"]
 ----
 include::start/src/main/java/io/openliberty/guides/system/SystemResource.java[]
 ----
 
 // file 1
 start/SystemConcurrency.java
-[source,xml,linenums,role="code_column hide_tags=copyright"]
+[source,Java,linenums,role="code_column hide_tags=copyright"]
 ----
 include::start/src/main/java/io/openliberty/guides/system/SystemConcurrency.java[]
 ----
@@ -108,7 +138,7 @@ The https://openliberty.io/docs/latest/reference/feature/concurrent-3.0.html[Jak
 
 // file 3
 WithVirtualThreads.java
-[source,xml,linenums,role="code_column hide_tags=copyright"]
+[source,Java,linenums,role="code_column hide_tags=copyright"]
 ----
 include::finish/src/main/java/io/openliberty/guides/system/WithVirtualThreads.java[]
 ----
@@ -125,7 +155,7 @@ The managed executor service provides a way to start asynchronous tasks within a
 
 // file 4
 SystemConcurrency.java
-[source,xml,linenums,role="code_column hide_tags=copyright,subscribe,calculateSystemLoad,getCpuLoad,asynchronous1,getMemoryUsage,enableSchedule,asynchronous2,schedule"]
+[source,Java,linenums,role="code_column hide_tags=copyright,subscribe,calculateSystemLoad,getCpuLoad,asynchronous1,getMemoryUsage,enableSchedule,asynchronous2,schedule"]
 ----
 include::finish/src/main/java/io/openliberty/guides/system/SystemConcurrency.java[]
 ----
@@ -136,7 +166,7 @@ include::finish/src/main/java/io/openliberty/guides/system/SystemConcurrency.jav
 `src/main/java/io/openliberty/guides/system/SystemConcurrency.java`
 ----
 
-Annotate the [hotspot file=4]`SystemConcurrency` class with the [hotspot=annotateManagedScheduledExecutor file=4]`@ManagedScheduledExecutorDefinition` annotation to provide a managed executor instance that enumerates the `WithVirtualThreads` required qualifiers through the [hotspot=managedScheduledExecutorService file=4]`ManagedScheduledExecutorService` injection point. Set the [hotspot=virtual file=4]`virtual` attribute to true to use virtual thread.
+Annotate the [hotspot file=4]`SystemConcurrency` class with the [hotspot=annotateManagedScheduledExecutor file=4]`@ManagedScheduledExecutorDefinition` annotation to provide a managed executor instance that enumerates the `WithVirtualThreads` required qualifiers through the [hotspot=managedScheduledExecutorService file=4]`ManagedScheduledExecutorService` injection point.
 
 // TODO: replace the javadoc link to jakartaee11
 The `@ManagedScheduledExecutorDefinition` annotation and the `ManagedScheduledExecutorService` interface are used in this bean instead of `@ManagedScheduledDefinition` annotation and `ManagedExecutorService` interface because you will implement a scheduled task in the following sections. For more information about these annotations and classes, see the Javadoc for https://openliberty.io/docs/latest/reference/javadoc/liberty-jakartaee10-javadoc.html?path=liberty-jakartaee10-javadoc/jakarta/enterprise/concurrent/package-summary.html[jakarta.enterprise.concurrent^].
@@ -157,7 +187,7 @@ Implement asynchronous tasks to get the current CPU load and memory usage.
 
 // file 0
 SystemConcurrency.java
-[source,xml,linenums,role="code_column hide_tags=copyright,enableSchedule,asynchronous2,schedule"]
+[source,Java,linenums,role="code_column hide_tags=copyright,enableSchedule,asynchronous2,schedule"]
 ----
 include::finish/src/main/java/io/openliberty/guides/system/SystemConcurrency.java[]
 ----
@@ -169,22 +199,21 @@ include::finish/src/main/java/io/openliberty/guides/system/SystemConcurrency.jav
 ----
 
 // file 1
-SseService.java
-[source,xml,linenums,role="code_column hide_tags=copyright"]
+persistence.xml
+[source,xml,linenums,role="code_column hide_tags=copyright,schedule,schedulToggle"]
 ----
-include::start/src/main/java/io/openliberty/guides/system/SseService.java[]
+include::finish/src/main/resources/META-INF/persistence.xml[]
 ----
 
-The [hotspot=getCpuLoad file=0]`getCpuLoad()` method uses the [hotspot=scheduleCall file=0]`virtualManagedExecutor` service to create and schedule an asynchronous task that will be delayed with [hotspot=after file=0]`5` seconds.
+The [hotspot=getCpuLoad file=0]`getCpuLoad()` method uses the [hotspot=scheduleCall file=0]`virtualManagedExecutor` service to create and schedule an asynchronous task that delays the execution with [hotspot=scheduleCall hotspot=after file=0]`5` seconds. The task calculates the [hotspot=calculateCPULoad file=0]`cpuLoadData` CPU load. Then, it calls the [hotspot=persistCPULoad file=0]`persist()` method to persist the data into the database through the [hotspot=entityManager file=0]`EntityManager` interface that interacts with the [hotspot=jpa-unit file=1]`jpa-unit` persistence context in the Liberty runtime.
 
-An alternative to create an asynchronous task is using `@Asynchronous` annotation. The [hotspot=getMemoryUsage file=0]`getMemoryUsage()` method is annotated with the [hotspot=asynchronous1 file=0]`@Asynchronous` annotation to make it running asynchronously.
+A transaction is required on a cascading PERSIST operation. Inside the asynchronous thread, retrieve the named [hotspot=userTransaction file=0]`UserTransaction` object from the Liberty runtime. Then, call the [hotspot=userTransaction hotspot=utBegin file=0]`begin()` method to create a transaction and call the [hotspot=userTransaction hotspot=utCommit file=0]`commit()` method to complete the transaction.
 
-Both tasks call the [hotspot=calculateSystemLoad hotspot=callCalculateSystemLoad1 hotspot=callCalculateSystemLoad2 file=0]`calculateSystemLoad()` method to calculate the CPU load and memory usage. Then, they call the [hotspot=broadcast1 hotspot=broadcast2 file=0]`broadcast()` method to broadcast the system load to clients through the [hotspot file=1]`SseService` bean that is provided for you.
-
+An alternative to create a similar asynchronous task is using `@Asynchronous` annotation. The [hotspot=getMemoryUsage file=0]`getMemoryUsage()` method is annotated with the [hotspot=asynchronous1 file=0]`@Asynchronous` annotation to make it running asynchronously. The task calculates the [hotspot=calculateMemoryUsage file=0]`memoryUsageData` memory usage and calls the [hotspot=persistMemoryUsage file=0]`persist()` method to persist the data into the database. To create a new transaction, annotate the `getMemoryUsage()` method by the [hotspot=transactional1 file=0]`@Transactional` annotation.
 
 // file 2
 SystemResource.java
-[source,xml,linenums,role="code_column hide_tags=copyright,schedule,schedulToggle"]
+[source,Java,linenums,role="code_column hide_tags=copyright,schedule,schedulToggle"]
 ----
 include::finish/src/main/java/io/openliberty/guides/system/SystemResource.java[]
 ----
@@ -197,28 +226,26 @@ include::finish/src/main/java/io/openliberty/guides/system/SystemResource.java[]
 
 The GET [hotspot=getCpuLoad file=2]`/systemLoad/cpuLoad` endpoint calls the `getCpuLoad()` asynchronous method and returns a message. The GET [hotspot=getMemoryUsage file=2]`/systemLoad/memoryUsage` endpoint calls the `getMemoryUsage()` asynchronous method and returns a message.
 
-
 Try out the http://localhost:9080/api/system/systemLoad/cpuLoad and http://localhost:9080/api/system/systemLoad/memoryUsage URLs. Both requests return to you immediately with a message.
 
-// file 3
-index.html
-[source,xml,linenums,role="code_column hide_tags=copyright"]
+To check the system loads after 5 seconds, go to the http://localhost:9080/api/system/systemLoad URL.
+
+[role="no_copy"]
 ----
-include::finish/src/main/webapp/index.html[]
+[
+  {
+    "id": 1,
+    "time": "2025-05-06T15:30:06.308192",
+    "cpuLoad": 5.074851387343854e-06
+  },
+  {
+    "id": 2,
+    "time": "2025-05-06T15:30:08.732892",
+    "memoryUsage": 0.7126722484827042
+  }
+]
 ----
 
-// file 4
-index.js
-[source,xml,linenums,role="code_column hide_tags=copyright"]
-----
-include::finish/src/main/webapp/index.js[]
-----
-
-To see the system load, check out the web application at the http://localhost:9080 URL.
-
-Click the image:meter-cpu.png[refresh CPU load icon, 20, 20] refresh button that calls the [hotspot=refreshCpuLoadButton file=3]`refreshCpuLoadCall()` method. The [hotspot=refreshCpuLoadCall file=4]`refreshCpuLoadCall()` method calls the `/api/system/systemLoad/cpuLoad` endpoint. After 5 seconds, you'll see that the current CPU load is added at the first row of the table.
-
-Click the image:meter-memory.png[refresh memory usage icon, 20, 20] refresh button that calls the [hotspot=refreshMemoryUsageButton file=3]`refreshMemoryUsageCall()` method. The [hotspot=refreshMemoryUsageCall file=4]`refreshMemoryUsageCall()` method calls the `/api/system/systemLoad/memoryUsage` endpoint. After 5 seconds, you'll see that the current memory usage is added at the first row of the table.
 
 
 == Scheduling asynchronous task
@@ -227,7 +254,7 @@ Implement a schedule task to get the current system load for every 10 seconds.
 
 // file 0
 SystemConcurrency.java
-[source,xml,linenums,role="code_column hide_tags=copyright"]
+[source,Java,linenums,role="code_column hide_tags=copyright"]
 ----
 include::finish/src/main/java/io/openliberty/guides/system/SystemConcurrency.java[]
 ----
@@ -238,7 +265,8 @@ include::finish/src/main/java/io/openliberty/guides/system/SystemConcurrency.jav
 `src/main/java/io/openliberty/guides/system/SystemConcurrency.java`
 ----
 
-Similarly, the [hotspot=schedule file=0]`schedule()` method calls the [hotspot=calculateSystemLoad hotspot=callCalculateSystemLoad3 file=0]`calculateSystemLoad()` method to calculate the CPU and memory usage and then the [hotspot=broadcast3 file=0]`broadcast()` method to broadcast the system load to clients.
+Similarly, the [hotspot=schedule file=0]`schedule()` method calculates the [hotspot=calculateSystemLoad file=0]`systemLoadData` system load data and calls the [hotspot=persistSystemLoad file=0]`persist()` method to persist the data into the database. To create a new transaction, annotate the `schedule()` method by the [hotspot=transactional2 hotspot=completableFuture file=0]`@Transactional` annotation.
+
 
 Annotate the [hotspot=asynchronous2 hotspot=completableFuture file=0]`schedule()` method with the `@Asynchronous` annotation. Configure the schedule with the [hotspot=asynchronous2 file=0]`"*/10 * * * * *"` cron expression to make it running asynchronously in every 10 seconds. Return a [hotspot=returnNull file=0]`null` value to make the schedule to keep running.
 
@@ -246,7 +274,7 @@ To stop the schedule, return a [hotspot=completableFuture hotspot=returnCompleta
 
 // file 1
 SystemResource.java
-[source,xml,linenums,role="code_column hide_tags=copyright"]
+[source,Java,linenums,role="code_column hide_tags=copyright"]
 ----
 include::finish/src/main/java/io/openliberty/guides/system/SystemResource.java[]
 ----
@@ -257,27 +285,26 @@ include::finish/src/main/java/io/openliberty/guides/system/SystemResource.java[]
 `src/main/java/io/openliberty/guides/system/SystemResource.java`
 ----
 
-Create the GET [hotspot=schedulToggle file=1]`/schedule/toggle` endpoint that calls the above `schedule()` scheduled asynchronous method.
+Create the GET [hotspot=schedulToggle file=1]`/schedule/toggle` endpoint that calls the `schedule()` scheduled asynchronous method.
 
-// file 2
-index.html
-[source,xml,linenums,role="code_column hide_tags=copyright"]
+Go to the http://localhost:9080/api/system/schedule/toggle URL to enable the schedule. After 10 seconds, go to the http://localhost:9080/api/system/systemLoad URL to check out the system loads.
+
+[role="no_copy"]
 ----
-include::finish/src/main/webapp/index.html[]
+[
+  ...
+  {
+    "id": 3,
+    "time": "2025-05-06T15:34:30.001636",
+    "cpuLoad": 1.8270538029075587e-06,
+    "memoryUsage": 0.6712260656058788
+  },
+  ...
+]
 ----
 
-// file 3
-index.js
-[source,xml,linenums,role="code_column hide_tags=copyright"]
-----
-include::finish/src/main/webapp/index.js[]
-----
+After you are finished checking out the schedule, go to the http://localhost:9080/api/system/schedule/toggle URL again to disable the schedule.
 
-Check out the web application at the http://localhost:9080 URL. Click the image:schedule.svg[schedule icon, 20, 20] schedule button to toggle the schedule that posts the current system load in every 10 seconds. The button calls the [hotspot=scheduleButton file=2]`scheduleCall()` method. The [hotspot=scheduleCall file=3]`scheduleCall()` method calls the `/api/system/schedule/toggle` endpoint.
-
-You'll see that the current system load is added at the first row of the table in every 10 seconds.
-
-After you are finished checking out the schedule, click the image:schedule.svg[schedule icon, 20, 20] schedule button again to stop the schedule.
 
 
 == Testing the application
@@ -299,11 +326,11 @@ include::finish/src/test/java/it/io/openliberty/guides/system/SystemEndpointIT.j
 
 The [hotspot=testGetProperties file=0]`testGetProperties()` tests the GET `/api/system/properties/os` endpoint and confirms that 4 `os.*` properties are returned.
 
-The [hotspot=testEndpoint hotspot=testGetCpuLoad file=0]`testGetCpuLoad()` tests the GET `/api/system/systemLoad/cpuLoad` endpoint and confirms that the CPU load is not null after 10 seconds.
+The [hotspot=testGetCpuLoad file=0]`testGetCpuLoad()` tests the GET `/api/system/systemLoad/cpuLoad` endpoint and confirms that the CPU load is not null after several seconds.
 
-The [hotspot=testEndpoint hotspot=testGetMemoryUsage file=0]`testGetMemoryUsage()` tests the GET `/api/system/systemLoad/memoryUsage` endpoint and confirms that the memory usage is not null after 10 seconds.
+The [hotspot=testGetMemoryUsage file=0]`testGetMemoryUsage()` tests the GET `/api/system/systemLoad/memoryUsage` endpoint and confirms that the memory usage is not null after several seconds.
 
-The [hotspot=testEnableSchedule file=0]`testEnableSchedule()` tests the GET `/api/systems/schedule/toggle` endpoint and confirms that 3 system loads are broadcast after 35 seconds.
+The [hotspot=testEnableSchedule file=0]`testEnableSchedule()` tests the GET `/api/systems/schedule/toggle` endpoint and confirms that 2 system loads are recorded after 20 seconds.
 
 // =================================================================================================
 // Running the tests
