@@ -4,7 +4,9 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence 
                         http://xmlns.jcp.org/xml/ns/persistence/persistence_2_2.xsd">
+    <!-- tag::jpa-unit[] -->
     <persistence-unit name="jpa-unit" transaction-type="JTA">
+    <!-- end::jpa-unit[] -->
         <jta-data-source>jdbc/SystemLoadDataSource</jta-data-source>
         <properties>
             <property name="jakarta.persistence.schema-generation.database.action"
