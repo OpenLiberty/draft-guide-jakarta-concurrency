@@ -330,7 +330,7 @@ The [hotspot=testGetCpuLoad file=0]`testGetCpuLoad()` tests the GET `/api/system
 
 The [hotspot=testGetMemoryUsage file=0]`testGetMemoryUsage()` tests the GET `/api/system/systemLoad/memoryUsage` endpoint and confirms that the memory usage is not null after several seconds.
 
-The [hotspot=testEnableSchedule file=0]`testEnableSchedule()` tests the GET `/api/systems/schedule/toggle` endpoint and confirms that 2 system loads are recorded after 21 seconds.
+The [hotspot=testEnableSchedule file=0]`testEnableSchedule()` tests the GET `/api/systems/schedule/toggle` endpoint and confirms that 2 system loads are recorded after 20 seconds.
 
 // =================================================================================================
 // Running the tests

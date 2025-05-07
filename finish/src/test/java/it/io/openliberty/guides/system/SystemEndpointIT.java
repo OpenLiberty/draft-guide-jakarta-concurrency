@@ -165,7 +165,7 @@ public class SystemEndpointIT {
     public void testEnableSchedule() throws Exception {
         toggleSchedule();
         JsonArray before = getSystemLoads();
-        Thread.sleep(21000);
+        Thread.sleep(20000);
         JsonArray after = getSystemLoads();
         assertEquals(before.size() + 2, after.size());
         List<JsonObject>  diff = removeAll(before, after);
