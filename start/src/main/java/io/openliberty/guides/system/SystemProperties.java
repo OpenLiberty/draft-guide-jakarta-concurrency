@@ -25,20 +25,10 @@ public class SystemProperties {
 
     private static Logger logger = Logger.getLogger(SystemProperties.class.getName());
 
-    private void doSomething(int t) {
-        try {
-            // tag::doSomethingSleep[]
-            Thread.sleep(t * 1000);
-            // end::doSomethingSleep[]
-        } catch (InterruptedException e) {
-            logger.warning(e.getMessage());
-        }
-    }
-
     // tag::getSystemPropertyTask[]
-    private String getSystemPropertyTask(String key) {
+    private String getSystemPropertyTask(String key) throws InterruptedException {
         logger.info("Getting the " + key + " property...");
-        doSomething(1);
+        Thread.sleep(1000);
         return System.getProperty(key);
     }
     // end::getSystemPropertyTask[]

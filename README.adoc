@@ -129,7 +129,7 @@ server.xml
 include::finish/src/main/liberty/config/server.xml[]
 ----
 
-The starting application is implemented the [hotspot=getProperties file=0]`/properties/{prefix}` endpoint. Go to the http://localhost:9080/api/system/properties/java URL to see all the `java.*` properties. Notice that the URL takes several seconds to get the result. Each [hotspot=doSomethingSleep hotspot=getSystemPropertyTask hotspot=callGetSystemPropertyTask file=1]`getSystemPropertyTask()` call takes at least a second.
+The starting application is implemented the [hotspot=getProperties file=0]`/properties/{prefix}` endpoint. Go to the http://localhost:9080/api/system/properties/java URL to see all the `java.*` properties. Notice that the URL takes several seconds to get the result. Each [hotspot=getSystemPropertyTask hotspot=callGetSystemPropertyTask file=1]`getSystemPropertyTask()` call takes at least a second.
 
 To improve the performance, enhance the [hotspot=getProperties file=1]`getProperties()` method to call the [hotspot=callGetSystemPropertyTask file=1]`getSystemPropertyTask()` method in parallel.
 

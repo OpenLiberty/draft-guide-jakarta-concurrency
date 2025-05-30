@@ -21,8 +21,6 @@ import java.util.stream.Collectors;
 
 import jakarta.enterprise.concurrent.ManagedExecutorDefinition;
 import jakarta.enterprise.concurrent.ManagedExecutorService;
-import jakarta.enterprise.concurrent.ManagedScheduledExecutorDefinition;
-import jakarta.enterprise.concurrent.ManagedScheduledExecutorService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
@@ -43,16 +41,9 @@ public class SystemProperties {
     // end::managedExecutor[]
     // end::managedExecutorService[]
     
-    private void doSomething(int t) {
-        try {
-            Thread.sleep(t * 1000);
-        } catch (InterruptedException e) {
-            logger.warning(e.getMessage());
-        }
-    }
-    private String getSystemPropertyTask(String key) {
+    private String getSystemPropertyTask(String key) throws InterruptedException {
         logger.info("Getting the " + key + " property...");
-        doSomething(1);
+        Thread.sleep(1000);
         return System.getProperty(key);
     }
 
