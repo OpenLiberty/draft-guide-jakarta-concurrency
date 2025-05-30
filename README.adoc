@@ -186,7 +186,7 @@ persistence.xml
 include::finish/src/main/resources/META-INF/persistence.xml[]
 ----
 
-The [hotspot file=3]`SystemConcurrency` class is annotated by the [hotspot=annotateManagedScheduledExecutor file=0]`@ManagedScheduledExecutorDefinition` annotation to provide a managed scheduled executor instance through the [hotspot=managedScheduledExecutorService file=0]`ManagedScheduledExecutorService` injection point.
+The [hotspot file=0]`SystemConcurrency` class is annotated by the [hotspot=annotateManagedScheduledExecutor file=0]`@ManagedScheduledExecutorDefinition` annotation to provide a managed scheduled executor instance through the [hotspot=managedScheduledExecutorService file=0]`ManagedScheduledExecutorService` injection point.
 
 // TODO: replace the javadoc link to jakartaee11
 The `@ManagedScheduledExecutorDefinition` annotation and the `ManagedScheduledExecutorService` interface are used in this bean because you will implement a scheduled task in the following section. For more information about different mananged services, see their annotations and classes in the https://openliberty.io/docs/latest/reference/javadoc/liberty-jakartaee10-javadoc.html?path=liberty-jakartaee10-javadoc/jakarta/enterprise/concurrent/package-summary.html[jakarta.enterprise.concurrent JavaDoc^].
