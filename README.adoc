@@ -252,10 +252,7 @@ include::finish/src/main/java/io/openliberty/guides/system/SystemConcurrency.jav
 
 Similarly, the [hotspot=schedule file=0]`schedule()` method calculates the [hotspot=calculateSystemLoad file=0]`systemLoadData` system load data and calls the [hotspot=persistSystemLoad file=0]`persist()` method to persist the data into the database. To create a new transaction, annotate the `schedule()` method by the [hotspot=transactional2 hotspot=completableFuture file=0]`@Transactional` annotation.
 
-
-Annotate the [hotspot=asynchronous2 hotspot=completableFuture file=0]`schedule()` method with the `@Asynchronous` annotation. Configure the schedule with the [hotspot=asynchronous2 file=0]`"*/10 * * * * *"` cron expression to make it running asynchronously in every 10 seconds. Return a [hotspot=returnNull file=0]`null` value to make the schedule to keep running.
-
-To stop the schedule, return a [hotspot=completableFuture hotspot=returnCompletableFuture file=0]`CompletableFuture<>` object or raises an exception.
+The [hotspot=asynchronous2 hotspot=completableFuture file=0]`schedule()` method is annotated with the `@Asynchronous` annotation that configures the schedule with the [hotspot=asynchronous2 file=0]`"*/10 * * * * *"` cron expression to make the task running asynchronously in every 10 seconds. A [hotspot=returnNull file=0]`null` value is returned to make the schedule to keep running. A [hotspot=completableFuture hotspot=returnCompletableFuture file=0]`CompletableFuture<>` object is returned to complete the task and stop the schedule.
 
 // file 1
 SystemResource.java
