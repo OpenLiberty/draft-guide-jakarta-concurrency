@@ -43,7 +43,7 @@ import jakarta.transaction.UserTransaction;
 
 // tag::annotateManagedScheduledExecutor[]
 @ManagedScheduledExecutorDefinition(
-    name = "java:module/concurrent/virtual-executor")
+    name = "java:module/concurrent/managed-executor")
 // end::annotateManagedScheduledExecutor[]
 @ApplicationScoped
 public class SystemConcurrency {
@@ -57,9 +57,9 @@ public class SystemConcurrency {
 
     // tag::managedScheduledExecutorService[]
     @Inject
-    // tag::virtualManagedExecutor[]
-    ManagedScheduledExecutorService virtualManagedExecutor;
-    // end::virtualManagedExecutor[]
+    // tag::managedExecutor[]
+    ManagedScheduledExecutorService managedExecutor;
+    // end::managedExecutor[]
     // end::managedScheduledExecutorService[]
 
     // tag::entityManager[]
@@ -92,7 +92,7 @@ public class SystemConcurrency {
                                   .collect(Collectors.toList());
         for (String k : keys) {
             // tag::submit[]
-            Future<String> v = virtualManagedExecutor.submit(() -> {
+            Future<String> v = managedExecutor.submit(() -> {
                 return getSystemPropertyTask(k);
             });
             properties.put(k, v);
@@ -119,7 +119,7 @@ public class SystemConcurrency {
     public void getCpuLoad() {
         logger.info("New CPU load will be recorded after 5 seconds.");
         // tag::scheduleCall[]
-        virtualManagedExecutor.schedule(() -> {
+        managedExecutor.schedule(() -> {
         // end::scheduleCall[]
             try {
                 // tag::userTransaction[]

@@ -157,7 +157,7 @@ The [hotspot file=3]`SystemConcurrency` class is annotated by the [hotspot=annot
 The `@ManagedScheduledExecutorDefinition` annotation and the `ManagedScheduledExecutorService` interface are used in this bean instead of `@ManagedScheduledDefinition` annotation and `ManagedExecutorService` interface because you will implement a scheduled task in the following sections. For more information about these annotations and classes, see the Javadoc for https://openliberty.io/docs/latest/reference/javadoc/liberty-jakartaee10-javadoc.html?path=liberty-jakartaee10-javadoc/jakarta/enterprise/concurrent/package-summary.html[jakarta.enterprise.concurrent^].
 
 
-The `getProperties()` method uses the [hotspot=virtualManagedExecutor hotspot=submit file=3]`virtualManagedExecutor` instance to submit callable tasks that call the `getSystemPropertyTask()` method to collect different property values in parallel. Each task creates a virtual thread and returns a `Future<String>` object.
+The `getProperties()` method uses the [hotspot=managedExecutor hotspot=submit file=3]`managedExecutor` instance to submit callable tasks that call the `getSystemPropertyTask()` method to collect different property values in parallel. Each task creates a thread and returns a `Future<String>` object.
 
 The `return` statement performs a [hotspot=collect file=3]`collect()` mutable reduction operation on the entries of the [hotspot=properties file=3]`properties` map. In the operation, use the [hotspot=get file=3]`get()` method to wait for all threads to complete and to collect the results.
 
@@ -190,7 +190,7 @@ persistence.xml
 include::finish/src/main/resources/META-INF/persistence.xml[]
 ----
 
-The [hotspot=getCpuLoad file=0]`getCpuLoad()` method uses the [hotspot=scheduleCall file=0]`virtualManagedExecutor` service to create and schedule an asynchronous task that delays the execution with [hotspot=scheduleCall hotspot=after file=0]`5` seconds. The task calculates the [hotspot=calculateCPULoad file=0]`cpuLoadData` CPU load. Then, it calls the [hotspot=persistCPULoad file=0]`persist()` method to persist the data into the database through the [hotspot=entityManager file=0]`EntityManager` interface that interacts with the [hotspot=jpa-unit file=1]`jpa-unit` persistence context in the Liberty runtime.
+The [hotspot=getCpuLoad file=0]`getCpuLoad()` method uses the [hotspot=scheduleCall file=0]`managedExecutor` service to create and schedule an asynchronous task that delays the execution with [hotspot=scheduleCall hotspot=after file=0]`5` seconds. The task calculates the [hotspot=calculateCPULoad file=0]`cpuLoadData` CPU load. Then, it calls the [hotspot=persistCPULoad file=0]`persist()` method to persist the data into the database through the [hotspot=entityManager file=0]`EntityManager` interface that interacts with the [hotspot=jpa-unit file=1]`jpa-unit` persistence context in the Liberty runtime.
 
 A transaction is required on a cascading PERSIST operation. Inside the asynchronous thread, retrieve the named [hotspot=userTransaction file=0]`UserTransaction` object from the Liberty runtime. Then, call the [hotspot=userTransaction hotspot=utBegin file=0]`begin()` method to create a transaction and call the [hotspot=userTransaction hotspot=utCommit file=0]`commit()` method to complete the transaction.
 
@@ -254,6 +254,8 @@ Similarly, the [hotspot=schedule file=0]`schedule()` method calculates the [hots
 
 The [hotspot=asynchronous2 hotspot=completableFuture file=0]`schedule()` method is annotated with the `@Asynchronous` annotation that configures the schedule with the [hotspot=asynchronous2 file=0]`"*/10 * * * * *"` cron expression to make the task running asynchronously in every 10 seconds. A [hotspot=returnNull file=0]`null` value is returned to make the schedule to keep running. A [hotspot=completableFuture hotspot=returnCompletableFuture file=0]`CompletableFuture<>` object is returned to complete the task and stop the schedule.
 
+Implement a REST endpoint to toggle the schedule.
+
 // file 1
 SystemResource.java
 [source,Java,linenums,role="code_column hide_tags=copyright"]
@@ -267,7 +269,7 @@ include::finish/src/main/java/io/openliberty/guides/system/SystemResource.java[]
 `src/main/java/io/openliberty/guides/system/SystemResource.java`
 ----
 
-Create the GET [hotspot=schedulToggle file=1]`/schedule/toggle` endpoint that calls the `schedule()` scheduled asynchronous method.
+The added GET [hotspot=schedulToggle file=1]`/schedule/toggle` endpoint calls the `schedule()` scheduled asynchronous method.
 
 Go to the http://localhost:9080/api/system/schedule/toggle URL to enable the schedule. After 10 seconds, go to the http://localhost:9080/api/system/systemLoad URL to check out the system loads.
 
