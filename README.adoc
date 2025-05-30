@@ -136,7 +136,7 @@ To improve the performance, enhance the [hotspot=getProperties file=1]`getProper
 // TODO: replace the concurrent-3.0.html to concurrent-3.1.html
 The https://openliberty.io/docs/latest/reference/feature/concurrent-3.0.html[Jakarta Concurrency^] feature is enabled for you in the Liberty [hotspot=concurrent file=2]`server.xml` configuration file.
 
-Enable the `SystemConcurrency` class to use Jakarta Concurrency managed executor service. The managed executor service provides a way to start asynchronous tasks within an application server environment. It propagates various thread contexts that are relevant to Jakarta EE applications.
+Enable the `SystemConcurrency` class to use Jakarta Concurrency managed executor service that provides a way to start asynchronous tasks within an application server environment. It propagates various thread contexts that are relevant to Jakarta EE applications.
 
 // file 3
 SystemConcurrency.java
@@ -157,9 +157,9 @@ The [hotspot file=3]`SystemConcurrency` class is annotated by the [hotspot=annot
 The `@ManagedScheduledExecutorDefinition` annotation and the `ManagedScheduledExecutorService` interface are used in this bean instead of `@ManagedScheduledDefinition` annotation and `ManagedExecutorService` interface because you will implement a scheduled task in the following sections. For more information about these annotations and classes, see the Javadoc for https://openliberty.io/docs/latest/reference/javadoc/liberty-jakartaee10-javadoc.html?path=liberty-jakartaee10-javadoc/jakarta/enterprise/concurrent/package-summary.html[jakarta.enterprise.concurrent^].
 
 
-Use the [hotspot=virtualManagedExecutor hotspot=submit file=3]`virtualManagedExecutor` instance to submit callable tasks that call the `getSystemPropertyTask()` method to collect different property values in parallel. Each task creates a virtual thread and returns a `Future<String>` object.
+The `getProperties()` method uses the [hotspot=virtualManagedExecutor hotspot=submit file=3]`virtualManagedExecutor` instance to submit callable tasks that call the `getSystemPropertyTask()` method to collect different property values in parallel. Each task creates a virtual thread and returns a `Future<String>` object.
 
-Perform a [hotspot=collect file=3]`collect()` mutable reduction operation on the entries of the [hotspot=properties file=3]`properties` map. In the operation, use the [hotspot=get file=3]`get()` method to wait for all threads to complete and to collect the results.
+The `return` statement performs a [hotspot=collect file=3]`collect()` mutable reduction operation on the entries of the [hotspot=properties file=3]`properties` map. In the operation, use the [hotspot=get file=3]`get()` method to wait for all threads to complete and to collect the results.
 
 You started the Open Liberty in dev mode at the beginning of this section, so all the changes are automatically picked up.
 
