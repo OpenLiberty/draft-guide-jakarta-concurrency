@@ -199,7 +199,7 @@ A transaction is required on a cascading PERSIST operation. Inside the asynchron
 
 An alternative to create a similar asynchronous task is using `@Asynchronous` annotation. The [hotspot=getMemoryUsage file=0]`getMemoryUsage()` method is annotated with the [hotspot=asynchronous1 file=0]`@Asynchronous` annotation to make it running asynchronously. The task calculates the [hotspot=calculateMemoryUsage file=0]`memoryUsageData` memory usage and calls the [hotspot=persistMemoryUsage file=0]`persist()` method to persist the data into the database. To create a new transaction, annotate the `getMemoryUsage()` method by the [hotspot=transactional1 file=0]`@Transactional` annotation.
 
-Jakarta Concurrency feature plays an important role to mange the [hotspot=jpa-unit file=1]`jpa-unit` persistence context that is propagated with transaction context in the threads to ensure that data integrity is preserved.
+Jakarta Concurrency feature plays an important role to mange the [hotspot=persistenceContext file=0]`jpa-unit` persistence context that is propagated with transaction context in the threads to ensure that data integrity is preserved.
 
 // file 2
 SystemResource.java

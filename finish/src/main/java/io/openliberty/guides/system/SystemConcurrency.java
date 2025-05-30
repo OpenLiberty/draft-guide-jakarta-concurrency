@@ -58,7 +58,9 @@ public class SystemConcurrency {
     // end::managedScheduledExecutorService[]
 
     // tag::entityManager[]
+    // tag::persistenceContext[]
     @PersistenceContext(name = "jpa-unit")
+    // end::persistenceContext[]
     private EntityManager em;
     // end::entityManager[]
 
