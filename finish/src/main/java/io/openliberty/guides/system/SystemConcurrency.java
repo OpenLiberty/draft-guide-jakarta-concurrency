@@ -65,7 +65,11 @@ public class SystemConcurrency {
     // end::entityManager[]
 
     private void doSomething(int t) {
-        try { Thread.sleep(t * 1000); } catch (Exception e) {};
+        try {
+            Thread.sleep(t * 1000);
+        } catch (Exception e) {
+            logger.warning(e.getMessage());
+        };
     }
 
     // tag::getCpuLoad[]

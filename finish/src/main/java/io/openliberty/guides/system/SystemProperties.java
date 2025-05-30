@@ -40,7 +40,7 @@ public class SystemProperties {
     ManagedExecutorService managedExecutor;
     // end::managedExecutor[]
     // end::managedExecutorService[]
-    
+
     private String getSystemPropertyTask(String key) throws InterruptedException {
         logger.info("Getting the " + key + " property...");
         Thread.sleep(1000);
