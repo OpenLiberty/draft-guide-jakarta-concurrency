@@ -136,45 +136,30 @@ To improve the performance, enhance the [hotspot=getProperties file=1]`getProper
 // TODO: replace the concurrent-3.0.html to concurrent-3.1.html
 The https://openliberty.io/docs/latest/reference/feature/concurrent-3.0.html[Jakarta Concurrency^] feature is enabled for you in the Liberty [hotspot=concurrent file=2]`server.xml` configuration file.
 
+Enable the `SystemConcurrency` class to use Jakarta Concurrency managed executor service. The managed executor service provides a way to start asynchronous tasks within an application server environment. It propagates various thread contexts that are relevant to Jakarta EE applications.
+
 // file 3
-WithVirtualThreads.java
-[source,Java,linenums,role="code_column hide_tags=copyright"]
-----
-include::finish/src/main/java/io/openliberty/guides/system/WithVirtualThreads.java[]
-----
-
-[role="code_command hotspot file=3", subs="quotes"]
-----
-#Create the `WithVirtualThreads.java` file.#
-`src/main/java/io/openliberty/guides/system/WithVirtualThreads.java`
-----
-
-The [hotspot file=3]`WithVirtualThreads` qualifier annotation class is used to enumerate the required qualifiers for the managed executor service.
-
-The managed executor service provides a way to start asynchronous tasks within an application server environment. It propagates various thread contexts that are relevant to Jakarta EE applications.
-
-// file 4
 SystemConcurrency.java
 [source,Java,linenums,role="code_column hide_tags=copyright,subscribe,calculateSystemLoad,getCpuLoad,asynchronous1,getMemoryUsage,enableSchedule,asynchronous2,schedule"]
 ----
 include::finish/src/main/java/io/openliberty/guides/system/SystemConcurrency.java[]
 ----
 
-[role="code_command hotspot file=4", subs="quotes"]
+[role="code_command hotspot file=3", subs="quotes"]
 ----
 #Replace the `SystemConcurrency.java` file.#
 `src/main/java/io/openliberty/guides/system/SystemConcurrency.java`
 ----
 
-Annotate the [hotspot file=4]`SystemConcurrency` class with the [hotspot=annotateManagedScheduledExecutor file=4]`@ManagedScheduledExecutorDefinition` annotation to provide a managed executor instance that enumerates the `WithVirtualThreads` required qualifiers through the [hotspot=managedScheduledExecutorService file=4]`ManagedScheduledExecutorService` injection point.
+The [hotspot file=3]`SystemConcurrency` class is annotated by the [hotspot=annotateManagedScheduledExecutor file=3]`@ManagedScheduledExecutorDefinition` annotation to provide a managed executor instance through the [hotspot=managedScheduledExecutorService file=3]`ManagedScheduledExecutorService` injection point.
 
 // TODO: replace the javadoc link to jakartaee11
 The `@ManagedScheduledExecutorDefinition` annotation and the `ManagedScheduledExecutorService` interface are used in this bean instead of `@ManagedScheduledDefinition` annotation and `ManagedExecutorService` interface because you will implement a scheduled task in the following sections. For more information about these annotations and classes, see the Javadoc for https://openliberty.io/docs/latest/reference/javadoc/liberty-jakartaee10-javadoc.html?path=liberty-jakartaee10-javadoc/jakarta/enterprise/concurrent/package-summary.html[jakarta.enterprise.concurrent^].
 
 
-Use the [hotspot=virtualManagedExecutor hotspot=submit file=4]`virtualManagedExecutor` instance to submit callable tasks that call the `getSystemPropertyTask()` method to collect different property values in parallel. Each task creates a virtual thread and returns a `Future<String>` object.
+Use the [hotspot=virtualManagedExecutor hotspot=submit file=3]`virtualManagedExecutor` instance to submit callable tasks that call the `getSystemPropertyTask()` method to collect different property values in parallel. Each task creates a virtual thread and returns a `Future<String>` object.
 
-Perform a [hotspot=collect file=4]`collect()` mutable reduction operation on the entries of the [hotspot=properties file=4]`properties` map. In the operation, use the [hotspot=get file=4]`get()` method to wait for all threads to complete and to collect the results.
+Perform a [hotspot=collect file=3]`collect()` mutable reduction operation on the entries of the [hotspot=properties file=3]`properties` map. In the operation, use the [hotspot=get file=3]`get()` method to wait for all threads to complete and to collect the results.
 
 You started the Open Liberty in dev mode at the beginning of this section, so all the changes are automatically picked up.
 

@@ -43,8 +43,7 @@ import jakarta.transaction.UserTransaction;
 
 // tag::annotateManagedScheduledExecutor[]
 @ManagedScheduledExecutorDefinition(
-    name = "java:module/concurrent/virtual-executor",
-    qualifiers = WithVirtualThreads.class)
+    name = "java:module/concurrent/virtual-executor")
 // end::annotateManagedScheduledExecutor[]
 @ApplicationScoped
 public class SystemConcurrency {
@@ -58,7 +57,6 @@ public class SystemConcurrency {
 
     // tag::managedScheduledExecutorService[]
     @Inject
-    @WithVirtualThreads
     // tag::virtualManagedExecutor[]
     ManagedScheduledExecutorService virtualManagedExecutor;
     // end::virtualManagedExecutor[]
