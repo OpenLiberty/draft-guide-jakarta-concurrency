@@ -29,21 +29,24 @@ import jakarta.ws.rs.core.MediaType;
 public class SystemResource {
 
     @Inject
-    SystemConcurrency bean;
+    SystemProperties propertiesBean;
+
+    @Inject
+    SystemConcurrency concurrencyBean;
 
     @GET
     @Path("/properties/{prefix}")
     @Produces(MediaType.APPLICATION_JSON)
     public Map<String, String> getProperties(@PathParam("prefix") String prefix)
         throws InterruptedException, ExecutionException {
-        return bean.getProperties(prefix);
+        return propertiesBean.getProperties(prefix);
     }
 
     @GET
     @Path("/systemLoad")
     @Produces(MediaType.APPLICATION_JSON)
     public List<SystemLoadData> getSystemLoads() {
-        return bean.getSystemLoads();
+        return concurrencyBean.getSystemLoads();
     }
 
     // tag::getCpuLoad[]
@@ -51,7 +54,7 @@ public class SystemResource {
     @Path("/systemLoad/cpuLoad")
     @Produces(MediaType.TEXT_PLAIN)
     public String getCpuLoad() {
-        bean.getCpuLoad();
+        concurrencyBean.getCpuLoad();
         return "Check CPU load after 5 seconds.";
     }
     // end::getCpuLoad[]
@@ -61,7 +64,7 @@ public class SystemResource {
     @Path("/systemLoad/memoryUsage")
     @Produces(MediaType.TEXT_PLAIN)
     public String getMemoryUsage() {
-        bean.getMemoryUsage();
+        concurrencyBean.getMemoryUsage();
         return "Check memory usage after 5 seconds.";
     }
     // end::getMemoryUsage[]
@@ -71,7 +74,7 @@ public class SystemResource {
     @Path("/schedule")
     @Produces(MediaType.TEXT_PLAIN)
     public String schedule() {
-        return String.valueOf(bean.isScheduleEnabled());
+        return String.valueOf(concurrencyBean.isScheduleEnabled());
     }
     // end::schedule[]
 
@@ -80,12 +83,12 @@ public class SystemResource {
     @Path("/schedule/toggle")
     @Produces(MediaType.TEXT_PLAIN)
     public String schedulToggle() {
-        if (bean.isScheduleEnabled()) {
-            bean.enableSchedule(false);
+        if (concurrencyBean.isScheduleEnabled()) {
+            concurrencyBean.enableSchedule(false);
             return "Disabling the schedule...";
         } else {
-            bean.enableSchedule(true);
-            bean.schedule();
+            concurrencyBean.enableSchedule(true);
+            concurrencyBean.schedule();
             return "Enabling the schedule...";
         }
     }

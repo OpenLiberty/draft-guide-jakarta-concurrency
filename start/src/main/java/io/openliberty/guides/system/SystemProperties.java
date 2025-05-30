@@ -11,8 +11,6 @@
 // end::copyright[]
 package io.openliberty.guides.system;
 
-import java.lang.management.ManagementFactory;
-import java.lang.management.MemoryMXBean;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,18 +18,12 @@ import java.util.concurrent.ExecutionException;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-import com.sun.management.OperatingSystemMXBean;
-
 import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
-public class SystemConcurrency {
+public class SystemProperties {
 
-    private static final OperatingSystemMXBean OS =
-        (OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
-    private static final MemoryMXBean MEM = ManagementFactory.getMemoryMXBean();
-
-    private static Logger logger = Logger.getLogger(SystemConcurrency.class.getName());
+    private static Logger logger = Logger.getLogger(SystemProperties.class.getName());
 
     private void doSomething(int t) {
         try {

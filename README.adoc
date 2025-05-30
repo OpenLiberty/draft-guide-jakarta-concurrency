@@ -116,10 +116,10 @@ include::start/src/main/java/io/openliberty/guides/system/SystemResource.java[]
 ----
 
 // file 1
-start/SystemConcurrency.java
+start/SystemProperties.java
 [source,Java,linenums,role="code_column hide_tags=copyright"]
 ----
-include::start/src/main/java/io/openliberty/guides/system/SystemConcurrency.java[]
+include::start/src/main/java/io/openliberty/guides/system/SystemProperties.java[]
 ----
 
 // file 2
@@ -136,26 +136,22 @@ To improve the performance, enhance the [hotspot=getProperties file=1]`getProper
 // TODO: replace the concurrent-3.0.html to concurrent-3.1.html
 The https://openliberty.io/docs/latest/reference/feature/concurrent-3.0.html[Jakarta Concurrency^] feature is enabled for you in the Liberty [hotspot=concurrent file=2]`server.xml` configuration file.
 
-Enable the `SystemConcurrency` class to use Jakarta Concurrency managed executor service that provides a way to start asynchronous tasks within an application server environment. It propagates various thread contexts that are relevant to Jakarta EE applications.
+Enable the `SystemProperties` class to use Jakarta Concurrency managed executor service that provides a way to start asynchronous tasks within an application server environment. It propagates various thread contexts that are relevant to Jakarta EE applications.
 
 // file 3
-SystemConcurrency.java
-[source,Java,linenums,role="code_column hide_tags=copyright,subscribe,calculateSystemLoad,getCpuLoad,asynchronous1,getMemoryUsage,enableSchedule,asynchronous2,schedule"]
+SystemProperties.java
+[source,Java,linenums,role="code_column hide_tags=copyright"]
 ----
-include::finish/src/main/java/io/openliberty/guides/system/SystemConcurrency.java[]
+include::finish/src/main/java/io/openliberty/guides/system/SystemProperties.java[]
 ----
 
 [role="code_command hotspot file=3", subs="quotes"]
 ----
-#Replace the `SystemConcurrency.java` file.#
-`src/main/java/io/openliberty/guides/system/SystemConcurrency.java`
+#Replace the `SystemProperties.java` file.#
+`src/main/java/io/openliberty/guides/system/SystemProperties.java`
 ----
 
-The [hotspot file=3]`SystemConcurrency` class is annotated by the [hotspot=annotateManagedScheduledExecutor file=3]`@ManagedScheduledExecutorDefinition` annotation to provide a managed executor instance through the [hotspot=managedScheduledExecutorService file=3]`ManagedScheduledExecutorService` injection point.
-
-// TODO: replace the javadoc link to jakartaee11
-The `@ManagedScheduledExecutorDefinition` annotation and the `ManagedScheduledExecutorService` interface are used in this bean instead of `@ManagedScheduledDefinition` annotation and `ManagedExecutorService` interface because you will implement a scheduled task in the following sections. For more information about these annotations and classes, see the Javadoc for https://openliberty.io/docs/latest/reference/javadoc/liberty-jakartaee10-javadoc.html?path=liberty-jakartaee10-javadoc/jakarta/enterprise/concurrent/package-summary.html[jakarta.enterprise.concurrent^].
-
+The [hotspot file=3]`SystemProperties` class is annotated by the [hotspot=annotateManagedExecutor file=3]`@ManagedExecutorDefinition` annotation to provide a managed executor instance through the [hotspot=managedExecutorService file=3]`ManagedExecutorService` injection point.
 
 The `getProperties()` method uses the [hotspot=managedExecutor hotspot=submit file=3]`managedExecutor` instance to submit callable tasks that call the `getSystemPropertyTask()` method to collect different property values in parallel. Each task creates a thread and returns a `Future<String>` object.
 
@@ -179,7 +175,7 @@ include::finish/src/main/java/io/openliberty/guides/system/SystemConcurrency.jav
 
 [role="code_command hotspot file=0", subs="quotes"]
 ----
-#Replace the `SystemConcurrency.java` file.#
+#Create the `SystemConcurrency.java` file.#
 `src/main/java/io/openliberty/guides/system/SystemConcurrency.java`
 ----
 
@@ -189,6 +185,11 @@ persistence.xml
 ----
 include::finish/src/main/resources/META-INF/persistence.xml[]
 ----
+
+The [hotspot file=3]`SystemConcurrency` class is annotated by the [hotspot=annotateManagedScheduledExecutor file=0]`@ManagedScheduledExecutorDefinition` annotation to provide a managed scheduled executor instance through the [hotspot=managedScheduledExecutorService file=0]`ManagedScheduledExecutorService` injection point.
+
+// TODO: replace the javadoc link to jakartaee11
+The `@ManagedScheduledExecutorDefinition` annotation and the `ManagedScheduledExecutorService` interface are used in this bean because you will implement a scheduled task in the following section. For more information about different mananged services, see their annotations and classes in the https://openliberty.io/docs/latest/reference/javadoc/liberty-jakartaee10-javadoc.html?path=liberty-jakartaee10-javadoc/jakarta/enterprise/concurrent/package-summary.html[jakarta.enterprise.concurrent JavaDoc^].
 
 The [hotspot=getCpuLoad file=0]`getCpuLoad()` method uses the [hotspot=scheduleCall file=0]`managedExecutor` service to create and schedule an asynchronous task that delays the execution with [hotspot=scheduleCall hotspot=after file=0]`5` seconds. The task calculates the [hotspot=calculateCPULoad file=0]`cpuLoadData` CPU load. Then, it calls the [hotspot=persistCPULoad file=0]`persist()` method to persist the data into the database through the [hotspot=entityManager file=0]`EntityManager` interface that interacts with the [hotspot=jpa-unit file=1]`jpa-unit` persistence context in the Liberty runtime.
 
