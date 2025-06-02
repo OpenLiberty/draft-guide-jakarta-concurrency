@@ -311,7 +311,7 @@ include::finish/src/test/java/it/io/openliberty/guides/system/SystemEndpointIT.j
 
 [role="code_command hotspot file=0", subs="quotes"]
 ----
-#Create the `SystemEndpointIT.java` file.#
+#Replace the `SystemEndpointIT.java` file.#
 `src/test/java/it/io/openliberty/guides/system/SystemEndpointIT.java`
 ----
 
