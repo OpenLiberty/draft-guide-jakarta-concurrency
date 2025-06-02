@@ -42,7 +42,7 @@ You'll update the application to learn how to run tasks in parallel by enhancing
 include::{common-includes}/gitclone.adoc[]
 
 [role='command']
-include::{common-includes}/twyb-intro.adoc[]
+include::{common-includes}/twyb-intro-mvnw.adoc[]
 
 Go to the http://localhost:9080/api/system/properties/os URL to see all the `os.*` properties. You will see an output similar to the following example:
 
@@ -93,7 +93,7 @@ Go to the http://localhost:9080/api/system/schedule/toggle URL to toggle the sch
 ----
 
 [role='command']
-include::{common-includes}/twyb-end.adoc[]
+include::{common-includes}/twyb-end-mvnw.adoc[]
 
 
 == Running tasks in parallel
@@ -108,7 +108,7 @@ cd /home/project/guide-jakarta-concurrency/start
 endif::[]
 
 [role='command']
-include::{common-includes}/devmode-lmp33-start.adoc[]
+include::{common-includes}/devmode-mvnw-start.adoc[]
 
 // file 0
 SystemResource.java
