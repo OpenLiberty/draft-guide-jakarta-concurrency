@@ -14,15 +14,10 @@ package io.openliberty.guides.system;
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryMXBean;
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 import javax.naming.InitialContext;
 
@@ -43,8 +38,7 @@ import jakarta.transaction.UserTransaction;
 
 // tag::annotateManagedScheduledExecutor[]
 @ManagedScheduledExecutorDefinition(
-    name = "java:module/concurrent/virtual-executor",
-    qualifiers = WithVirtualThreads.class)
+    name = "java:module/concurrent/managed-scheduled-executor")
 // end::annotateManagedScheduledExecutor[]
 @ApplicationScoped
 public class SystemConcurrency {
@@ -58,70 +52,31 @@ public class SystemConcurrency {
 
     // tag::managedScheduledExecutorService[]
     @Inject
-    @WithVirtualThreads
-    // tag::virtualManagedExecutor[]
-    ManagedScheduledExecutorService virtualManagedExecutor;
-    // end::virtualManagedExecutor[]
+    // tag::managedExecutor[]
+    ManagedScheduledExecutorService managedExecutor;
+    // end::managedExecutor[]
     // end::managedScheduledExecutorService[]
 
     // tag::entityManager[]
+    // tag::persistenceContext[]
     @PersistenceContext(name = "jpa-unit")
+    // end::persistenceContext[]
     private EntityManager em;
     // end::entityManager[]
 
     private void doSomething(int t) {
         try {
             Thread.sleep(t * 1000);
-        } catch (InterruptedException e) {
+        } catch (Exception e) {
             logger.warning(e.getMessage());
         }
-    }
-
-    private String getSystemPropertyTask(String key) {
-        logger.info("Getting the " + key + " property...");
-        doSomething(1);
-        return System.getProperty(key);
-    }
-
-    public Map<String, String> getProperties(String prefix)
-           throws InterruptedException, ExecutionException {
-
-        // tag::properties[]
-        Map<String, Future<String>> properties = new HashMap<String, Future<String>>();
-        // end::properties[]
-        List<String> keys = System.getProperties().stringPropertyNames().stream()
-                                  .filter(k -> k.startsWith(prefix + "."))
-                                  .collect(Collectors.toList());
-        for (String k : keys) {
-            // tag::submit[]
-            Future<String> v = virtualManagedExecutor.submit(() -> {
-                return getSystemPropertyTask(k);
-            });
-            properties.put(k, v);
-            // end::submit[]
-        }
-        // tag::collect[]
-        return properties.entrySet().stream().collect(
-            Collectors.toMap(Map.Entry::getKey, e -> {
-                try {
-                    // tag::get[]
-                    Future<String> propertyValue = e.getValue();
-                    String v = propertyValue.get();
-                    // end::get[]
-                    logger.info("The value of the " + e.getKey() + " property: " + v);
-                    return v;
-                 } catch (Exception ex) {
-                       return null;
-                 }
-            }));
-        // end::collect[]
     }
 
     // tag::getCpuLoad[]
     public void getCpuLoad() {
         logger.info("New CPU load will be recorded after 5 seconds.");
         // tag::scheduleCall[]
-        virtualManagedExecutor.schedule(() -> {
+        managedExecutor.schedule(() -> {
         // end::scheduleCall[]
             try {
                 // tag::userTransaction[]

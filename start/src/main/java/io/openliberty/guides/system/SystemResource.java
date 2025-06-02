@@ -27,7 +27,7 @@ import jakarta.ws.rs.core.MediaType;
 public class SystemResource {
 
     @Inject
-    SystemConcurrency bean;
+    SystemProperties propertiesBean;
 
     // tag::getProperties[]
     @GET
@@ -35,7 +35,7 @@ public class SystemResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Map<String, String> getProperties(@PathParam("prefix") String prefix)
         throws InterruptedException, ExecutionException {
-        return bean.getProperties(prefix);
+        return propertiesBean.getProperties(prefix);
     }
     // end::getProperties[]
 
