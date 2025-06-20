@@ -155,9 +155,7 @@ include::finish/src/main/java/io/openliberty/guides/system/SystemProperties.java
 
 The [hotspot file=3]`SystemProperties` class is annotated by the [hotspot=annotateManagedExecutor file=3]`@ManagedExecutorDefinition` annotation to provide a managed executor instance through the [hotspot=managedExecutorService file=3]`ManagedExecutorService` injection point.
 
-The `getProperties()` method uses the [hotspot=managedExecutor hotspot=submit file=3]`managedExecutor` instance to submit callable tasks that call the `getSystemPropertyTask()` method to collect different property values in parallel. Each task creates a thread and returns a `Future<String>` object.
-
-The `return` statement performs a [hotspot=collect file=3]`collect()` mutable reduction operation on the entries of the [hotspot=properties file=3]`properties` map. In the operation, use the [hotspot=get file=3]`get()` method to wait for all threads to complete and to collect the results.
+The `getProperties()` method constructs all [hotspot=tasks file=3]`tasks` for collecting different property values. Each task calls the [hotspot=getSystemPropertyTask file=3]`getSystemPropertyTask()` method. Then, the `getProperties()` method uses the [hotspot=managedExecutor hotspot=invokeAll file=3]`managedExecutor` instance to invoke all tasks by the [ file=3]`invokeAll()` method.
 
 You started the Open Liberty in dev mode at the beginning of this section, so all the changes are automatically picked up.
 
@@ -200,6 +198,9 @@ A transaction is required on a cascading PERSIST operation. Inside the asynchron
 An alternative to create a similar asynchronous task is using `@Asynchronous` annotation. The [hotspot=getMemoryUsage file=0]`getMemoryUsage()` method is annotated with the [hotspot=asynchronous1 file=0]`@Asynchronous` annotation to make it run asynchronously. The task calculates the [hotspot=calculateMemoryUsage file=0]`memoryUsageData` memory usage and calls the [hotspot=persistMemoryUsage file=0]`persist()` method to persist the data into the database. To create a new transaction, annotate the `getMemoryUsage()` method by the [hotspot=transactional1 file=0]`@Transactional` annotation.
 
 Jakarta Concurrency feature plays an important role to manage the application context in order to make the [hotspot=persistenceContext file=0]`jpa-unit` persistence context available to the asynchronous task.
+
+
+Implement two REST endpoints to run the asynchronous tasks.
 
 // file 2
 SystemResource.java

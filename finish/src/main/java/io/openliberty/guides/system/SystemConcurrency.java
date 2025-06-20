@@ -24,12 +24,12 @@ import javax.naming.InitialContext;
 import com.sun.management.OperatingSystemMXBean;
 
 import io.openliberty.guides.system.model.SystemLoadData;
+import jakarta.annotation.Resource;
 import jakarta.enterprise.concurrent.Asynchronous;
 import jakarta.enterprise.concurrent.ManagedScheduledExecutorDefinition;
 import jakarta.enterprise.concurrent.ManagedScheduledExecutorService;
 import jakarta.enterprise.concurrent.Schedule;
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
@@ -51,7 +51,7 @@ public class SystemConcurrency {
     private static boolean scheduleEnabled = false;
 
     // tag::managedScheduledExecutorService[]
-    @Inject
+    @Resource(lookup = "java:module/concurrent/managed-scheduled-executor")
     // tag::managedExecutor[]
     ManagedScheduledExecutorService managedExecutor;
     // end::managedExecutor[]
