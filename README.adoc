@@ -155,7 +155,7 @@ include::finish/src/main/java/io/openliberty/guides/system/SystemProperties.java
 
 The [hotspot file=3]`SystemProperties` class is annotated by the [hotspot=annotateManagedExecutor file=3]`@ManagedExecutorDefinition` annotation to provide a managed executor instance through the [hotspot=managedExecutorService file=3]`ManagedExecutorService` injection point.
 
-The `getProperties()` method constructs all [hotspot=tasks file=3]`tasks` for collecting different property values. Each task calls the [hotspot=getSystemPropertyTask file=3]`getSystemPropertyTask()` method. Then, the `getProperties()` method uses the [hotspot=managedExecutor hotspot=invokeAll file=3]`managedExecutor` instance to invoke all tasks by the [ file=3]`invokeAll()` method.
+The `getProperties()` method constructs all [hotspot=tasks file=3]`tasks` for collecting different property values. Each task calls the [hotspot=getSystemPropertyTask file=3]`getSystemPropertyTask()` method. Then, the `getProperties()` method uses the [hotspot=managedExecutor hotspot=invokeAll file=3]`managedExecutor` instance to invoke all tasks in parallel. The [hotspot=invokeAll file=3]`invokeAll()` method waits for all tasks to complete.
 
 You started the Open Liberty in dev mode at the beginning of this section, so all the changes are automatically picked up.
 
