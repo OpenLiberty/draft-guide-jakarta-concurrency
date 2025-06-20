@@ -39,7 +39,7 @@ You will update the application to learn how to run tasks in parallel by enhanci
 // Getting started
 // =================================================================================================
 [role='command']
-include::{common-includes}/gitclone.adoc[]
+include::{common-includes}/gitclone-no-prereqs.adoc[]
 
 [role='command']
 include::{common-includes}/twyb-intro-mvnw.adoc[]
