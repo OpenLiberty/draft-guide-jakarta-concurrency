@@ -78,11 +78,14 @@ public class SystemConcurrency {
         // tag::scheduleCall[]
         managedExecutor.schedule(() -> {
         // end::scheduleCall[]
+            // tag::userTransaction[]
+            UserTransaction ut = null;
+            // end::userTransaction[]
             try {
-                // tag::userTransaction[]
-                UserTransaction ut = (UserTransaction)
+                // tag::utLookup[]
+                ut = (UserTransaction)
                     new InitialContext().lookup("java:comp/UserTransaction");
-                // end::userTransaction[]
+                // end::utLookup[]
                 // tag::utBegin[]
                 ut.begin();
                 // end::utBegin[]
@@ -102,6 +105,13 @@ public class SystemConcurrency {
                 logger.info("CPU load at \"" + current + "\" was recorded.");
             } catch (Exception e) {
                 logger.warning(e.getMessage());
+                if (ut != null) {
+                    try {
+                        ut.rollback();
+                    } catch (Exception re) {
+                        logger.warning(re.getMessage());
+                    }
+                }
             }
         // tag::after[]
         }, 5, TimeUnit.SECONDS);
