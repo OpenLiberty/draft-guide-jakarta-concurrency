@@ -191,7 +191,7 @@ public class SystemConcurrency {
             return null;
             // end::returnNull[]
         } else {
-            logger.info("Schedule was disabled.");
+            logger.info("Schedule is stopped.");
             // tag::returnCompletableFuture[]
             return Asynchronous.Result.complete("Completed");
             // end::returnCompletableFuture[]
