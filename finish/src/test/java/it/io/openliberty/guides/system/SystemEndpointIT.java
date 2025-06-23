@@ -159,10 +159,10 @@ public class SystemEndpointIT {
     }
     // end::testGetMemoryUsage[]
 
-    // tag::testEnableSchedule[]
+    // tag::testToggleSchedule[]
     @Test
     @Order(4)
-    public void testEnableSchedule() throws Exception {
+    public void testToggleSchedule() throws Exception {
         toggleSchedule();
         JsonArray before = getSystemLoads();
         Thread.sleep(20000);
@@ -174,6 +174,6 @@ public class SystemEndpointIT {
         assertNotNull(systemLoad.get("cpuLoad"));
         assertNotNull(systemLoad.get("memoryUsage"));
     }
-    // end::testEnableSchedule[]
+    // end::testToggleSchedule[]
 
 }

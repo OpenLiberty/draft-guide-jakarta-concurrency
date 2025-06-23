@@ -24,12 +24,12 @@ import javax.naming.InitialContext;
 import com.sun.management.OperatingSystemMXBean;
 
 import io.openliberty.guides.system.model.SystemLoadData;
+import jakarta.annotation.Resource;
 import jakarta.enterprise.concurrent.Asynchronous;
 import jakarta.enterprise.concurrent.ManagedScheduledExecutorDefinition;
 import jakarta.enterprise.concurrent.ManagedScheduledExecutorService;
 import jakarta.enterprise.concurrent.Schedule;
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
@@ -48,10 +48,10 @@ public class SystemConcurrency {
     private static final MemoryMXBean MEM = ManagementFactory.getMemoryMXBean();
 
     private static Logger logger = Logger.getLogger(SystemConcurrency.class.getName());
-    private static boolean scheduleEnabled = false;
+    private static boolean isScheduleStarted = false;
 
     // tag::managedScheduledExecutorService[]
-    @Inject
+    @Resource(lookup = "java:module/concurrent/managed-scheduled-executor")
     // tag::managedExecutor[]
     ManagedScheduledExecutorService managedExecutor;
     // end::managedExecutor[]
@@ -78,11 +78,14 @@ public class SystemConcurrency {
         // tag::scheduleCall[]
         managedExecutor.schedule(() -> {
         // end::scheduleCall[]
+            // tag::userTransaction[]
+            UserTransaction ut = null;
+            // end::userTransaction[]
             try {
-                // tag::userTransaction[]
-                UserTransaction ut = (UserTransaction)
+                // tag::utLookup[]
+                ut = (UserTransaction)
                     new InitialContext().lookup("java:comp/UserTransaction");
-                // end::userTransaction[]
+                // end::utLookup[]
                 // tag::utBegin[]
                 ut.begin();
                 // end::utBegin[]
@@ -102,6 +105,15 @@ public class SystemConcurrency {
                 logger.info("CPU load at \"" + current + "\" was recorded.");
             } catch (Exception e) {
                 logger.warning(e.getMessage());
+                // tag::utRollback[]
+                if (ut != null) {
+                    try {
+                        ut.rollback();
+                    } catch (Exception re) {
+                        logger.warning(re.getMessage());
+                    }
+                }
+                // end::utRollback[]
             }
         // tag::after[]
         }, 5, TimeUnit.SECONDS);
@@ -136,12 +148,16 @@ public class SystemConcurrency {
     // end::getMemoryUsage[]
 
     // tag::enableSchedule[]
-    public boolean isScheduleEnabled() {
-        return scheduleEnabled;
+    public boolean isScheduleStarted() {
+        return isScheduleStarted;
     }
 
-    public void enableSchedule(boolean enabled) {
-        scheduleEnabled = enabled;
+    public void startSchedule() {
+        isScheduleStarted = true;
+    }
+
+    public void stopSchedule() {
+        isScheduleStarted = false;
     }
     // end::enableSchedule[]
 
@@ -155,7 +171,7 @@ public class SystemConcurrency {
     // tag::completableFuture[]
     public CompletableFuture<String> schedule() {
     // end::completableFuture[]
-        if (isScheduleEnabled()) {
+        if (isScheduleStarted()) {
             // tag::calculateSystemLoad[]
             SystemLoadData systemLoadData  = new SystemLoadData();
             LocalDateTime current = LocalDateTime.now();

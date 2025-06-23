@@ -28,18 +28,18 @@ Learn how to run tasks concurrently or asynchronously in Java microservices by u
 
 == What you'll learn
 
-Jakarta Concurrency enables the creation of managed executors to run tasks in separate threads with access to server contexts. It also enables the creation of managed thread factories to create threads that run with the thread context of the component that looks up the managed thread factory. The threads are managed by the application server, coexist, access server contexts, and safely interact in the Enterprise Java Beans and Web containers. To learn more about Jakarta Concurrency, see the https://jakarta.ee/specifications/concurrency[Jakarta Concurrency specification^].
+Jakarta Concurrency enables the creation of managed executors to run tasks in separate threads with access to the context of the submitter. It also enables the creation of managed thread factories to create threads that run with the thread context of the component that looks up the managed thread factory. The threads are managed by the application server and safely interact in the Enterprise Java Beans and Web containers. To learn more about Jakarta Concurrency, see the https://jakarta.ee/specifications/concurrency[Jakarta Concurrency specification^].
 
-The application that you'll build provides REST APIs to retrieve system properties and record system loads including CPU load and memory usage to the database.
+The application that you will build provides REST APIs to retrieve system properties and write information about system loads, including CPU load and memory usage, to the database.
 
-You'll update the application to learn how to run tasks in parallel by enhancing the GET `/api/system/properties/{prefix}` endpoint that retrieves system properties with the provided prefix. You'll learn two different ways to create asynchronous task by implementing the GET `/api/system/systemLoad/cpuLoad` and `/api/system/systemLoad/memoryUsage` endpoints that calculate the CPU load and memory usage and persist the data to the database. Also, you'll learn how to create a scheduled asynchronous task that calculates and records the current system load to the database for every 10 seconds.
+You will update the application to learn how to run tasks in parallel by enhancing the GET `/api/system/properties/{prefix}` endpoint that retrieves system properties with the provided prefix. You will learn two different ways to create asynchronous task by implementing the GET `/api/system/systemLoad/cpuLoad` and `/api/system/systemLoad/memoryUsage` endpoints that calculate the CPU load and memory usage and persist the data to the database. Also, you will learn how to create a scheduled asynchronous task that calculates and records the current system load to the database for every 10 seconds.
 
 
 // =================================================================================================
 // Getting started
 // =================================================================================================
 [role='command']
-include::{common-includes}/gitclone.adoc[]
+include::{common-includes}/gitclone-no-prereqs.adoc[]
 
 [role='command']
 include::{common-includes}/twyb-intro-mvnw.adoc[]
@@ -98,7 +98,7 @@ include::{common-includes}/twyb-end-mvnw.adoc[]
 
 == Running tasks in parallel
 
-Starting to learn Jakarta Concurrency, you'll learn how to use the https://jakarta.ee/specifications/concurrency/3.1/jakarta-concurrency-spec-3.1#managedexecutorservice[ManagedExecutorService^] to run tasks in parallel.
+Starting to learn Jakarta Concurrency, you will learn how to use the https://jakarta.ee/specifications/concurrency/3.1/jakarta-concurrency-spec-3.1#managedexecutorservice[ManagedExecutorService^] to run tasks in parallel.
 
 Navigate to the `start` directory to begin.
 ifdef::cloud-hosted[]
@@ -131,14 +131,14 @@ server.xml
 include::finish/src/main/liberty/config/server.xml[]
 ----
 
-The starting application is implemented the [hotspot=getProperties file=0]`/properties/{prefix}` endpoint. Go to the http://localhost:9080/api/system/properties/java URL to see all the `java.*` properties. Notice that the URL takes several seconds to get the result. Each [hotspot=getSystemPropertyTask hotspot=callGetSystemPropertyTask file=1]`getSystemPropertyTask()` call takes at least a second.
+The starting application provides the [hotspot=getProperties file=0]`/properties/{prefix}` endpoint. Go to the http://localhost:9080/api/system/properties/java URL to see all the `java.*` properties. Notice that the URL takes several seconds to get the result. Each [hotspot=getSystemPropertyTask hotspot=callGetSystemPropertyTask file=1]`getSystemPropertyTask()` call takes at least a second.
 
 To improve the performance, enhance the [hotspot=getProperties file=1]`getProperties()` method to call the [hotspot=callGetSystemPropertyTask file=1]`getSystemPropertyTask()` method in parallel.
 
 // TODO: replace the concurrent-3.0.html to concurrent-3.1.html
 The https://openliberty.io/docs/latest/reference/feature/concurrent-3.0.html[Jakarta Concurrency^] feature is enabled for you in the Liberty [hotspot=concurrent file=2]`server.xml` configuration file.
 
-Enable the `SystemProperties` class to use Jakarta Concurrency managed executor service that provides a way to start asynchronous tasks within an application server environment. It propagates various thread contexts that are relevant to Jakarta EE applications.
+Update the `SystemProperties` class to use Jakarta Concurrency managed executor service to provide a way to start asynchronous tasks within an application server environment. It propagates various thread contexts that are relevant to Jakarta EE applications.
 
 // file 3
 SystemProperties.java
@@ -155,9 +155,7 @@ include::finish/src/main/java/io/openliberty/guides/system/SystemProperties.java
 
 The [hotspot file=3]`SystemProperties` class is annotated by the [hotspot=annotateManagedExecutor file=3]`@ManagedExecutorDefinition` annotation to provide a managed executor instance through the [hotspot=managedExecutorService file=3]`ManagedExecutorService` injection point.
 
-The `getProperties()` method uses the [hotspot=managedExecutor hotspot=submit file=3]`managedExecutor` instance to submit callable tasks that call the `getSystemPropertyTask()` method to collect different property values in parallel. Each task creates a thread and returns a `Future<String>` object.
-
-The `return` statement performs a [hotspot=collect file=3]`collect()` mutable reduction operation on the entries of the [hotspot=properties file=3]`properties` map. In the operation, use the [hotspot=get file=3]`get()` method to wait for all threads to complete and to collect the results.
+The `getProperties()` method constructs all [hotspot=tasks file=3]`tasks` for collecting different property values. Each task calls the [hotspot=getSystemPropertyTask file=3]`getSystemPropertyTask()` method. Then, the `getProperties()` method uses the [hotspot=managedExecutor hotspot=invokeAll file=3]`managedExecutor` instance to invoke all tasks in parallel. The [hotspot=invokeAll file=3]`invokeAll()` method waits for all tasks to complete.
 
 You started the Open Liberty in dev mode at the beginning of this section, so all the changes are automatically picked up.
 
@@ -195,11 +193,14 @@ The `@ManagedScheduledExecutorDefinition` annotation and the `ManagedScheduledEx
 
 The [hotspot=getCpuLoad file=0]`getCpuLoad()` method uses the [hotspot=scheduleCall file=0]`managedExecutor` service to create and schedule an asynchronous task that delays the execution with [hotspot=scheduleCall hotspot=after file=0]`5` seconds. The task calculates the [hotspot=calculateCPULoad file=0]`cpuLoadData` CPU load. Then, it calls the [hotspot=persistCPULoad file=0]`persist()` method to persist the data into the database through the [hotspot=entityManager file=0]`EntityManager` interface that interacts with the [hotspot=jpa-unit file=1]`jpa-unit` persistence context in the Liberty runtime.
 
-A transaction is required on a cascading PERSIST operation. Inside the asynchronous thread, retrieve the named [hotspot=userTransaction file=0]`UserTransaction` object from the Liberty runtime. Then, call the [hotspot=userTransaction hotspot=utBegin file=0]`begin()` method to create a transaction and call the [hotspot=userTransaction hotspot=utCommit file=0]`commit()` method to complete the transaction.
+A transaction is required on a cascading PERSIST operation. Inside the asynchronous task, it retrieves the named [hotspot=userTransaction hotspot=utLookup file=0]`UserTransaction` object from the Liberty runtime. Then, it calls the [hotspot=utLookup hotspot=utBegin file=0]`begin()` method to create a transaction and the [hotspot=utLookup hotspot=utCommit file=0]`commit()` method to complete the transaction. If there is any exception, it calls the [hotspot=utRollback file=0]`rollback()` method to roll back the transaction that associates to the thread.
 
-An alternative to create a similar asynchronous task is using `@Asynchronous` annotation. The [hotspot=getMemoryUsage file=0]`getMemoryUsage()` method is annotated with the [hotspot=asynchronous1 file=0]`@Asynchronous` annotation to make it running asynchronously. The task calculates the [hotspot=calculateMemoryUsage file=0]`memoryUsageData` memory usage and calls the [hotspot=persistMemoryUsage file=0]`persist()` method to persist the data into the database. To create a new transaction, annotate the `getMemoryUsage()` method by the [hotspot=transactional1 file=0]`@Transactional` annotation.
+An alternative to create a similar asynchronous task is using `@Asynchronous` annotation. The [hotspot=getMemoryUsage file=0]`getMemoryUsage()` method is annotated with the [hotspot=asynchronous1 file=0]`@Asynchronous` annotation to make it run asynchronously. The task calculates the [hotspot=calculateMemoryUsage file=0]`memoryUsageData` memory usage and calls the [hotspot=persistMemoryUsage file=0]`persist()` method to persist the data into the database. To create a new transaction, annotate the `getMemoryUsage()` method by the [hotspot=transactional1 file=0]`@Transactional` annotation.
 
-Jakarta Concurrency feature plays an important role to mange the [hotspot=persistenceContext file=0]`jpa-unit` persistence context that is propagated with transaction context in the threads to ensure that data integrity is preserved.
+Jakarta Concurrency feature plays an important role to manage the application context in order to make the [hotspot=persistenceContext file=0]`jpa-unit` persistence context available to the asynchronous task.
+
+
+Implement two REST endpoints to run the asynchronous tasks.
 
 // file 2
 SystemResource.java
@@ -242,7 +243,7 @@ To check the system loads after 5 seconds, go to the http://localhost:9080/api/s
 
 Starting from Jakarta Concurrency 3.1, https://jakarta.ee/specifications/concurrency/3.1/jakarta-concurrency-spec-3.1#scheduled-asynchronous-methods[Scheduled asynchronous methods^] replaces the `@Schedule` annotation of Jakarta Entperprise Beans.
 
-In this section, you'll implement a schedule task to get the current system load for every 10 seconds by using scheduled asynchronous method.
+In this section, you will implement a schedule task to get the current system load for every 10 seconds by using a scheduled asynchronous method.
 
 // file 0
 SystemConcurrency.java
@@ -259,7 +260,8 @@ include::finish/src/main/java/io/openliberty/guides/system/SystemConcurrency.jav
 
 Similarly, the [hotspot=schedule file=0]`schedule()` method calculates the [hotspot=calculateSystemLoad file=0]`systemLoadData` system load data and calls the [hotspot=persistSystemLoad file=0]`persist()` method to persist the data into the database. To create a new transaction, annotate the `schedule()` method by the [hotspot=transactional2 hotspot=completableFuture file=0]`@Transactional` annotation.
 
-The [hotspot=asynchronous2 hotspot=completableFuture file=0]`schedule()` method is annotated with the `@Asynchronous` annotation that configures the schedule with the [hotspot=asynchronous2 file=0]`"*/10 * * * * *"` cron expression to make the task running asynchronously in every 10 seconds. A [hotspot=returnNull file=0]`null` value is returned to make the schedule to keep running. A [hotspot=completableFuture hotspot=returnCompletableFuture file=0]`CompletableFuture<>` object is returned to complete the task and stop the schedule.
+// TODO: replace the javadoc link to jakartaee11
+The [hotspot=asynchronous2 hotspot=completableFuture file=0]`schedule()` method is annotated with the `@Asynchronous` annotation that configures the schedule with the [hotspot=asynchronous2 file=0]`"*/10 * * * * *"` cron expression to make the task run asynchronously every 10 seconds (after the seconds of each minute that are divisible by 10). For more information about CRON syntax, see the https://openliberty.io/docs/latest/reference/javadoc/liberty-jakartaee10-javadoc.html?path=liberty-jakartaee10-javadoc/jakarta/enterprise/concurrent/CronTrigger.html[jakarta.enterprise.concurrent.CronTrigger JavaDoc^]. A [hotspot=returnNull file=0]`null` value is returned to make the schedule to keep running. A [hotspot=completableFuture hotspot=returnCompletableFuture file=0]`CompletableFuture<>` object is returned to complete the task and stop the schedule.
 
 Implement a REST endpoint to toggle the schedule.
 
@@ -276,9 +278,9 @@ include::finish/src/main/java/io/openliberty/guides/system/SystemResource.java[]
 `src/main/java/io/openliberty/guides/system/SystemResource.java`
 ----
 
-The added GET [hotspot=schedulToggle file=1]`/schedule/toggle` endpoint calls the `schedule()` scheduled asynchronous method.
+The added GET [hotspot=schedulToggle file=1]`/schedule/toggle` endpoint calls the `schedule()` scheduled asynchronous method if the schedule is not started.
 
-Go to the http://localhost:9080/api/system/schedule/toggle URL to enable the schedule. After 10 seconds, go to the http://localhost:9080/api/system/systemLoad URL to check out the system loads.
+Go to the http://localhost:9080/api/system/schedule/toggle URL to start the schedule. After 10 seconds, go to the http://localhost:9080/api/system/systemLoad URL to check out the system loads.
 
 [role="no_copy"]
 ----
@@ -294,7 +296,7 @@ Go to the http://localhost:9080/api/system/schedule/toggle URL to enable the sch
 ]
 ----
 
-After you are finished checking out the schedule, go to the http://localhost:9080/api/system/schedule/toggle URL again to disable the schedule.
+After you are finished checking out the schedule, go to the http://localhost:9080/api/system/schedule/toggle URL again to stop the schedule.
 
 
 
@@ -321,7 +323,7 @@ The [hotspot=testGetCpuLoad file=0]`testGetCpuLoad()` tests the GET `/api/system
 
 The [hotspot=testGetMemoryUsage file=0]`testGetMemoryUsage()` tests the GET `/api/system/systemLoad/memoryUsage` endpoint and confirms that the memory usage is not null after several seconds.
 
-The [hotspot=testEnableSchedule file=0]`testEnableSchedule()` tests the GET `/api/systems/schedule/toggle` endpoint and confirms that 2 system loads are recorded after 20 seconds.
+The [hotspot=testToggleSchedule file=0]`testToggleSchedule()` tests the GET `/api/systems/schedule/toggle` endpoint and confirms that 2 system loads are recorded after 20 seconds.
 
 // =================================================================================================
 // Running the tests

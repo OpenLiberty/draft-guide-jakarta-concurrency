@@ -11,18 +11,18 @@
 // end::copyright[]
 package io.openliberty.guides.system;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
+import jakarta.annotation.Resource;
 import jakarta.enterprise.concurrent.ManagedExecutorDefinition;
 import jakarta.enterprise.concurrent.ManagedExecutorService;
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
 
 
 //tag::annotateManagedExecutor[]
@@ -35,7 +35,7 @@ public class SystemProperties {
     private static Logger logger = Logger.getLogger(SystemProperties.class.getName());
 
     // tag::managedExecutorService[]
-    @Inject
+    @Resource(lookup = "java:module/concurrent/managed-executor")
     // tag::managedExecutor[]
     ManagedExecutorService managedExecutor;
     // end::managedExecutor[]
@@ -51,34 +51,27 @@ public class SystemProperties {
            throws InterruptedException, ExecutionException {
 
         // tag::properties[]
-        Map<String, Future<String>> properties = new HashMap<String, Future<String>>();
+        ConcurrentHashMap<String, String> properties = new ConcurrentHashMap<>();
         // end::properties[]
-        List<String> keys = System.getProperties().stringPropertyNames().stream()
-                                  .filter(k -> k.startsWith(prefix + "."))
-                                  .collect(Collectors.toList());
-        for (String k : keys) {
-            // tag::submit[]
-            Future<String> v = managedExecutor.submit(() -> {
-                return getSystemPropertyTask(k);
-            });
-            properties.put(k, v);
-            // end::submit[]
+
+        // tag::tasks[]
+        List<Callable<String>> tasks = new ArrayList<>();
+        for (String key : System.getProperties().stringPropertyNames()) {
+            if (key.startsWith(prefix + ".")) {
+                tasks.add(() -> {
+                    // tag::getSystemPropertyTask[]
+                    return properties.put(key, getSystemPropertyTask(key));
+                    // end::getSystemPropertyTask[]
+                });
+            }
         }
-        // tag::collect[]
-        return properties.entrySet().stream().collect(
-            Collectors.toMap(Map.Entry::getKey, e -> {
-                try {
-                    // tag::get[]
-                    Future<String> propertyValue = e.getValue();
-                    String v = propertyValue.get();
-                    // end::get[]
-                    logger.info("The value of the " + e.getKey() + " property: " + v);
-                    return v;
-                 } catch (Exception ex) {
-                       return null;
-                 }
-            }));
-        // end::collect[]
+        // end::tasks[]
+
+        // tag::invokeAll[]
+        managedExecutor.invokeAll(tasks);
+        // end::invokeAll[]
+
+        return properties;
     }
 
 }
