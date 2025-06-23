@@ -84,7 +84,7 @@ public class SystemConcurrency {
             try {
                 // tag::utLookup[]
                 ut = (UserTransaction)
-                    new InitialContext().lookup("java:comp/UserTransaction");
+                     new InitialContext().lookup("java:comp/UserTransaction");
                 // end::utLookup[]
                 // tag::utBegin[]
                 ut.begin();
