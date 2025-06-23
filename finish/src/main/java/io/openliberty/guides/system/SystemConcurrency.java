@@ -105,6 +105,7 @@ public class SystemConcurrency {
                 logger.info("CPU load at \"" + current + "\" was recorded.");
             } catch (Exception e) {
                 logger.warning(e.getMessage());
+                // tag::utRollback[]
                 if (ut != null) {
                     try {
                         ut.rollback();
@@ -112,6 +113,7 @@ public class SystemConcurrency {
                         logger.warning(re.getMessage());
                     }
                 }
+                // end::utRollback[]
             }
         // tag::after[]
         }, 5, TimeUnit.SECONDS);
