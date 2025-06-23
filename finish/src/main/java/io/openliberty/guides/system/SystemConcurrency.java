@@ -155,11 +155,11 @@ public class SystemConcurrency {
     public void startSchedule() {
         isScheduleStarted = true;
     }
-    // end::enableSchedule[]
 
     public void stopSchedule() {
         isScheduleStarted = false;
     }
+    // end::enableSchedule[]
 
     // tag::asynchronous2[]
     @Asynchronous(runAt = { @Schedule(cron = "*/10 * * * * *")})

@@ -280,7 +280,7 @@ include::finish/src/main/java/io/openliberty/guides/system/SystemResource.java[]
 
 The added GET [hotspot=schedulToggle file=1]`/schedule/toggle` endpoint calls the `schedule()` scheduled asynchronous method if the schedule is not started.
 
-Go to the http://localhost:9080/api/system/schedule/toggle URL to enable the schedule. After 10 seconds, go to the http://localhost:9080/api/system/systemLoad URL to check out the system loads.
+Go to the http://localhost:9080/api/system/schedule/toggle URL to start the schedule. After 10 seconds, go to the http://localhost:9080/api/system/systemLoad URL to check out the system loads.
 
 [role="no_copy"]
 ----
@@ -296,7 +296,7 @@ Go to the http://localhost:9080/api/system/schedule/toggle URL to enable the sch
 ]
 ----
 
-After you are finished checking out the schedule, go to the http://localhost:9080/api/system/schedule/toggle URL again to disable the schedule.
+After you are finished checking out the schedule, go to the http://localhost:9080/api/system/schedule/toggle URL again to stop the schedule.
 
 
 
