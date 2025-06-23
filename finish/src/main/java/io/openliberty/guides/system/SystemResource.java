@@ -74,7 +74,7 @@ public class SystemResource {
     @Path("/schedule")
     @Produces(MediaType.TEXT_PLAIN)
     public String schedule() {
-        return String.valueOf(concurrencyBean.isScheduleEnabled());
+        return String.valueOf(concurrencyBean.isScheduleStarted());
     }
     // end::schedule[]
 
@@ -83,11 +83,11 @@ public class SystemResource {
     @Path("/schedule/toggle")
     @Produces(MediaType.TEXT_PLAIN)
     public String schedulToggle() {
-        if (concurrencyBean.isScheduleEnabled()) {
-            concurrencyBean.enableSchedule(false);
+        if (concurrencyBean.isScheduleStarted()) {
+            concurrencyBean.stopSchedule();
             return "Disabling the schedule...";
         } else {
-            concurrencyBean.enableSchedule(true);
+            concurrencyBean.startSchedule();
             concurrencyBean.schedule();
             return "Enabling the schedule...";
         }

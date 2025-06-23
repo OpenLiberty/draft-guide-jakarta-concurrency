@@ -48,7 +48,7 @@ public class SystemConcurrency {
     private static final MemoryMXBean MEM = ManagementFactory.getMemoryMXBean();
 
     private static Logger logger = Logger.getLogger(SystemConcurrency.class.getName());
-    private static boolean scheduleEnabled = false;
+    private static boolean isScheduleStarted = false;
 
     // tag::managedScheduledExecutorService[]
     @Resource(lookup = "java:module/concurrent/managed-scheduled-executor")
@@ -148,14 +148,18 @@ public class SystemConcurrency {
     // end::getMemoryUsage[]
 
     // tag::enableSchedule[]
-    public boolean isScheduleEnabled() {
-        return scheduleEnabled;
+    public boolean isScheduleStarted() {
+        return isScheduleStarted;
     }
 
-    public void enableSchedule(boolean enabled) {
-        scheduleEnabled = enabled;
+    public void startSchedule() {
+        isScheduleStarted = true;
     }
     // end::enableSchedule[]
+
+    public void stopSchedule() {
+        isScheduleStarted = false;
+    }
 
     // tag::asynchronous2[]
     @Asynchronous(runAt = { @Schedule(cron = "*/10 * * * * *")})
@@ -167,7 +171,7 @@ public class SystemConcurrency {
     // tag::completableFuture[]
     public CompletableFuture<String> schedule() {
     // end::completableFuture[]
-        if (isScheduleEnabled()) {
+        if (isScheduleStarted()) {
             // tag::calculateSystemLoad[]
             SystemLoadData systemLoadData  = new SystemLoadData();
             LocalDateTime current = LocalDateTime.now();
