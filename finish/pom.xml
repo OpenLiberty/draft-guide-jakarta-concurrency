@@ -22,7 +22,7 @@
         <dependency>
             <groupId>jakarta.platform</groupId>
             <artifactId>jakarta.jakartaee-api</artifactId>
-            <version>11.0.0-RC1</version>
+            <version>11.0.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -48,7 +48,7 @@
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
-            <version>5.13.0</version>
+            <version>5.13.4</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -92,9 +92,9 @@
             <plugin>
                 <groupId>io.openliberty.tools</groupId>
                 <artifactId>liberty-maven-plugin</artifactId>
-                <version>3.11.3</version>
+                <version>3.11.4</version>
                 <configuration>
-<install><runtimeUrl>https://public.dhe.ibm.com/ibmdl/export/pub/software/openliberty/runtime/nightly/2025-06-16_1902/openliberty-all-25.0.0.7-cl250720250616-1902.zip</runtimeUrl></install>
+<install><runtimeUrl>https://public.dhe.ibm.com/ibmdl/export/pub/software/openliberty/runtime/nightly/2025-08-06_1902/openliberty-all-25.0.0.9-cl250920250806-1902.zip</runtimeUrl></install>
                     <copyDependencies>
                         <location>${project.build.directory}/liberty/wlp/usr/shared/resources</location>
                         <dependency>
