@@ -92,7 +92,7 @@
             <plugin>
                 <groupId>io.openliberty.tools</groupId>
                 <artifactId>liberty-maven-plugin</artifactId>
-                <version>3.11.4</version>
+                <version>3.11.5</version>
                 <configuration>
 <install><runtimeUrl>https://public.dhe.ibm.com/ibmdl/export/pub/software/openliberty/runtime/nightly/2025-06-16_1902/openliberty-all-25.0.0.7-cl250720250616-1902.zip</runtimeUrl></install>
                     <copyDependencies>
