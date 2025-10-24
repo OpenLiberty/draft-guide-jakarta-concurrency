@@ -94,7 +94,7 @@
                 <artifactId>liberty-maven-plugin</artifactId>
                 <version>3.11.5</version>
                 <configuration>
-<install><runtimeUrl>https://public.dhe.ibm.com/ibmdl/export/pub/software/openliberty/runtime/nightly/2025-06-16_1902/openliberty-all-25.0.0.7-cl250720250616-1902.zip</runtimeUrl></install>
+<install><runtimeUrl>https://public.dhe.ibm.com/ibmdl/export/pub/software/openliberty/runtime/nightly/2025-10-23_0302/openliberty-all-25.0.0.12-cl251220251023-0302.zip</runtimeUrl></install>
                     <copyDependencies>
                         <location>${project.build.directory}/liberty/wlp/usr/shared/resources</location>
                         <dependency>
