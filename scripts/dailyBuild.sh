@@ -24,4 +24,5 @@ fi
 sed -i "s;2025-10-23_0302/openliberty-all-25.0.0.12-cl251220251023-0302.zip;$DATE/$DRIVER;g" pom.xml
 cat pom.xml
 
-../scripts/testApp.sh
+../scripts/testAppFinish.sh
+../scripts/testAppStart.sh
