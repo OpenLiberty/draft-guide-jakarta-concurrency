@@ -31,13 +31,13 @@
 
     <logging consoleLogLevel="INFO"/>
 
-    <library id="derbyJDBCLib">
-        <fileset dir="${shared.resource.dir}/" includes="derby*.jar" />
+    <library id="h2JDBCLib">
+        <fileset dir="${shared.resource.dir}/" includes="h2*.jar" />
     </library>
 
     <dataSource id="SystemLoadDataSource" jndiName="jdbc/SystemLoadDataSource">
-        <jdbcDriver libraryRef="derbyJDBCLib" />
-        <properties.derby.embedded databaseName="SystemLoadDB" createDatabase="create" />
+        <jdbcDriver libraryRef="h2JDBCLib" />
+        <properties.h2 URL="jdbc:h2:${server.output.dir}/SystemLoadDB" />
     </dataSource>
 
 </server>
